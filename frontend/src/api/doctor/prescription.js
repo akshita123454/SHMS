@@ -1,7 +1,7 @@
 import axios from 'axios';
 const BASE_URL = "http://localhost:3000";
 
-export const createPrescription2 = async (data) => {
+export const createPrescription = async (data) => {
   try {
     const response = await axios.post(`${BASE_URL}/doctor/prescriptions`, data, {
       headers: { 'Content-Type': 'application/json' },
