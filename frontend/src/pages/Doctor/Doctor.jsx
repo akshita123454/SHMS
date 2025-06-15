@@ -1,18 +1,15 @@
-// Directory: src/
-
-// File: src/App.jsx
-import React, { useState } from 'react';
-import Sidebar from '../../components/Sidebar';
-import Header from '../../components/Header';
-import Dashboard from './DoctorDashboard';
+import Reviews from './Reviews';
+import { useState } from 'react';
 import Patients from './PatientList';
-import Reviews from './reviews';
+import Header from './components/Header';
 import Appointments from './Appointment';   
-// import Surgeries from './components/sections/Surgeries';
 import CalendarSection from './Calender';
+import Dashboard from './DoctorDashboard';
+import Sidebar from './components/Sidebar';
+import PrescriptionForm from './Prescription';
 // import Staff from './components/sections/Staff';
 // import Settings from './components/sections/Settings';
-import PrescriptionForm from './Prescription';
+// import Surgeries from './components/sections/Surgeries';
 // import TestReferralsForm from './components/TestReferralsForm';
 
 import { ToastContainer } from 'react-toastify';
@@ -23,16 +20,16 @@ function DoctorPage() {
 
   const renderSection = () => {
     switch (section) {
-      case 'patients': return <Patients />;
       case 'reviews': return <Reviews />;
-      case 'appointments': return <Appointments />;
-    //   case 'surgeries': return <Surgeries />;
+      case 'patients': return <Patients />;
       case 'calendar': return <CalendarSection />;
+      case 'appointments': return <Appointments />;
+      case 'prescription': return <PrescriptionForm />;
+      default: return <Dashboard />;
+    //   case 'surgeries': return <Surgeries />;
     //   case 'staff': return <Staff />;
     //   case 'settings': return <Settings />;
-      case 'prescription': return <PrescriptionForm />;
     //   case 'tests': return <TestReferralsForm />;
-      default: return <Dashboard />;
     }
   };
 

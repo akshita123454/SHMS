@@ -1,19 +1,11 @@
-
-// File: src/components/Sidebar.jsx
-import React from 'react';
-import { Home, Users, Star, MessageCircle, HeartPulse, Calendar, CheckSquare, Settings, FileText, TestTube } from 'lucide-react';
+import { Users, Star, MessageCircle, Calendar,  FileText, LogOut } from 'lucide-react';
 
 const items = [
-//   { key: 'dashboard', icon: <Home />, label: 'Dashboard' },
-  { key: 'patients', icon: <Users />, label: 'Patients' },
-  { key: 'reviews', icon: <Star />, label: 'Reviews' },
   { key: 'appointments', icon: <MessageCircle />, label: 'Appointments' },
-//   { key: 'surgeries', icon: <HeartPulse />, label: 'Surgeries' },
-  { key: 'calendar', icon: <Calendar />, label: 'Calendar' },
-//   { key: 'staff', icon: <CheckSquare />, label: 'Staff' },
-//   { key: 'settings', icon: <Settings />, label: 'Settings' },
   { key: 'prescription', icon: <FileText />, label: 'Prescription' },
-//   { key: 'tests', icon: <TestTube />, label: 'Tests / Referrals' }
+  { key: 'calendar', icon: <Calendar />, label: 'Calendar' },
+  { key: 'patients', icon: <Users />, label: 'Patients' },
+  { key: 'reviews', icon: <Star />, label: 'Reviews' }, 
 ];
 
 export default function Sidebar({ activeKey, onChange }) {
@@ -30,8 +22,8 @@ export default function Sidebar({ activeKey, onChange }) {
             </button>
           ))}
         </nav>
-        <button onClick={() => console.log('Logout')} className="flex items-center w-full p-2 rounded-lg hover:bg-gray-700 transition mt-6">
-          <span className="mr-2">🔓</span>Logout
+        <button onClick={() => console.log('Logout')} className="flex  bg-red-600 items-center w-full p-2 rounded-lg hover:bg-gray-700 transition mt-6">
+          <span className="mr-2"><LogOut/></span>Logout
         </button>
       </div>
     </aside>
