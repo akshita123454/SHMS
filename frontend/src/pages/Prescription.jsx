@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import { User, Stethoscope, Clipboard, FileText, TestTube, Calendar, Briefcase } from 'lucide-react';
-import { createPrescription2 } from '../../api/prescription';
+
 
 export default function PrescriptionForm() {
   const [form, setForm] = useState({
