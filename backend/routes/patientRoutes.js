@@ -1,37 +1,28 @@
-const express = require('express');
+// ProfileForm: POST /api/patients
+import express from 'express';
+import Patient from '../models/patient.js';
+
 const router = express.Router();
-const Patient = require('../models/patient');
 
-// Get patient data (for dashboard)
-router.get('/:id', async (req, res) => {
-  try {
-    const patient = await Patient.findById(req.params.id);
-    res.json(patient);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// Anyone can create a new patient (Profile form)
+router.post('/', async (req, res) => {
+  const patient = new Patient(req.body);
+  await patient.save();
+  res.status(201).json(patient);
 });
 
-// Update profile
-router.put('/:id/profile', async (req, res) => {
-  try {
-    const patient = await Patient.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(patient);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// Anyone can book an appointment (Appointment form)
+router.post('/appointments', async (req, res) => {
+  const patient = new Patient({ appointments: [req.body] });
+  await patient.save();
+  res.status(201).json(patient);
 });
 
-// Book Appointment
-router.post('/:id/appointments', async (req, res) => {
-  try {
-    const patient = await Patient.findById(req.params.id);
-    patient.appointments.push(req.body);
-    await patient.save();
-    res.json(patient);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// Anyone can send a message (Message form)
+router.post('/messages', async (req, res) => {
+  const patient = new Patient({ messages: [req.body] });
+  await patient.save();
+  res.status(201).json(patient);
 });
 
-module.exports = router;
+export default router;

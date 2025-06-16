@@ -1,32 +1,23 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
+
+const appointmentSchema = new mongoose.Schema({
+  doctor: String,
+  date: Date,
+  status: { type: String, default: "Pending" },
+});
+
+const messageSchema = new mongoose.Schema({
+  sender: String,
+  content: String,
+  date: { type: Date, default: Date.now },
+});
 
 const patientSchema = new mongoose.Schema({
   name: String,
   email: String,
   phone: String,
-  appointments: [{
-    doctor: String,
-    date: Date,
-    status: String
-  }],
-  notifications: [{
-    message: String,
-    status: String
-  }],
-  medicalHistory: [{
-    date: Date,
-    condition: String,
-    treatment: String
-  }],
-  reports: [{
-    name: String,
-    url: String
-  }],
-  messages: [{
-    sender: String,
-    message: String,
-    date: Date
-  }]
+  appointments: [appointmentSchema],
+  messages: [messageSchema],
 });
 
-module.exports = mongoose.model('Patient', patientSchema);
+export default mongoose.model("Patient", patientSchema);

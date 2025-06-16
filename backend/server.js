@@ -37,24 +37,24 @@
 //   console.log(`Server is running at the port ${port}`);
 // });
 
-
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/database.js";
-
 import doctorRoute from "./routes/doctor.route.js";
-
+import patientRoutes from "./routes/patientRoutes.js";
 import dotenv from "dotenv";
-dotenv.config(); // Correct
+dotenv.config();
 
 const port = process.env.PORT || 3000;
 const app = express();
 
-// CORS Configuration - Make sure FRONTEND_URL is set in your .env file
+
+// CORS Configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
-  credentials: true,
+  origin: 'http://localhost:5173',
+  credentials: true
 }));
+
 
 // Middleware to parse JSON & form data
 app.use(express.json());
@@ -65,8 +65,9 @@ app.get("/", (req, res) => {
   res.send("Welcome to SHMS backend!");
 });
 
-// Mount doctor routes
+// Mount routes
 app.use("/doctor", doctorRoute);
+app.use("/api/patients", patientRoutes); // <-- THIS LINE WAS MISSING
 
 // Connect to DB and start server
 app.listen(port, () => {
