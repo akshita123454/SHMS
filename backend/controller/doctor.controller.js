@@ -1,9 +1,9 @@
-import Prescription_Schema from "../models/prescription2.model.js"
+import Prescription_Schema from "../models/prescription.model.js"
 import dotenv  from "dotenv";
 dotenv.config();
 
 
-export const createPrescription2 = async (req, res) => {
+export const createPrescription = async (req, res) => {
   try {
     const newPres = await Prescription_Schema.create(req.body);
     res.status(201).json(newPres);
