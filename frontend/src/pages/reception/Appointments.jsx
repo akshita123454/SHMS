@@ -21,7 +21,7 @@ export default function Appointments() {
       date,
       time,
     };
-    setAppointments([...appointments, newAppointment]);
+    setAppointments([newAppointment, ...appointments]);
     setName('');
     setDate('');
     setTime('');
@@ -32,65 +32,81 @@ export default function Appointments() {
   };
 
   return (
-    <ReceptionLayout>
-      
-        <h2 className="text-2xl font-semibold flex items-center gap-2 mb-4">
-          <CalendarPlus className="w-6 h-6" />
-          Manage Appointments
-        </h2>
+  <ReceptionLayout>
+    <h2 className="text-2xl font-semibold flex items-center gap-2 mb-4">
+      <CalendarPlus className="w-6 h-6" />
+      Manage Appointments
+    </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-          <input
-            type="text"
-            placeholder="Patient Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border p-2 rounded w-full"
-          />
-          <div className="relative col-span-1">
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="border p-2 rounded w-full"
-            />
-            
-          </div>
-          <div className="relative col-span-1">
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="border p-2 rounded w-full"
-            />
-            
-          </div>
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+      <input
+        type="text"
+        placeholder="Patient Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        className="border p-2 rounded w-full"
+      />
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        className="border p-2 rounded w-full"
+      />
+      <input
+        type="time"
+        value={time}
+        onChange={(e) => setTime(e.target.value)}
+        className="border p-2 rounded w-full"
+      />
+      <button
+        onClick={handleBook}
+        className="bg-green-600 text-white rounded px-6 py-2 hover:bg-green-700"
+      >
+        Book Appointment
+      </button>
+    </div>
 
-          <div className="mb-6">
-          <button
-            onClick={handleBook}
-            className="bg-green-600 text-white rounded px-6 py-2 hover:bg-green-700"
-          >
-            Book Appointment
-          </button>
-          </div>
-        </div>
+    <div className="overflow-x-auto border rounded">
+  <table className="min-w-full table-auto border-collapse">
+    <thead className="bg-gray-100">
+      <tr>
+        <th className="text-left p-3 border">#</th>
+        <th className="text-left p-3 border">Patient Name</th>
+        <th className="text-left p-3 border">Date</th>
+        <th className="text-left p-3 border">Time</th>
+        <th className="text-left p-3 border">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {appointments.length === 0 ? (
+        <tr>
+          <td colSpan="5" className="p-4 text-gray-500 text-center">
+            No appointments booked.
+          </td>
+        </tr>
+      ) : (
+        appointments.map((appt, index) => (
+          <tr key={appt.id} className="border-t">
+            <td className="p-3 border">{index + 1}</td>
+            <td className="p-3 border">{appt.name}</td>
+            <td className="p-3 border">{appt.date}</td>
+            <td className="p-3 border">{appt.time}</td>
+            <td className="p-3 border">
+              <button
+                onClick={() => handleCancel(appt.id)}
+                className="text-red-600 border border-red-500 px-3 py-1 rounded hover:bg-red-100"
+              >
+                Cancel
+              </button>
+            </td>
+          </tr>
+        ))
+      )}
+    </tbody>
+  </table>
+</div>
 
-        {appointments.map((appt) => (
-          <div
-            key={appt.id}
-            className="flex justify-between items-center border p-3 rounded mb-2"
-          >
-            <span>{`${appt.name} - ${appt.time}`}</span>
-            <button
-              onClick={() => handleCancel(appt.id)}
-              className="border border-red-500 text-red-500 px-3 py-1 rounded hover:bg-red-100"
-            >
-              Cancel
-            </button>
-          </div>
-        ))}
-      
-    </ReceptionLayout>
-  );
+
+  </ReceptionLayout>
+);
 }

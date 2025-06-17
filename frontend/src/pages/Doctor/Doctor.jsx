@@ -1,4 +1,4 @@
-import Reviews from './Reviews';
+import Reviews from './reviews';
 import { useState } from 'react';
 import Patients from './PatientList';
 import Header from './components/Header';
