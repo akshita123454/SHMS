@@ -28,7 +28,7 @@ function App() {
       <div className="min-h-screen bg-gray-100">
         <Routes>
           <Route path="/doctor" element={<DoctorPage />} />
-          {/* this is a comment. */}
+
 
             <Route path="/" element={<PatientLayout />}>
                 <Route path="profile" element={<ProfileCard />} />
