@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { createPrescription } from '../../api/doctor/prescription';
+import { User, Stethoscope, Clipboard, FileText, TestTube, Calendar, Briefcase } from 'lucide-react';
+import { createPrescription2 } from '../../api/prescription';
 
 export default function PrescriptionForm() {
   const initialMed = { drug: '', directions: '', qty: '', refills: '' };
