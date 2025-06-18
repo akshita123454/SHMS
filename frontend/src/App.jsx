@@ -13,11 +13,7 @@ import ProfileCard from "./pages/patient/components/ProfileCard";
 import MyCalendar from "./pages/patient/components/Calendar"; 
 
 
-import RegisterPatient from "./pages/reception/RegisterPatient"
-import Appointments from "./pages/reception/Appointments"
-import Billing from "./pages/reception/Billing"
-import RoomAndBed from "./pages/reception/RoomAndBed"
-import DoctorAvailability from "./pages/reception/DoctorAvailability"
+import ReceptionPage from "./pages/reception/ReceptionPage";
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import ReceptionLayout from "./pages/reception/components/layout/ReceptionLayout";
@@ -28,6 +24,7 @@ function App() {
       <div className="min-h-screen bg-gray-100">
         <Routes>
           <Route path="/doctor" element={<DoctorPage />} />
+          <Route path="/reception" element={<ReceptionPage />} />
 
             <Route path="/" element={<PatientLayout />}>
                 <Route path="profile" element={<ProfileCard />} />
@@ -41,11 +38,7 @@ function App() {
                 <Route path="calendar" element={<MyCalendar />} />
             </Route>
 
-            <Route path="/reception/register" element={<RegisterPatient />} />
-            <Route path="/reception/appointments" element={<Appointments />} />
-            <Route path="/reception/billing" element={<Billing />} />
-            <Route path="/reception/room-bed" element={<RoomAndBed />} />
-            <Route path="/reception/doctor-availability" element={<DoctorAvailability />} />
+            
         </Routes>
       </div>
     </Router>
