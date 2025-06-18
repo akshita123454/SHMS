@@ -1,6 +1,7 @@
-import { Users, Star, MessageCircle, Calendar,  FileText, LogOut } from 'lucide-react';
+import { Users, Star, MessageCircle, Calendar,  FileText, LogOut, HomeIcon } from 'lucide-react';
 
 const items = [
+  { key: '/', icon: <HomeIcon />, label: 'DashBoard' }, 
   { key: 'appointments', icon: <MessageCircle />, label: 'Appointments' },
   { key: 'prescription', icon: <FileText />, label: 'Prescription' },
   { key: 'calendar', icon: <Calendar />, label: 'Calendar' },
