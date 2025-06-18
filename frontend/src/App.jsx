@@ -1,6 +1,7 @@
 import "./App.css";
 import DoctorPage from "./pages/Doctor/Doctor";
 // import  Sidebar  from './pages/patient/components/Sidebar'
+//import AdminPage from "./pages/Admin/Admin";
 
 import PatientLayout from "./pages/patient/PatientLayout";
 import NotificationList from "./pages/patient/components/NotificationList";
@@ -29,6 +30,7 @@ function App() {
       <div className="min-h-screen bg-gray-100">
         <Routes>
           <Route path="/doctor" element={<DoctorPage />} />
+          {/* <Route path="/Admin" element={<AdminPage />} /> */}
           <Route path="/admin/*" element={<AdminLayout />} />
 
           <Route path="/" element={<PatientLayout />}>
