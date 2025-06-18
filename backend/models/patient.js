@@ -12,12 +12,20 @@ const messageSchema = new mongoose.Schema({
   date: { type: Date, default: Date.now },
 });
 
+const medicalHistorySchema = new mongoose.Schema({
+  date: String, // or Date if you want
+  description: String,
+});
+
 const patientSchema = new mongoose.Schema({
   name: String,
   email: String,
   phone: String,
   appointments: [appointmentSchema],
   messages: [messageSchema],
+  medicalHistory: [medicalHistorySchema],
 });
+
+
 
 export default mongoose.model("Patient", patientSchema);

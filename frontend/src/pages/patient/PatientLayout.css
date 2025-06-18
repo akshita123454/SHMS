@@ -118,3 +118,75 @@ ul li {
   margin-bottom: 0.7rem;
   color: #22223b;
 }
+
+/* SHMS_Project/frontend/src/pages/patient/PatientLayout.css */
+
+/* ... existing styles ... */
+
+.patient-content-area {
+  /* Set the background image */
+  /* Use the correct path based on where you placed icons.png in the public folder */
+  background-image: url('/icons.png'); /* Example: if icons.png is directly in public folder */
+  /* OR */
+  /* background-image: url('/images/icons.png'); */ /* Example: if icons.png is in public/images folder */
+
+
+  /* To cover the entire area with the image */
+  background-size: cover;
+
+  /* To prevent the image from repeating */
+  background-repeat: no-repeat;
+
+  /* To center the image */
+  background-position: center;
+
+  /* Optional: Fix the background image position when scrolling */
+  /* background-attachment: fixed; */
+
+  /* Ensure the background color is transparent or removed if it's interfering */
+  background-color: transparent; /* Or remove any conflicting background-color */
+}
+
+/* ... other styles ... */
+
+/* SHMS_Project/frontend/src/pages/patient/PatientLayout.css */
+
+.section-heading {
+  /* Existing styles for section-heading */
+  /* ... */
+
+  /* Add or modify these lines to make the text darker */
+  color: #a71919; /* Example: Dark grey color. You can use 'black' or a darker hex code */
+  font-weight: bold; /* Makes the text bold */
+  /* Or a specific weight like 700 or 800 if available in your font */
+  /* font-weight: 700; */
+}
+
+/* SHMS_Project/frontend/src/pages/patient/PatientLayout.css or Sidebar.css */
+
+/* ... existing sidebar styles ... */
+
+.sidebar li button {
+  /* Existing button styles */
+  display: flex; /* Flexbox use karein icon aur text ko align karne ke liye */
+  align-items: center; /* Vertically center icon and text */
+  /* ... other button styles ... */
+}
+
+.sidebar li button i {
+  /* Style for the icon element */
+  margin-right: 10px; /* Icon aur text ke beech space */
+  font-size: 1.2em; /* Icon size adjust karein */
+  /* Agar aap icon ka color button text se alag chahte hain */
+  /* color: #bdc3c7; */ /* Example: Lighter grey color for icons */
+}
+
+/* Logout button icon style */
+.sidebar button.text-danger i {
+   margin-right: 10px; /* Space for logout icon */
+   font-size: 1.2em;
+   color: white; /* Ensure icon color is white */
+}
+
+/* ... other styles ... */
+

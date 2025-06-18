@@ -18,17 +18,22 @@ const MessageSection = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="border border-info text-center translate-y-1/2 container mt-5 p-4 rounded-4 shadow-lg text-white"
+      style={{
+        background: "rgba(255, 255, 255, 0.1)",
+        backdropFilter: "blur(10px)",
+        maxWidth: "500px",
+      }}>
       <h2>Send Message</h2>
       <label>
         Sender:
-        <input name="sender" value={msg.sender} onChange={handleChange} />
+        <input class="border border-info" name="sender" value={msg.sender} onChange={handleChange} />
       </label>
       <label>
         Message:
-        <textarea name="content" value={msg.content} onChange={handleChange} />
+        <textarea class="border border-info" name="content" value={msg.content} onChange={handleChange} />
       </label>
-      <button type="submit">Send</button>
+      <button class="border border-info" type="submit">Send</button>
       {message && <div>{message}</div>}
     </form>
   );

@@ -17,21 +17,26 @@ const ProfileForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="border border-info text-center translate-y-1/2 container mt-5 p-4 rounded-4 shadow-lg text-white"
+      style={{
+        background: "rgba(255, 255, 255, 0.1)",
+        backdropFilter: "blur(10px)",
+        maxWidth: "500px",
+      }}>
       <h2>Profile</h2>
       <label>
         Name:
-        <input name="name" value={profile.name} onChange={handleChange} required />
+        <input class="border border-danger-subtle" name="name" value={profile.name} onChange={handleChange} required />
       </label>
       <label>
         Email:
-        <input name="email" value={profile.email} onChange={handleChange} required />
+        <input class="border border-danger-subtle" name="email" value={profile.email} onChange={handleChange} required />
       </label>
       <label>
         Phone:
-        <input name="phone" value={profile.phone} onChange={handleChange} required />
+        <input class="border border-danger-subtle" name="phone" value={profile.phone} onChange={handleChange} required />
       </label>
-      <button type="submit">Submit</button>
+      <button class="border border-danger-subtle" type="submit">Submit</button>
       {message && <div>{message}</div>}
     </form>
   );

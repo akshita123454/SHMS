@@ -18,19 +18,27 @@ const AppointmentForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="border border-info text-center translate-y-1/2 container mt-5 p-4 rounded-4 shadow-lg text-white"
+      style={{
+        background: "rgba(255, 255, 255, 0.1)",
+        backdropFilter: "blur(10px)",
+        maxWidth: "500px",
+      }}>
+     
       <h2>Book Appointment</h2>
       <label>
         Doctor:
-        <input name="doctor" value={appointment.doctor} onChange={handleChange} />
+        <input class="border border-info" name="doctor" value={appointment.doctor} onChange={handleChange} />
       </label>
       <label>
         Date:
-        <input type="date" name="date" value={appointment.date} onChange={handleChange} />
+        <input class="border border-info" type="date" name="date" value={appointment.date} onChange={handleChange} />
       </label>
-      <button type="submit">Book</button>
+      <button class="border border-info" type="submit">Book</button>
       {message && <div>{message}</div>}
+     
     </form>
+    
   );
 };
 
