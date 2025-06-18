@@ -1,15 +1,51 @@
 import "./App.css";
 import DoctorPage from "./pages/Doctor/Doctor";
+// import  Sidebar  from './pages/patient/components/Sidebar'
+
+import PatientLayout from "./pages/patient/PatientLayout";
+import NotificationList from "./pages/patient/components/NotificationList";
+import MessageSection from "./pages/patient/components/MessageSection";
+import Reports from "./pages/patient/components/Reports";
+import MedicalHistory from "./pages/patient/components/MedicalHistory";
+import AppointmentForm from "./pages/patient/components/AppointmentForm";
+import AppointmentHistory from "./pages/patient/components/AppointmentHistory";
+import ProfileCard from "./pages/patient/components/ProfileCard";
+import MyCalendar from "./pages/patient/components/Calendar"; 
+
+
+import RegisterPatient from "./pages/reception/RegisterPatient"
+import Appointments from "./pages/reception/Appointments"
+import Billing from "./pages/reception/Billing"
+import RoomAndBed from "./pages/reception/RoomAndBed"
+import DoctorAvailability from "./pages/reception/DoctorAvailability"
+
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import ReceptionLayout from "./pages/reception/components/layout/ReceptionLayout";
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-gray-100">
         <Routes>
-          <Route path="/hello" element={<Doctor />} />
           <Route path="/doctor" element={<DoctorPage />} />
-          <Route path="/test" element={<Test />} />
-          {/* Add more routes here if needed */}
+
+            <Route path="/" element={<PatientLayout />}>
+                <Route path="profile" element={<ProfileCard />} />
+                <Route path="appointment" element={<AppointmentForm />} />
+                <Route path="notification" element={<NotificationList />} />
+                <Route path="message" element={<MessageSection />} />
+                <Route path="history" element={<MedicalHistory />} />
+                <Route path="reports" element={<Reports />} />
+                <Route path="appointment-history" element={<AppointmentHistory />} />
+              
+                <Route path="calendar" element={<MyCalendar />} />
+            </Route>
+
+            <Route path="/reception/register" element={<RegisterPatient />} />
+            <Route path="/reception/appointments" element={<Appointments />} />
+            <Route path="/reception/billing" element={<Billing />} />
+            <Route path="/reception/room-bed" element={<RoomAndBed />} />
+            <Route path="/reception/doctor-availability" element={<DoctorAvailability />} />
         </Routes>
       </div>
     </Router>
@@ -17,53 +53,3 @@ function App() {
 }
 
 export default App;
-
-
-
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
-// import Doctor from './pages/Doctor'
-
-// function App() {
-//   const [count, setCount] = useState(0)
-
-//   return (
-//     <>
-//       <div>
-//         <a href="https://vite.dev" target="_blank">
-//           <img src={viteLogo} className="logo" alt="Vite logo" />
-//         </a>
-//         <a href="https://react.dev" target="_blank">
-//           <img src={reactLogo} className="logo react" alt="React logo" />
-//         </a>
-//       </div>
-//       <h1>Vite + React</h1>
-//       <div className="card">
-//         <button onClick={() => setCount((count) => count + 1)}>
-//           count is {count}
-//         </button>
-//         <p>
-//           Edit <code>src/App.jsx</code> and save to test HMR
-//         </p>
-//       </div>
-//       <p className="read-the-docs">
-//         Click on the Vite and React logos to learn more
-//       </p>
-
-
-//       <Router>
-//       <div className="min-h-screen bg-gray-100">
-//         <Routes>
-//           <Route path="/" element={<Doctor />} />
-//           {/* Add more routes below if needed */}
-//           {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-//         </Routes>
-//       </div>
-//     </Router>
-//     </>
-//   )
-// }
-
-// export default App
