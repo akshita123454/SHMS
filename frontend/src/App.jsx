@@ -14,6 +14,8 @@ import MyCalendar from "./pages/patient/components/Calendar";
 
 
 import ReceptionPage from "./pages/reception/ReceptionPage";
+import EmergencyStaffPage from './pages/EmergencyStaff/EmergencyStaffPage';
+
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import ReceptionLayout from "./pages/reception/components/layout/ReceptionLayout";
@@ -25,7 +27,7 @@ function App() {
         <Routes>
           <Route path="/doctor" element={<DoctorPage />} />
           <Route path="/reception" element={<ReceptionPage />} />
-
+          <Route path="/emergency" element={<EmergencyStaffPage />} />
             <Route path="/" element={<PatientLayout />}>
                 <Route path="profile" element={<ProfileCard />} />
                 <Route path="appointment" element={<AppointmentForm />} />
