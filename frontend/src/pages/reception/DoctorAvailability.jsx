@@ -1,6 +1,5 @@
 // src/pages/reception/DoctorAvailability.jsx
 import React, { useState } from 'react';
-import ReceptionLayout from './components/layout/ReceptionLayout';
 import { UserCheck, Clock8 } from 'lucide-react';
 
 export default function DoctorAvailability() {
@@ -48,10 +47,10 @@ export default function DoctorAvailability() {
   };
 
   return (
-    <ReceptionLayout>
-      
+    
+      <div className="max-w-4xl mx-auto bg-white p-6 rounded shadow-md">
         <h2 className="text-2xl font-semibold flex items-center gap-2 mb-6">
-          <UserCheck className="w-6 h-6" />
+          <UserCheck className="w-6 h-6 text-black" />
           Doctor Availability
         </h2>
 
@@ -85,7 +84,6 @@ export default function DoctorAvailability() {
           )}
         </div>
 
-        {/* Schedule Display */}
         {selectedDoctor && (
           <div className="mt-6 p-4 border rounded bg-gray-50">
             <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
@@ -107,7 +105,7 @@ export default function DoctorAvailability() {
             )}
           </div>
         )}
-      
-    </ReceptionLayout>
+      </div>
+    
   );
 }

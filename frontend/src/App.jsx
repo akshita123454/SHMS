@@ -19,7 +19,13 @@ import Billing from "./pages/reception/Billing";
 import RoomAndBed from "./pages/reception/RoomAndBed";
 import DoctorAvailability from "./pages/reception/DoctorAvailability";
 
+
+import ReceptionPage from "./pages/reception/ReceptionPage";
+import EmergencyStaffPage from './pages/EmergencyStaff/EmergencyStaffPage';
+
+
 import AdminLayout from "./pages/Admin/Layouts/AdminLayout";
+
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // import ReceptionLayout from "./pages/reception/components/layout/ReceptionLayout";
@@ -30,6 +36,20 @@ function App() {
       <div className="min-h-screen bg-gray-100">
         <Routes>
           <Route path="/doctor" element={<DoctorPage />} />
+          <Route path="/reception" element={<ReceptionPage />} />
+          <Route path="/emergency" element={<EmergencyStaffPage />} />
+//             <Route path="/" element={<PatientLayout />}>
+//                 <Route path="profile" element={<ProfileCard />} />
+//                 <Route path="appointment" element={<AppointmentForm />} />
+//                 <Route path="notification" element={<NotificationList />} />
+//                 <Route path="message" element={<MessageSection />} />
+//                 <Route path="history" element={<MedicalHistory />} />
+//                 <Route path="reports" element={<Reports />} />
+//                 <Route path="appointment-history" element={<AppointmentHistory />} />
+              
+//                 <Route path="calendar" element={<MyCalendar />} />
+//             </Route>
+
           {/* <Route path="/Admin" element={<AdminPage />} /> */}
           <Route path="/admin/*" element={<AdminLayout />} />
 

@@ -1,4 +1,3 @@
-// src/components/reception/Header.jsx
 import React from 'react';
 
 export default function Header() {
@@ -10,3 +9,4 @@ export default function Header() {
     </header>
   );
 }
+

@@ -1,5 +1,5 @@
+// src/pages/reception/RoomAndBed.jsx
 import React, { useState } from 'react';
-import ReceptionLayout from './components/layout/ReceptionLayout';
 import { BedDouble } from 'lucide-react';
 
 export default function RoomAndBed() {
@@ -7,12 +7,11 @@ export default function RoomAndBed() {
   const [bedType, setBedType] = useState('');
   const [status, setStatus] = useState('');
 
-  const checkAvailability = () => {
-    if (roomType && bedType) {
-      // Dummy logic — replace with actual if needed
-      if (roomType === 'Private' && bedType === 'Single') {
+  const checkAvailability = (room, bed) => {
+    if (room && bed) {
+      if (room === 'Private' && bed === 'Single') {
         setStatus('Full');
-      } else if (roomType === 'ICU') {
+      } else if (room === 'ICU') {
         setStatus('Limited');
       } else {
         setStatus('Available');
@@ -22,9 +21,21 @@ export default function RoomAndBed() {
     }
   };
 
+  const handleRoomChange = (e) => {
+    const value = e.target.value;
+    setRoomType(value);
+    checkAvailability(value, bedType);
+  };
+
+  const handleBedChange = (e) => {
+    const value = e.target.value;
+    setBedType(value);
+    checkAvailability(roomType, value);
+  };
+
   return (
-    <ReceptionLayout>
-      
+    
+      <div className="max-w-4xl mx-auto bg-white p-6 rounded shadow">
         <h2 className="text-2xl font-semibold flex items-center gap-2 mb-6">
           <BedDouble className="w-6 h-6 text-black" />
           Room & Bed Availability
@@ -36,10 +47,7 @@ export default function RoomAndBed() {
             <label className="block mb-2 text-gray-700 font-medium">Room Type</label>
             <select
               value={roomType}
-              onChange={(e) => {
-                setRoomType(e.target.value);
-                
-              }}
+              onChange={handleRoomChange}
               className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Room Type</option>
@@ -54,10 +62,7 @@ export default function RoomAndBed() {
             <label className="block mb-2 text-gray-700 font-medium">Bed Type</label>
             <select
               value={bedType}
-              onChange={(e) => {
-                setBedType(e.target.value);
-                checkAvailability();
-              }}
+              onChange={handleBedChange}
               className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Bed Type</option>
@@ -84,7 +89,7 @@ export default function RoomAndBed() {
             </span>
           </div>
         )}
-      
-    </ReceptionLayout>
+      </div>
+    
   );
 }

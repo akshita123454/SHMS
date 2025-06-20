@@ -1,5 +1,5 @@
+// src/pages/reception/Appointments.jsx
 import React, { useState } from 'react';
-import ReceptionLayout from './components/layout/ReceptionLayout';
 import { CalendarPlus } from 'lucide-react';
 
 export default function Appointments() {
@@ -13,7 +13,7 @@ export default function Appointments() {
     { id: 7, name: 'Liam Martinez', date: '2025-06-16', time: '16:45' },
     { id: 8, name: 'Sophia Anderson', date: '2025-06-17', time: '15:20' },
     { id: 9, name: 'James Thomas', date: '2025-06-17', time: '11:10' },
-    { id: 10, name: 'Ava Taylor', date: '2025-06-18', time: '10:50' }
+    { id: 10, name: 'Ava Taylor', date: '2025-06-18', time: '10:50' },
   ]);
 
   const [name, setName] = useState('');
@@ -39,77 +39,80 @@ export default function Appointments() {
     setAppointments(appointments.filter((appt) => appt.id !== id));
   };
 
-  // Filter appointments based on searchTerm
   const filteredAppointments = appointments.filter((appt) =>
     appt.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <ReceptionLayout>
-      <h2 className="text-2xl font-semibold flex items-center gap-2 mb-4">
-        <CalendarPlus className="w-6 h-6" />
-        Manage Appointments
-      </h2>
+    
+      <div className="w-4xl mx-auto bg-white p-4 rounded shadow-md">
+        <h2 className="text-2xl font-semibold flex items-center gap-2 mb-4">
+          <CalendarPlus className="w-6 h-6" />
+          Manage Appointments
+        </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-        <input
-          type="text"
-          placeholder="Patient Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="border p-2 rounded w-full"
-        />
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="border p-2 rounded w-full"
-        />
-        <input
-          type="time"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          className="border p-2 rounded w-full"
-        />
-        <button
-          onClick={handleBook}
-          className="bg-green-600 text-white rounded px-6 py-2 hover:bg-green-700"
-        >
-          Book Appointment
-        </button>
-      </div>
+        {/* Form Inputs */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="Patient Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="border p-2 rounded w-full"
+          />
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="border p-2 rounded w-full"
+          />
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="border p-2 rounded w-full"
+          />
+          <button
+            onClick={handleBook}
+            className="bg-green-600 text-white rounded px-6 py-2 hover:bg-green-700"
+          >
+            Book Appointment
+          </button>
+        </div>
 
-      {/* 🔍 Search Bar */}
-      <div className="mb-4">
-        <input
-          type="text"
-          placeholder="Search by patient name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border p-2 rounded w-full md:w-1/2"
-        />
-      </div>
+        {/* 🔍 Search */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search by patient name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="border p-2 rounded w-full md:w-1/2"
+          />
+        </div>
 
-      <div className="border rounded p-2 h-[400px] overflow-y-auto">
-        {filteredAppointments.length === 0 ? (
-          <p className="text-gray-500">No appointments found.</p>
-        ) : (
-          filteredAppointments.map((appt) => (
-            <div
-              key={appt.id}
-              className="flex justify-between items-center border p-3 rounded mb-2"
-            >
-              <span>{`${appt.name} - ${appt.date} at ${appt.time}`}</span>
-              <button
-                onClick={() => handleCancel(appt.id)}
-                className="border border-red-500 text-red-500 px-3 py-1 rounded hover:bg-red-100"
+        {/* Appointment List */}
+        <div className="border rounded p-2 h-[400px] overflow-y-auto">
+          {filteredAppointments.length === 0 ? (
+            <p className="text-gray-500">No appointments found.</p>
+          ) : (
+            filteredAppointments.map((appt) => (
+              <div
+                key={appt.id}
+                className="flex justify-between items-center border p-3 rounded mb-2"
               >
-                Cancel
-              </button>
-            </div>
-          ))
-        )}
+                <span>{`${appt.name} - ${appt.date} at ${appt.time}`}</span>
+                <button
+                  onClick={() => handleCancel(appt.id)}
+                  className="border border-red-500 text-red-500 px-3 py-1 rounded hover:bg-red-100"
+                >
+                  Cancel
+                </button>
+              </div>
+            ))
+          )}
+        </div>
       </div>
-    </ReceptionLayout>
+    
   );
 }
