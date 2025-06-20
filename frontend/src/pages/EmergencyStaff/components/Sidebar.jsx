@@ -1,4 +1,3 @@
-// src/pages/EmergencyStaff/components/Sidebar.jsx
 import {
   Activity,
   Bell,

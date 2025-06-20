@@ -1,81 +1,26 @@
 import "./App.css";
 import DoctorPage from "./pages/Doctor/Doctor";
-// import  Sidebar  from './pages/patient/components/Sidebar'
-//import AdminPage from "./pages/Admin/Admin";
-
-import PatientLayout from "./pages/patient/PatientLayout";
-import NotificationList from "./pages/patient/components/NotificationList";
-import MessageSection from "./pages/patient/components/MessageSection";
-import Reports from "./pages/patient/components/Reports";
-import MedicalHistory from "./pages/patient/components/MedicalHistory";
-import AppointmentForm from "./pages/patient/components/AppointmentForm";
-import AppointmentHistory from "./pages/patient/components/AppointmentHistory";
-import ProfileCard from "./pages/patient/components/ProfileCard";
-import MyCalendar from "./pages/patient/components/Calendar";
-
-import RegisterPatient from "./pages/reception/RegisterPatient";
-import Appointments from "./pages/reception/Appointments";
-import Billing from "./pages/reception/Billing";
-import RoomAndBed from "./pages/reception/RoomAndBed";
-import DoctorAvailability from "./pages/reception/DoctorAvailability";
-
-
+import AdminLayout from "./pages/Admin/Layouts/AdminLayout";
 import ReceptionPage from "./pages/reception/ReceptionPage";
+import PatientPage from "./pages/patient/components/PatientPage";
 import EmergencyStaffPage from './pages/EmergencyStaff/EmergencyStaffPage';
 
-
-import AdminLayout from "./pages/Admin/Layouts/AdminLayout";
-
-
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import ReceptionLayout from "./pages/reception/components/layout/ReceptionLayout";
 
 function App() {
   return (
+    //NOTE: DONT REMOVE ANY ROUTE ANS IF YOU ARE WOKING ON ANY ROUTE ADD IN SIMILAR FASHION.
+
     <Router>
       <div className="min-h-screen bg-gray-100">
         <Routes>
           <Route path="/doctor" element={<DoctorPage />} />
           <Route path="/reception" element={<ReceptionPage />} />
           <Route path="/emergency" element={<EmergencyStaffPage />} />
-//             <Route path="/" element={<PatientLayout />}>
-//                 <Route path="profile" element={<ProfileCard />} />
-//                 <Route path="appointment" element={<AppointmentForm />} />
-//                 <Route path="notification" element={<NotificationList />} />
-//                 <Route path="message" element={<MessageSection />} />
-//                 <Route path="history" element={<MedicalHistory />} />
-//                 <Route path="reports" element={<Reports />} />
-//                 <Route path="appointment-history" element={<AppointmentHistory />} />
-              
-//                 <Route path="calendar" element={<MyCalendar />} />
-//             </Route>
+          <Route path="/patient" element={<PatientPage />} />
 
-          {/* <Route path="/Admin" element={<AdminPage />} /> */}
+          {/* Fix this admin route not correct. */}
           <Route path="/admin/*" element={<AdminLayout />} />
-
-          <Route path="/" element={<PatientLayout />}>
-            <Route path="profile" element={<ProfileCard />} />
-            <Route path="appointment" element={<AppointmentForm />} />
-            <Route path="notification" element={<NotificationList />} />
-            <Route path="message" element={<MessageSection />} />
-            <Route path="history" element={<MedicalHistory />} />
-            <Route path="reports" element={<Reports />} />
-            <Route
-              path="appointment-history"
-              element={<AppointmentHistory />}
-            />
-
-            <Route path="calendar" element={<MyCalendar />} />
-          </Route>
-
-          <Route path="/reception/register" element={<RegisterPatient />} />
-          <Route path="/reception/appointments" element={<Appointments />} />
-          <Route path="/reception/billing" element={<Billing />} />
-          <Route path="/reception/room-bed" element={<RoomAndBed />} />
-          <Route
-            path="/reception/doctor-availability"
-            element={<DoctorAvailability />}
-          />
 
           <Route
             path="*"
