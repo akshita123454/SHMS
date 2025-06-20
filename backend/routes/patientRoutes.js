@@ -53,5 +53,71 @@ router.get('/all-medical-history', async (req, res) => {
   );
   res.json(allHistory);
 });
+//Add a Notification to a Specific Patient
+router.post('/notifications/:patientId', async (req, res) => {
+  try {
+    const { content, status } = req.body;
+    const patient = await Patient.findById(req.params.patientId);
+    if (!patient) return res.status(404).json({ message: "Patient not found" });
+
+    patient.notifications.push({ content, status });
+    await patient.save();
+    res.status(201).json({ message: "Notification added", notifications: patient.notifications });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//Get All Notifications
+router.get('/all-notifications', async (req, res) => {
+  try {
+    const patients = await Patient.find({ "notifications.0": { $exists: true } });
+    const allNotifications = patients.flatMap(p =>
+      p.notifications.map(n => ({
+        content: n.content || "",
+        status: n.status || "New",
+        date: n.date || "",
+        patientName: p.name || "Unknown",
+      }))
+    );
+    res.json(allNotifications);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// /POST /api/patients/reports/:patientId – Add a report to a patient
+router.post('/reports/:patientId', async (req, res) => {
+  try {
+    const patient = await Patient.findById(req.params.patientId);
+    if (!patient) return res.status(404).json({ message: "Patient not found" });
+
+    patient.reports.push(req.body); // { name, link }
+    await patient.save();
+
+    res.status(201).json({ message: "Report added", reports: patient.reports });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+//GET /api/patients/all-reports – Get all reports for all patients
+router.get('/all-reports', async (req, res) => {
+  try {
+    const patients = await Patient.find({ "reports.0": { $exists: true } });
+    const allReports = patients.flatMap(p =>
+      p.reports.map(r => ({
+        name: r.name || "Unknown Report",
+        link: r.link || "#",
+        patientName: p.name || "Unknown"
+      }))
+    );
+    res.json(allReports);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 export default router;
+
+

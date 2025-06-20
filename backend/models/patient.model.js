@@ -17,6 +17,20 @@ const medicalHistorySchema = new mongoose.Schema({
   description: String,
 });
 
+
+//for notification
+const notificationSchema = new mongoose.Schema({
+  content: String,
+  status: { type: String, default: "New" },
+  date: { type: Date, default: Date.now },
+});
+
+const reportSchema = new mongoose.Schema({
+  name: String,
+  link: String,
+});
+
+
 const patientSchema = new mongoose.Schema({
   name: String,
   email: String,
@@ -24,7 +38,11 @@ const patientSchema = new mongoose.Schema({
   appointments: [appointmentSchema],
   messages: [messageSchema],
   medicalHistory: [medicalHistorySchema],
+   notifications: [notificationSchema], 
+    reports: [reportSchema],
 });
+
+
 
 
 
