@@ -41,7 +41,7 @@
 import express from "express";
 import cors from "cors";
 import connectDB from "./config/database.js";
-
+import patientRoutes from "./routes/patientRoutes.js";
 import doctorRoute from "./routes/doctor.route.js";
 
 import dotenv from "dotenv";
@@ -67,6 +67,7 @@ app.get("/", (req, res) => {
 
 // Mount doctor routes
 app.use("/doctor", doctorRoute);
+app.use("/api/patients", patientRoutes);
 
 // Connect to DB and start server
 app.listen(port, () => {
