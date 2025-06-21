@@ -1,4 +1,5 @@
 import { Users, Star, MessageCircle, Calendar,  FileText, LogOut, HomeIcon } from 'lucide-react';
+import LogoutButton from '../../../utils/LogoutButton';
 
 const items = [
   { key: '/', icon: <HomeIcon />, label: 'DashBoard' }, 
@@ -24,7 +25,7 @@ export default function Sidebar({ activeKey, onChange }) {
           ))}
         </nav>
         <button onClick={() => console.log('Logout')} className="flex  bg-red-600 items-center w-full p-2 rounded-lg hover:bg-gray-700 transition mt-6">
-          <span className="mr-2"><LogOut/></span>Logout
+          <span className="mr-2"><LogoutButton/></span>Logout
         </button>
       </div>
     </aside>
