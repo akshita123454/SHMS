@@ -18,6 +18,7 @@ import MessageSection from './MessageSection';
 import AppointmentForm from './AppointmentForm';
 import NotificationList from './NotificationList';
 import AppointmentHistory from './AppointmentHistory';
+import LogoutButton from "../../../utils/LogoutButton";
 
 const Sidebar = ({activeKey,onChange}) => {
 
@@ -101,52 +102,17 @@ const Sidebar = ({activeKey,onChange}) => {
       </div>
 
       <div>
-        <button
+        <LogoutButton/>
+        {/* <button
           onClick={() => console.log("Logout")}
           className="w-full text-center text-red-400 hover:text-red-500 flex items-center justify-center gap-2 py-2 mt-6"
         >
           <LogOut size={18} />
           Logout
-        </button>
+        </button> */}
       </div>
     </aside>
   );
 };
 
 export default Sidebar;
-
-
- // return (
-  //   <div className="h-screen w-64 bg-gray-900 text-white flex flex-col justify-between p-4">
-  //     <div>
-  //       <h2 className="text-2xl font-bold mb-4">SHMS</h2>
-  //       <p className="mb-6 text-sm">User: <br /> <span className="font-medium">Patient</span></p>
-
-  //       <ul className="space-y-2">
-  //         {activeKey.map((item) => (
-  //           <li key={item.name}>
-  //             <NavLink
-  //               to={item.path}
-  //               className={({ isActive }) =>
-  //                 `block px-4 py-2 rounded-md ${
-  //                   isActive ? "bg-teal-500 text-white" : "hover:bg-gray-700"
-  //                 }`
-  //               }
-  //             >
-  //               {item.name}
-  //             </NavLink>
-  //           </li>
-  //         ))}
-  //       </ul>
-  //     </div>
-
-  //     <div>
-  //       <NavLink
-  //         to="/logout"
-  //         className="block text-center text-red-400 hover:text-red-500"
-  //       >
-  //         Logout
-  //       </NavLink>
-  //     </div>
-  //   </div>
-  // );
