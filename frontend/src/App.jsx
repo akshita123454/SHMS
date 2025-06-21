@@ -18,8 +18,6 @@ function App() {
           <Route path="/reception" element={<ReceptionPage />} />
           <Route path="/emergency" element={<EmergencyStaffPage />} />
           <Route path="/patient" element={<PatientPage />} />
-
-          {/* Fix this admin route not correct. */}
           <Route path="/admin/*" element={<AdminLayout />} />
 
           <Route
@@ -30,7 +28,7 @@ function App() {
                 <p>
                   Try going to{" "}
                   <a href="/admin" className="text-blue-500 underline">
-                    Admin Dashboard
+                    Admin Dashbo
                   </a>{" "}
                   or{" "}
                   <a href="/doctor" className="text-blue-500 underline">
