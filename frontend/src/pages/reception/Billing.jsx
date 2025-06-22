@@ -1,5 +1,6 @@
 // src/pages/reception/Billing.jsx
 import React, { useState } from 'react';
+import { addBillingEntry, getAllBillingEntries } from '../../api/reception/billing';
 import { FileText, Plus } from 'lucide-react';
 
 export default function Billing() {
@@ -44,7 +45,7 @@ export default function Billing() {
   );
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    
       <div className="max-w-5xl mx-auto bg-white p-6 rounded shadow-md">
         <h2 className="text-2xl font-semibold flex items-center gap-2 mb-6">
           <FileText className="w-6 h-6 text-black" />
@@ -146,6 +147,6 @@ export default function Billing() {
           </table>
         </div>
       </div>
-    </div>
+    
   );
 }
