@@ -24,9 +24,7 @@ export default function Sidebar({ activeKey, onChange }) {
             </button>
           ))}
         </nav>
-        <button onClick={() => console.log('Logout')} className="flex  bg-red-600 items-center w-full p-2 rounded-lg hover:bg-gray-700 transition mt-6">
-          <span className="mr-2"><LogoutButton/></span>Logout
-        </button>
+        <LogoutButton/>
       </div>
     </aside>
   );

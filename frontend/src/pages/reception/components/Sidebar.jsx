@@ -7,6 +7,7 @@ import {
   LogOut,
   Home
 } from 'lucide-react';
+import LogoutButton from '../../../utils/LogoutButton';
 
 const items = [
   { key: 'register', icon: <UserPlus />, label: 'Register Patient' },
@@ -32,12 +33,13 @@ export default function Sidebar({ activeKey, onChange }) {
             </button>
           ))}
         </nav>
-        <button
+        <LogoutButton/>
+        {/* <button
           onClick={() => console.log('Logout')}
           className="flex items-center bg-red-600 w-full p-2 rounded-lg hover:bg-red-700 transition mt-6"
         >
           <span className="mr-2"><LogOut /></span>Logout
-        </button>
+        </button> */}
       </div>
     </aside>
   );

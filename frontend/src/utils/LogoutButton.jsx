@@ -1,19 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { LogOut } from 'lucide-react';
 import { useAuth } from '../api/auth/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 export default function LogoutButton() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
+  const [loggingOut, setLoggingOut] = useState(false);
 
   const handleLogout = () => {
     const confirmed = window.confirm('Are you sure you want to logout?');
     if (confirmed) {
-      logout();           // Clears auth data
-      navigate('/login'); // Redirects to login
+      setLoggingOut(true); // Set flag to watch for logout completion
+      logout();            // Clears auth data
     }
   };
+
+  useEffect(() => {
+    if (loggingOut && !user) {
+      navigate('/login');
+    }
+  }, [user, loggingOut, navigate]);
 
   return (
     <button
