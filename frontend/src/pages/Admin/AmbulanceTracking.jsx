@@ -1,113 +1,211 @@
-// src/pages/Admin/components/AmbulanceTracking.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {
+  fetchAmbulances,
+  addAmbulance,
+  updateAmbulance,
+  deleteAmbulance,
+} from "../../api/admin/ambulance.api.js";
 
 const AmbulanceTracking = () => {
-  const ambulanceData = [
-    {
-      id: 1,
-      vehicleNo: "AMB-001",
-      driver: "John Smith",
-      status: "Available",
-      location: "Hospital",
-      eta: "-",
-    },
-    {
-      id: 2,
-      vehicleNo: "AMB-002",
-      driver: "Emma Davis",
-      status: "On Route",
-      location: "Downtown",
-      eta: "10 mins",
-    },
-    {
-      id: 3,
-      vehicleNo: "AMB-003",
-      driver: "Robert Green",
-      status: "Available",
-      location: "Hospital",
-      eta: "-",
-    },
-    {
-      id: 4,
-      vehicleNo: "AMB-004",
-      driver: "Alice Brown",
-      status: "Maintenance",
-      location: "Garage",
-      eta: "N/A",
-    },
-  ];
+  const [ambulances, setAmbulances] = useState([]);
+  const [formData, setFormData] = useState({
+    vehicleNo: "",
+    driver: "",
+    status: "Available",
+    location: "",
+    eta: "",
+  });
+  const [editingId, setEditingId] = useState(null);
+  const [toast, setToast] = useState("");
 
-  const handleDispatchAmbulance = () => {
-    alert("Dispatch Ambulance clicked!");
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(""), 3000);
   };
+
+  const loadAmbulances = async () => {
+    try {
+      const { data } = await fetchAmbulances();
+      setAmbulances(data);
+    } catch (err) {
+      showToast("Failed to load ambulances");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingId) {
+        await updateAmbulance(editingId, formData);
+        showToast("Ambulance updated");
+      } else {
+        await addAmbulance(formData);
+        showToast("Ambulance added");
+      }
+      setFormData({
+        vehicleNo: "",
+        driver: "",
+        status: "Available",
+        location: "",
+        eta: "",
+      });
+      setEditingId(null);
+      loadAmbulances();
+    } catch (/** @type {any} */ err) {
+      showToast(err?.response?.data?.message || "Error saving ambulance");
+    }
+  };
+
+  const handleEdit = (amb) => {
+    setFormData(amb);
+    setEditingId(amb._id);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteAmbulance(id);
+      showToast("Ambulance deleted");
+      loadAmbulances();
+    } catch (/** @type {any} */ err) {
+      showToast("Failed to delete ambulance");
+    }
+  };
+
+  useEffect(() => {
+    loadAmbulances();
+  }, []);
 
   return (
     <section id="ambulance" className="section">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Ambulance Tracking</h2>
-        <button
-          className="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600"
-          onClick={handleDispatchAmbulance}
-        >
-          Dispatch Ambulance
-        </button>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="module-card col-span-2">
-          <h3 className="text-lg font-semibold mb-4">Active Ambulances</h3>
-          <div className="table-container">
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th>Vehicle No.</th>
-                  <th>Driver</th>
-                  <th>Status</th>
-                  <th>Location</th>
-                  <th>ETA</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ambulanceData.map((ambulance) => (
-                  <tr key={ambulance.id}>
-                    <td>{ambulance.vehicleNo}</td>
-                    <td>{ambulance.driver}</td>
-                    <td>
-                      <span
-                        className={`status-badge ${
-                          ambulance.status === "Available"
-                            ? "status-active"
-                            : ambulance.status === "On Route"
-                            ? "status-pending"
-                            : "status-critical"
-                        }`}
-                      >
-                        {ambulance.status}
-                      </span>
-                    </td>
-                    <td>{ambulance.location}</td>
-                    <td>{ambulance.eta}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      <h2 className="text-xl font-semibold mb-4">Ambulance Tracking</h2>
+
+      {toast && (
+        <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">
+          {toast}
         </div>
-        <div className="module-card">
-          <h3 className="text-lg font-semibold mb-4">Quick Stats</h3>
-          <div className="space-y-4">
-            <div className="bg-green-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">5</div>
-              <div className="text-green-800">Available</div>
-            </div>
-            <div className="bg-yellow-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-yellow-600">2</div>
-              <div className="text-yellow-800">On Route</div>
-            </div>
-            <div className="bg-red-50 p-4 rounded-lg">
-              <div className="text-2xl font-bold text-red-600">1</div>
-              <div className="text-red-800">Maintenance</div>
-            </div>
-          </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="mb-6 space-y-2">
+        <div className="grid grid-cols-5 gap-4">
+          <input
+            type="text"
+            placeholder="Vehicle No"
+            value={formData.vehicleNo}
+            onChange={(e) =>
+              setFormData({ ...formData, vehicleNo: e.target.value })
+            }
+            className="input"
+            required
+          />
+          <input
+            type="text"
+            placeholder="Driver Name"
+            value={formData.driver}
+            onChange={(e) =>
+              setFormData({ ...formData, driver: e.target.value })
+            }
+            className="input"
+            required
+          />
+          <select
+            value={formData.status}
+            onChange={(e) =>
+              setFormData({ ...formData, status: e.target.value })
+            }
+            className="input"
+          >
+            <option>Available</option>
+            <option>On Route</option>
+            <option>Maintenance</option>
+          </select>
+          <input
+            type="text"
+            placeholder="Location"
+            value={formData.location}
+            onChange={(e) =>
+              setFormData({ ...formData, location: e.target.value })
+            }
+            className="input"
+            required
+          />
+          <input
+            type="text"
+            placeholder="ETA"
+            value={formData.eta}
+            onChange={(e) => setFormData({ ...formData, eta: e.target.value })}
+            className="input"
+          />
+        </div>
+        <button
+          type="submit"
+          className={`${
+            editingId
+              ? "bg-yellow-500 hover:bg-yellow-600"
+              : "bg-blue-500 hover:bg-blue-600"
+          } text-white px-4 py-2 rounded-lg`}
+        >
+          {editingId ? "Update Ambulance" : "Add Ambulance"}
+        </button>
+        {editingId && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditingId(null);
+              setFormData({
+                vehicleNo: "",
+                driver: "",
+                status: "Available",
+                location: "",
+                eta: "",
+              });
+            }}
+            className="ml-4 bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"
+          >
+            Cancel
+          </button>
+        )}
+      </form>
+
+      <div className="module-card">
+        <h3 className="text-lg font-semibold mb-4">Ambulance Table</h3>
+        <div className="table-container">
+          <table className="w-full">
+            <thead>
+              <tr>
+                <th>Vehicle No</th>
+                <th>Driver</th>
+                <th>Status</th>
+                <th>Location</th>
+                <th>ETA</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ambulances.map((amb) => (
+                <tr key={amb._id}>
+                  <td>{amb.vehicleNo}</td>
+                  <td>{amb.driver}</td>
+                  <td>{amb.status}</td>
+                  <td>{amb.location}</td>
+                  <td>{amb.eta}</td>
+                  <td>
+                    <button
+                      className="text-blue-500 hover:text-blue-700"
+                      onClick={() => handleEdit(amb)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="text-red-500 hover:text-red-700 ml-3"
+                      onClick={() => handleDelete(amb._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
