@@ -1,6 +1,7 @@
 // src/pages/Admin/components/Sidebar.jsx
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import LogoutButton from "../../../utils/LogoutButton";
 
 const AdminSidebar = () => {
   const location = useLocation();
@@ -55,12 +56,13 @@ const AdminSidebar = () => {
         >
           Ambulance Tracking
         </Link>
-        <div
+        <LogoutButton/>
+        {/* <div
           className="nav-item logout"
           onClick={() => alert("Logging out Admin...")}
         >
           Logout
-        </div>
+        </div> */}
       </nav>
     </div>
   );
