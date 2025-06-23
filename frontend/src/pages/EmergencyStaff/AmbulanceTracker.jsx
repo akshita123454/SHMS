@@ -1,6 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getAllAmbulances } from '../../api/emergency/ambulance';
 
 export default function AmbulanceTracker() {
+  const [ambulances, setAmbulances] = useState([]);
+
+  useEffect(() => {
+    const fetchAmbulances = async () => {
+      const data = await getAllAmbulances();
+      setAmbulances(data);
+    };
+
+    fetchAmbulances();
+  }, []);
+
   return (
     <div>
       <h2 className="text-xl font-semibold mb-4">Ambulance Tracker</h2>
@@ -15,18 +27,14 @@ export default function AmbulanceTracker() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td className="p-2 border">Ambulance 1</td>
-            <td className="p-2 border">On Route</td>
-            <td className="p-2 border">8 mins</td>
-            <td className="p-2 border">+91-9876543210</td>
-          </tr>
-          <tr>
-            <td className="p-2 border">Ambulance 2</td>
-            <td className="p-2 border">Arrived</td>
-            <td className="p-2 border">0 mins</td>
-            <td className="p-2 border">+91-9876543222</td>
-          </tr>
+          {ambulances.map((amb, idx) => (
+            <tr key={idx}>
+              <td className="p-2 border">{amb.name}</td>
+              <td className="p-2 border">{amb.status}</td>
+              <td className="p-2 border">{amb.eta}</td>
+              <td className="p-2 border">{amb.driverContact}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
