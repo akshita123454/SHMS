@@ -187,7 +187,7 @@ const Payroll = () => {
             <div className="flex justify-between items-center">
               <span>Total Salary</span>
               <span className="font-semibold">
-                ${totalSalary.toLocaleString()}
+                ₹{totalSalary.toLocaleString("en-IN")}
               </span>
             </div>
             <div className="flex justify-between items-center">
@@ -249,7 +249,7 @@ const Payroll = () => {
                       : p.staffId}
                   </td>
                   <td>{p.month}</td>
-                  <td>${p.salary}</td>
+                  <td>₹{p.salary.toLocaleString("en-IN")}</td>
                   <td>{p.status}</td>
                   <td>
                     <button
