@@ -1,68 +1,173 @@
-// src/pages/Admin/components/StaffManagement.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
+import {
+  fetchStaff,
+  addStaff,
+  updateStaff,
+  deleteStaff,
+} from "../../api/admin/staff.api.js";
 
 const StaffManagement = () => {
-  const staffData = [
-    {
-      id: 1,
-      name: "Dr. Sarah Johnson",
-      department: "Cardiology",
-      role: "Senior Physician",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Dr. Michael Chen",
-      department: "Emergency",
-      role: "Emergency Physician",
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Nurse Emily White",
-      department: "ICU",
-      role: "Head Nurse",
-      status: "Active",
-    },
-    {
-      id: 4,
-      name: "Admin Clerk David Lee",
-      department: "Administration",
-      role: "Front Desk",
-      status: "Active",
-    },
-    {
-      id: 5,
-      name: "Dr. John Doe",
-      department: "Pediatrics",
-      role: "Junior Doctor",
-      status: "On Leave",
-    },
-  ];
+  const [staffList, setStaffList] = useState([]);
+  const [formData, setFormData] = useState({
+    name: "",
+    department: "",
+    role: "",
+    email: "",
+    status: "Active",
+  });
+  const [editingId, setEditingId] = useState(null);
+  const [toast, setToast] = useState("");
 
-  const handleEdit = (id) => {
-    alert(`Edit staff member with ID: ${id}`);
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(""), 3000);
   };
 
-  const handleDelete = (id) => {
-    alert(`Delete staff member with ID: ${id}`);
+  const loadStaff = async () => {
+    try {
+      const { data } = await fetchStaff();
+      setStaffList(data);
+    } catch (/** @type {any} */ err) {
+      showToast("Failed to load staff");
+    }
   };
 
-  const handleAddStaff = () => {
-    alert("Add new staff member clicked!");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingId) {
+        await updateStaff(editingId, formData);
+        showToast("Staff updated");
+      } else {
+        await addStaff(formData);
+        showToast("Staff added");
+      }
+      setFormData({
+        name: "",
+        department: "",
+        role: "",
+        email: "",
+        status: "Active",
+      });
+      setEditingId(null);
+      loadStaff();
+    } catch (/** @type {any} */ err) {
+      showToast("Error saving staff");
+    }
   };
+
+  const handleEdit = (staff) => {
+    setFormData(staff);
+    setEditingId(staff._id);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteStaff(id);
+      showToast("Staff deleted");
+      loadStaff();
+    } catch (/** @type {any} */ err) {
+      showToast("Failed to delete staff");
+    }
+  };
+
+  useEffect(() => {
+    loadStaff();
+  }, []);
 
   return (
     <section id="staff" className="section">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">Staff Management</h2>
-        <button
-          className="bg-teal-500 text-white px-4 py-2 rounded-lg hover:bg-teal-600"
-          onClick={handleAddStaff}
-        >
-          Add New Staff
-        </button>
-      </div>
+      <h2 className="text-xl font-semibold mb-4">Staff Management</h2>
+
+      {toast && (
+        <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">
+          {toast}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="mb-6 space-y-2">
+        <div className="grid grid-cols-5 gap-4">
+          <input
+            type="text"
+            placeholder="Name"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            className="input"
+            required
+          />
+          <input
+            type="text"
+            placeholder="Department"
+            value={formData.department}
+            onChange={(e) =>
+              setFormData({ ...formData, department: e.target.value })
+            }
+            className="input"
+            required
+          />
+          <input
+            type="text"
+            placeholder="Role"
+            value={formData.role}
+            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+            className="input"
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={(e) =>
+              setFormData({ ...formData, email: e.target.value })
+            }
+            className="input"
+            required
+          />
+          <select
+            value={formData.status}
+            onChange={(e) =>
+              setFormData({ ...formData, status: e.target.value })
+            }
+            className="input"
+          >
+            <option>Active</option>
+            <option>On Leave</option>
+            <option>Inactive</option>
+          </select>
+        </div>
+
+        <div className="mt-4">
+          <button
+            type="submit"
+            className={`${
+              editingId
+                ? "bg-yellow-500 hover:bg-yellow-600"
+                : "bg-blue-500 hover:bg-blue-600"
+            } text-white px-4 py-2 rounded-lg`}
+          >
+            {editingId ? "Update Staff" : "Add Staff"}
+          </button>
+          {editingId && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingId(null);
+                setFormData({
+                  name: "",
+                  department: "",
+                  role: "",
+                  email: "",
+                  status: "Active",
+                });
+              }}
+              className="ml-4 bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
+      </form>
+
       <div className="module-card">
         <div className="table-container">
           <table className="w-full">
@@ -71,16 +176,18 @@ const StaffManagement = () => {
                 <th>Name</th>
                 <th>Department</th>
                 <th>Role</th>
+                <th>Email</th>
                 <th>Status</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {staffData.map((staff) => (
-                <tr key={staff.id}>
+              {staffList.map((staff) => (
+                <tr key={staff._id}>
                   <td>{staff.name}</td>
                   <td>{staff.department}</td>
                   <td>{staff.role}</td>
+                  <td>{staff.email}</td>
                   <td>
                     <span
                       className={`status-badge ${
@@ -95,13 +202,13 @@ const StaffManagement = () => {
                   <td>
                     <button
                       className="text-blue-500 hover:text-blue-700"
-                      onClick={() => handleEdit(staff.id)}
+                      onClick={() => handleEdit(staff)}
                     >
                       Edit
                     </button>
                     <button
                       className="text-red-500 hover:text-red-700 ml-3"
-                      onClick={() => handleDelete(staff.id)}
+                      onClick={() => handleDelete(staff._id)}
                     >
                       Delete
                     </button>
