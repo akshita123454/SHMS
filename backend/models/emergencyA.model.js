@@ -20,15 +20,6 @@ const RoomAllotmentSchema = new mongoose.Schema({
   status: { type: String, default: "Occupied" }
 }, { timestamps: true });
 
-// --- Ambulance Schema ---
-// Schema for Ambulance
-const ambulanceSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  status: { type: String, required: true },
-  eta: { type: String, required: true },
-  driverContact: { type: String, required: true }
-});
-
 // --- Notification Schema ---
 const NotificationSchema = new mongoose.Schema({
   message: String
@@ -37,5 +28,15 @@ const NotificationSchema = new mongoose.Schema({
 // Export all models
 export const Triage = mongoose.model("Triage", TriageSchema);
 export const RoomAllotment = mongoose.model("RoomAllotment", RoomAllotmentSchema);
-export const Ambulance = mongoose.model("Ambulance", ambulanceSchema);
 export const Notification = mongoose.model("Notification", NotificationSchema);
+// export const Ambulance = mongoose.model("Ambulance", ambulanceSchema);
+
+
+// --- Ambulance Schema ---
+//  i am using likhit schma of ambulance insted of yours as both would be same.
+// const ambulanceSchema = new mongoose.Schema({
+//   name: { type: String, required: true },
+//   status: { type: String, required: true },
+//   eta: { type: String, required: true },
+//   driverContact: { type: String, required: true }
+// });
