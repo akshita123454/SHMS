@@ -1,5 +1,6 @@
 // src/pages/reception/RoomAndBed.jsx
 import React, { useState } from 'react';
+import { checkRoomAvailability } from '../../api/reception/room';
 import { BedDouble } from 'lucide-react';
 
 export default function RoomAndBed() {

@@ -4,6 +4,7 @@ import AdminLayout from "./pages/Admin/Layouts/AdminLayout";
 import ReceptionPage from "./pages/reception/ReceptionPage";
 import PatientPage from "./pages/patient/components/PatientPage";
 import EmergencyStaffPage from './pages/EmergencyStaff/EmergencyStaffPage';
+import Home from './pages/Home';
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -18,6 +19,7 @@ function App() {
           <Route path="/reception" element={<ReceptionPage />} />
           <Route path="/emergency" element={<EmergencyStaffPage />} />
           <Route path="/patient" element={<PatientPage />} />
+          <Route path="/home" element={<Home />} />
 
           {/* Fix this admin route not correct. */}
           <Route path="/admin/*" element={<AdminLayout />} />
@@ -150,5 +152,7 @@ export default App;
 //     </Router>
 //   );
 // }
+
+
 
 // export default App;
