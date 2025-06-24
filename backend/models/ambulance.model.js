@@ -11,6 +11,10 @@ const ambulanceSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    driverContact: { 
+      type: String,
+      required: true 
+    },
     status: {
       type: String,
       enum: ["Available", "On Route", "Maintenance"],

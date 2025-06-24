@@ -6,7 +6,7 @@ import connectDB from "./config/database.js";
 import patientRoutes from "./routes/patientRoutes.js";
 import doctorRoute from "./routes/doctor.route.js";
 import authRoute from "./routes/auth.route.js";
-import emergencyRoutes from "./routes/emergency.route.js"; 
+import emergencyRoutesA from "./routes/emergencyA.route.js"; 
 
 import staffRoutes from "./routes/staff.route.js";
 import inventoryRoutes from "./routes/inventory.route.js";
@@ -14,35 +14,42 @@ import emergencyRoutes from "./routes/emergency.route.js";
 import ambulanceRoutes from "./routes/ambulance.route.js";
 import payrollRoutes from "./routes/payroll.route.js";
 import reportRoutes from "./routes/report.route.js";
-import dotenv from "dotenv";
 
-dotenv.config();
 
-const port = process.env.PORT || 3000;
 const app = express();
 
+const port = process.env.PORT || 3000;
+
+dotenv.config();
 app.use(cors({
   origin: process.env.FRONTEND_URL,
   credentials: true,
 }));
+
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Test route
+
+
+
+// TEST ROUTE
 app.get("/", (req, res) => {
   res.send("Welcome to SHMS backend!");
 });
 
-// Route registrations
+// Apis
 app.use("/doctor", doctorRoute);
 app.use("/api/patients", patientRoutes);
 
-// app.use("/api/auth", authRoute);
-// app.use("/emergency", emergencyRoutes); 
 
-// Start server
+// this route is for ayush Emergency Page.
+app.use("/emergency", emergencyRoutesA); 
 
-//Mount admin routes
+// emergency route for Akshita
+app.use("/emergencyAkshita",emergencyRoutes)
+
+// All Admin Router
 app.use("/api/staff", staffRoutes);
 app.use("/api/inventory", inventoryRoutes);
 app.use("/api/emergencies", emergencyRoutes);
@@ -50,9 +57,10 @@ app.use("/api/ambulances", ambulanceRoutes);
 app.use("/api/payroll", payrollRoutes);
 app.use("/api/reports", reportRoutes);
 
+// Auth Routes
 app.use("/api/auth", authRoute);
 
 app.listen(port, () => {
-  connectDB(); // connects to MongoDB
+  connectDB();
   console.log(` Server is running at port ${port}`);
 });
