@@ -1,5 +1,11 @@
 // src/pages/reception/Appointments.jsx
 import React, { useState } from 'react';
+import {
+  bookAppointment,
+  getAllAppointments,
+  cancelAppointment
+} from '../../api/reception/appointments';
+
 import { CalendarPlus } from 'lucide-react';
 
 export default function Appointments() {

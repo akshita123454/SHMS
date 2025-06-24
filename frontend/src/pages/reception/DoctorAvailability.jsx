@@ -1,5 +1,7 @@
 // src/pages/reception/DoctorAvailability.jsx
 import React, { useState } from 'react';
+import { getAllDepartmentsWithDoctors, getDoctorSchedule } from '../../api/reception/doctor';
+
 import { UserCheck, Clock8 } from 'lucide-react';
 
 export default function DoctorAvailability() {

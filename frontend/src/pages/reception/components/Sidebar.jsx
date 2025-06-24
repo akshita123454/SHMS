@@ -4,6 +4,7 @@ import {
   FileText,
   BedDouble,
   UserCheck,
+  Brush,
   LogOut,
   Home
 } from 'lucide-react';
@@ -15,6 +16,8 @@ const items = [
   { key: 'billing', icon: <FileText />, label: 'Billing' },
   { key: 'room-bed', icon: <BedDouble />, label: 'Room & Bed' },
   { key: 'doctor-availability', icon: <UserCheck />, label: 'Doctor Availability' },
+  { key: 'sanitation', icon: <Brush />, label: 'Sanitation' },
+
 ];
 
 export default function Sidebar({ activeKey, onChange }) {
