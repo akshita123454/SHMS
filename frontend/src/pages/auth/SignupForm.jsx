@@ -26,7 +26,8 @@ export default function SignupForm() {
       await signup(form);
       toast.success('Signup successful!');
       navigate('/login');
-    } catch (err) {
+    } 
+    catch (err) {
       console.error('Signup failed:', err);
       toast.error(err?.message || 'Signup failed. Please try again.');
     }
