@@ -1,5 +1,9 @@
-import { Triage, RoomAllotment, Notification } from "../models/emergencyA.model.js";
-import Ambulance from "../models/ambulance.model.js";
+import {
+  Triage,
+  RoomAllotment,
+  Notification,
+} from "../models/emergencyA.model.js";
+import { Ambulance } from "../models/ambulance.model.js";
 
 // Create a new triage case
 //POST /triage

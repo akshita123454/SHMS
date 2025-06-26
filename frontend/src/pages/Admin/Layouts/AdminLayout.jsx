@@ -11,10 +11,8 @@ import Dashboard from "../Dashboard"; // Path adjusted
 import StaffManagement from "../StaffManagement"; // Path adjusted
 import Inventory from "../Inventory"; // Path adjusted
 import Payroll from "../PayRoll"; // Path adjusted
-import EmergencyCases from "../EmergencyCases"; // Path adjusted
-import Reports from "../Reports"; // Path adjusted
 import AmbulanceTracking from "../AmbulanceTracking"; // Path adjusted
-
+import RoomManagement from "../RoomManagement";
 const AdminLayout = () => {
   return (
     <div className="flex bg-gray-50 min-h-screen">
@@ -32,9 +30,8 @@ const AdminLayout = () => {
           <Route path="staff" element={<StaffManagement />} />
           <Route path="inventory" element={<Inventory />} />
           <Route path="payroll" element={<Payroll />} />
-          <Route path="emergency" element={<EmergencyCases />} />
-          <Route path="reports" element={<Reports />} />
           <Route path="ambulance" element={<AmbulanceTracking />} />
+          <Route path="rooms" element={<RoomManagement />} />
           <Route
             path="*"
             element={

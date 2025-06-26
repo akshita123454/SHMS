@@ -3,9 +3,8 @@ import DoctorPage from "./pages/Doctor/Doctor";
 import AdminLayout from "./pages/Admin/Layouts/AdminLayout";
 import ReceptionPage from "./pages/reception/ReceptionPage";
 import PatientPage from "./pages/patient/components/PatientPage";
-import EmergencyStaffPage from './pages/EmergencyStaff/EmergencyStaffPage';
-import Home from './pages/Home';
-
+import EmergencyStaffPage from "./pages/EmergencyStaff/EmergencyStaffPage";
+import Home from "./pages/Home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -49,10 +48,7 @@ function App() {
   );
 }
 
-
 export default App;
-
-
 
 //  AUTH KE LIYE APP.JSX DONT CHANGE OR REMOVE THE COMMENTS.
 
@@ -72,7 +68,6 @@ export default App;
 // import DeveloperLayout from "./pages/developer/Developer";
 
 // //NOTE: DONT REMOVE ANY ROUTE ANS IF YOU ARE WOKING ON ANY ROUTE ADD IN SIMILAR FASHION.
-
 
 // function App() {
 //   return (
@@ -154,7 +149,4 @@ export default App;
 //   );
 // }
 
-
-
 // export default App;
-

@@ -1,6 +1,7 @@
+// backend/routes/ambulance.route.js
 import express from "express";
 import {
-  getAmbulances,
+  getAllAmbulances,
   createAmbulance,
   updateAmbulance,
   deleteAmbulance,
@@ -8,7 +9,7 @@ import {
 
 const router = express.Router();
 
-router.get("/", getAmbulances);
+router.get("/", getAllAmbulances);
 router.post("/", createAmbulance);
 router.put("/:id", updateAmbulance);
 router.delete("/:id", deleteAmbulance);
