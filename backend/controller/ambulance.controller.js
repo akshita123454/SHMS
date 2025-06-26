@@ -1,46 +1,56 @@
-import Ambulance from "../models/ambulance.model.js";
+// backend/controllers/ambulance.controller.js
+import { Ambulance } from "../models/ambulance.model.js";
 
-// Get all ambulances
-export const getAmbulances = async (req, res) => {
+export const getAllAmbulances = async (req, res) => {
   try {
     const ambulances = await Ambulance.find();
     res.json(ambulances);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch ambulances" });
   }
 };
 
-// Add new ambulance
 export const createAmbulance = async (req, res) => {
   try {
-    //console.log("🛠 Incoming ambulance data:", req.body);
-    const ambulance = new Ambulance(req.body);
-    const saved = await ambulance.save();
-    res.status(201).json(saved);
-  } catch (error) {
-    //console.log("🔥 Mongoose error:", error.message);
-    res.status(400).json({ message: error.message });
+    const { vehicleNo, driver, status } = req.body;
+    const newAmbulance = new Ambulance({ vehicleNo, driver, status });
+    await newAmbulance.save();
+    res.status(201).json(newAmbulance);
+  } catch (err) {
+    res.status(400).json({ message: "Failed to create ambulance" });
   }
 };
 
-// Update ambulance
 export const updateAmbulance = async (req, res) => {
   try {
-    const updated = await Ambulance.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const { id } = req.params;
+    const { vehicleNo, driver, status } = req.body;
+
+    const updated = await Ambulance.findByIdAndUpdate(
+      id,
+      { vehicleNo, driver, status },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Ambulance not found" });
+    }
+
     res.json(updated);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+  } catch (err) {
+    res.status(400).json({ message: "Failed to update ambulance" });
   }
 };
 
-// Delete ambulance
 export const deleteAmbulance = async (req, res) => {
   try {
-    await Ambulance.findByIdAndDelete(req.params.id);
-    res.json({ message: "Ambulance deleted successfully" });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
+    const { id } = req.params;
+    const deleted = await Ambulance.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ message: "Ambulance not found" });
+    }
+    res.json({ message: "Ambulance deleted" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete ambulance" });
   }
 };

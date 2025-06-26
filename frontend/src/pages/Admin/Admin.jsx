@@ -8,9 +8,8 @@ import Dashboard from "./Dashboard";
 import EmergencyCases from "./EmergencyCases";
 import Inventory from "./Inventory";
 import Payroll from "./PayRoll";
-import Reports from "./Reports";
 import StaffManagement from "./StaffManagement";
-
+import RoomAllotment from "../EmergencyStaff/RoomAllotment";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -28,10 +27,10 @@ function AdminPage() {
         return <Inventory />;
       case "payroll":
         return <Payroll />;
-      case "reports":
-        return <Reports />;
       case "staff-management":
         return <StaffManagement />;
+      case "room-allotment":
+        return <RoomAllotment />;
       default:
         return <Dashboard />; // Default to the main Dashboard
     }

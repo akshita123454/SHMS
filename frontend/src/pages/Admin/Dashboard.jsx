@@ -1,8 +1,29 @@
 // src/pages/Admin/Dashboard.jsx
-import React from "react";
-import { Link } from "react-router-dom"; // Import Link
+import React, { useEffect, useState } from "react";
+import { fetchDashboardStats } from "../../api/admin/reports.api.js";
+import { Link } from "react-router-dom";
 
 const Dashboard = () => {
+  const [stats, setStats] = useState({
+    totalRooms: 0,
+    availableRooms: 0,
+    occupiedRooms: 0,
+    totalStaff: 0,
+    totalAmbulances: 0,
+  });
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const { data } = await fetchDashboardStats();
+        setStats(data);
+      } catch (err) {
+        console.error("Failed to fetch stats");
+      }
+    };
+    loadStats();
+  }, []);
+
   return (
     <div className="dashboard-content">
       <h2 className="text-3xl font-semibold text-gray-800 mb-6">
@@ -12,20 +33,24 @@ const Dashboard = () => {
       {/* Quick Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         <div className="module-card flex flex-col items-center justify-center p-6 bg-gradient-to-r from-teal-500 to-teal-600 text-white shadow-lg">
-          <span className="text-4xl font-bold">120+</span>
+          <span className="text-4xl font-bold">{stats.totalStaff}</span>
           <p className="text-lg">Total Staff</p>
         </div>
-        <div className="module-card flex flex-col items-center justify-center p-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg">
-          <span className="text-4xl font-bold">450+</span>
-          <p className="text-lg">Total Patients</p>
+        <div className="module-card flex flex-col items-center justify-center p-6 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white shadow-lg">
+          <span className="text-4xl font-bold">{stats.totalAmbulances}</span>
+          <p className="text-lg">Total Ambulances</p>
         </div>
-        <div className="module-card flex flex-col items-center justify-center p-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-lg">
-          <span className="text-4xl font-bold">30+</span>
-          <p className="text-lg">Critical Cases</p>
+        <div className="module-card flex flex-col items-center justify-center p-6 bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg">
+          <span className="text-4xl font-bold">{stats.totalRooms}</span>
+          <p className="text-lg">Total Rooms</p>
         </div>
-        <div className="module-card flex flex-col items-center justify-center p-6 bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-lg">
-          <span className="text-4xl font-bold">150+</span>
-          <p className="text-lg">Daily Appointments</p>
+        <div className="module-card flex flex-col items-center justify-center p-6 bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg">
+          <span className="text-4xl font-bold">{stats.availableRooms}</span>
+          <p className="text-lg">Available Rooms</p>
+        </div>
+        <div className="module-card flex flex-col items-center justify-center p-6 bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg">
+          <span className="text-4xl font-bold">{stats.occupiedRooms}</span>
+          <p className="text-lg">Occupied Rooms</p>
         </div>
       </div>
 
@@ -73,19 +98,6 @@ const Dashboard = () => {
           </p>
         </Link>
 
-        {/* Reports Panel */}
-        <Link
-          to="/admin/reports"
-          className="module-card block cursor-pointer hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-        >
-          <h4 className="text-xl font-semibold text-red-600 mb-2">
-            Reports Panel
-          </h4>
-          <p className="text-gray-600">
-            Generate various reports on hospital operations and data.
-          </p>
-        </Link>
-
         {/* Ambulance Tracking */}
         <Link
           to="/admin/ambulance"
@@ -99,38 +111,18 @@ const Dashboard = () => {
           </p>
         </Link>
 
-        {/* Emergency Cases - Example for a module without a dedicated card yet, showing how to add */}
-        {/* <Link to="/admin/emergency" className="module-card block cursor-pointer hover:shadow-xl transform hover:scale-105 transition-all duration-300">
-                    <h4 className="text-xl font-semibold text-green-600 mb-2">Emergency Cases</h4>
-                    <p className="text-gray-600">Track and manage emergency patient arrivals and treatment.</p>
-                </Link> */}
-      </div>
-
-      {/* Recent Activities Section (Example - can be expanded) */}
-      <h3 className="text-2xl font-semibold text-gray-800 mb-6">
-        Recent Activities
-      </h3>
-      <div className="bg-white p-6 rounded-lg shadow-sm">
-        <ul className="space-y-4">
-          <li className="flex items-center space-x-3">
-            <span className="text-sm text-gray-500">2 hours ago</span>
-            <p className="text-gray-700">
-              Dr. Smith updated patient record for Jane Doe.
-            </p>
-          </li>
-          <li className="flex items-center space-x-3">
-            <span className="text-sm text-gray-500">Yesterday</span>
-            <p className="text-gray-700">
-              New batch of surgical masks added to inventory.
-            </p>
-          </li>
-          <li className="flex items-center space-x-3">
-            <span className="text-sm text-gray-500">2 days ago</span>
-            <p className="text-gray-700">
-              Ambulance A1 dispatched to accident scene.
-            </p>
-          </li>
-        </ul>
+        {/* Room Management */}
+        <Link
+          to="/admin/rooms"
+          className="module-card block cursor-pointer hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+        >
+          <h4 className="text-xl font-semibold text-red-600 mb-2">
+            Room Management
+          </h4>
+          <p className="text-gray-600">
+            View, assign and track available and occupied rooms.
+          </p>
+        </Link>
       </div>
     </div>
   );

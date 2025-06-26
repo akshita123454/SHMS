@@ -12,8 +12,6 @@ const AmbulanceTracking = () => {
     vehicleNo: "",
     driver: "",
     status: "Available",
-    location: "",
-    eta: "",
   });
   const [editingId, setEditingId] = useState(null);
   const [toast, setToast] = useState("");
@@ -46,8 +44,6 @@ const AmbulanceTracking = () => {
         vehicleNo: "",
         driver: "",
         status: "Available",
-        location: "",
-        eta: "",
       });
       setEditingId(null);
       loadAmbulances();
@@ -58,6 +54,11 @@ const AmbulanceTracking = () => {
 
   const handleEdit = (amb) => {
     setFormData(amb);
+    ({
+      vehicleNo: amb.vehicleNo,
+      driver: amb.driver,
+      status: amb.status,
+    });
     setEditingId(amb._id);
   };
 
@@ -77,7 +78,7 @@ const AmbulanceTracking = () => {
 
   return (
     <section id="ambulance" className="section">
-      <h2 className="text-xl font-semibold mb-4">Ambulance Tracking</h2>
+      <h2 className="text-xl font-semibold mb-4">Ambulances</h2>
 
       {toast && (
         <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">
@@ -118,23 +119,6 @@ const AmbulanceTracking = () => {
             <option>On Route</option>
             <option>Maintenance</option>
           </select>
-          <input
-            type="text"
-            placeholder="Location"
-            value={formData.location}
-            onChange={(e) =>
-              setFormData({ ...formData, location: e.target.value })
-            }
-            className="input"
-            required
-          />
-          <input
-            type="text"
-            placeholder="ETA"
-            value={formData.eta}
-            onChange={(e) => setFormData({ ...formData, eta: e.target.value })}
-            className="input"
-          />
         </div>
         <button
           type="submit"
@@ -155,8 +139,6 @@ const AmbulanceTracking = () => {
                 vehicleNo: "",
                 driver: "",
                 status: "Available",
-                location: "",
-                eta: "",
               });
             }}
             className="ml-4 bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"
@@ -175,8 +157,6 @@ const AmbulanceTracking = () => {
                 <th>Vehicle No</th>
                 <th>Driver</th>
                 <th>Status</th>
-                <th>Location</th>
-                <th>ETA</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -186,8 +166,6 @@ const AmbulanceTracking = () => {
                   <td>{amb.vehicleNo}</td>
                   <td>{amb.driver}</td>
                   <td>{amb.status}</td>
-                  <td>{amb.location}</td>
-                  <td>{amb.eta}</td>
                   <td>
                     <button
                       className="text-blue-500 hover:text-blue-700"

@@ -39,24 +39,18 @@ const AdminSidebar = () => {
           Payroll
         </Link>
         <Link
-          to="/admin/emergency"
-          className={`nav-item ${isActive("/admin/emergency") ? "active" : ""}`}
-        >
-          Emergency Cases
-        </Link>
-        <Link
-          to="/admin/reports"
-          className={`nav-item ${isActive("/admin/reports") ? "active" : ""}`}
-        >
-          Reports
-        </Link>
-        <Link
           to="/admin/ambulance"
           className={`nav-item ${isActive("/admin/ambulance") ? "active" : ""}`}
         >
-          Ambulance Tracking
+          Ambulances
         </Link>
-        <LogoutButton/>
+        <Link
+          to="/admin/rooms"
+          className={`nav-item ${isActive("/admin/rooms") ? "active" : ""}`}
+        >
+          Room Management
+        </Link>
+        <LogoutButton />
         {/* <div
           className="nav-item logout"
           onClick={() => alert("Logging out Admin...")}
