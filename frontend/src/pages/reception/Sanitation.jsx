@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Brush, CheckCircle } from 'lucide-react';
+import { getSanitationStatus, markRoomSanitized } from '../../api/reception/sanitation';
 
 export default function Sanitation() {
   // Predefined lists

@@ -22,19 +22,52 @@ export default function RoomAllotment() {
   useEffect(() => { fetchRooms(); }, []);
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Room Allotment</h2>
-      <form onSubmit={handleSubmit} className="space-y-4 mb-4">
-        <input name="patientId" value={form.patientId} onChange={handleChange} className="w-full p-2 border rounded" placeholder="Patient ID" required />
-        <input name="roomNumber" value={form.roomNumber} onChange={handleChange} className="w-full p-2 border rounded" placeholder="Room Number" required />
-        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">Allot Room</button>
-      </form>
-      <h3 className="font-semibold">Live Bed Status</h3>
-      <ul className="list-disc ml-6 space-y-1 mt-2">
-        {rooms.map((room, idx) => (
-          <li key={idx}>Room {room.roomNumber} - {room.status}</li>
-        ))}
-      </ul>
+    <div className="bg-white rounded shadow-md p-6 max-w-6xl mx-auto mt-6">
+      <h2 className="text-2xl font-bold text-blue-900 mb-6">Room Allotment</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Left Section - Form */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Allot Room</h3>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
+              name="patientId"
+              value={form.patientId}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              placeholder="Patient ID"
+              required
+            />
+            <input
+              name="roomNumber"
+              value={form.roomNumber}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
+              placeholder="Room Number"
+              required
+            />
+            <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+              Allot Room
+            </button>
+          </form>
+        </div>
+
+        {/* Right Section - Status */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Live Bed Status</h3>
+          <ul className="list-disc pl-5 space-y-2 max-h-64 overflow-y-auto border rounded p-4 bg-gray-50">
+            {rooms.length > 0 ? (
+              rooms.map((room, idx) => (
+                <li key={idx}>
+                  <span className="font-medium">Room {room.roomNumber}</span> - {room.status}
+                </li>
+              ))
+            ) : (
+              <p className="text-gray-500">No room data available.</p>
+            )}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
