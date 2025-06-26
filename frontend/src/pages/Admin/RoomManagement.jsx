@@ -163,7 +163,7 @@ const RoomManagement = () => {
         </div>
         <button
           type="submit"
-          className={`$${
+          className={`${
             editingId
               ? "bg-yellow-500 hover:bg-yellow-600"
               : "bg-blue-500 hover:bg-blue-600"
