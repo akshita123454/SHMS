@@ -13,9 +13,7 @@ export default function Home() {
           <h1 className="text-5xl font-bold text-blue-900">SHMS</h1>
           <nav className="space-x-6 text-sm md:text-base">
 
-            <Link to="/reception/appointments" className="hover:text-blue-600 font-medium">Book Appointment</Link>
-// this line below was already present the upper one was added
-//             <Link to="/patient" className="hover:text-blue-600 font-medium">Book Appointment</Link>
+            <Link to="/patient" className="hover:text-blue-600 font-medium">Book Appointment</Link>
             <Link to="/emergency" className="hover:text-blue-600 font-medium">Emergency</Link>
             <Link to="/login" className="hover:text-blue-600 font-medium">Login</Link>
             <Link to="/signup" className="hover:text-blue-600 font-medium">Signup</Link>
