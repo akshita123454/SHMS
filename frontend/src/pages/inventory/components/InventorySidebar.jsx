@@ -5,6 +5,7 @@ const items = [
   { key: '/', icon: <HomeIcon />, label: 'DashBoard' }, 
   { key: 'items', icon: <MessageCircle />, label: 'items' },
   { key: 'additems', icon: <MessageCircle />, label: 'additems' },
+  { key: 'updateOrDelete', icon: <MessageCircle />, label: 'updateOrDelete' },
   // { key: 'prescription', icon: <FileText />, label: 'Prescription' },
   // { key: 'calendar', icon: <Calendar />, label: 'Calendar' },
   // { key: 'patients', icon: <Users />, label: 'Patients' },
