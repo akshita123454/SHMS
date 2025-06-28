@@ -25,6 +25,7 @@ const departments = [
 ];
 
 const roomTypes = ["Single", "Shared", "Deluxe", "Suite", "Isolation"];
+const conditions = ["Good", "Damaged"];
 
 const RoomManagement = () => {
   const [rooms, setRooms] = useState([]);
@@ -33,7 +34,7 @@ const RoomManagement = () => {
     department: departments[0],
     type: roomTypes[0],
     capacity: 1,
-    status: "Available",
+    condition: "Good",
   });
   const [editingId, setEditingId] = useState(null);
   const [toast, setToast] = useState("");
@@ -67,7 +68,7 @@ const RoomManagement = () => {
         department: departments[0],
         type: roomTypes[0],
         capacity: 1,
-        status: "Available",
+        condition: "Good",
       });
       setEditingId(null);
       loadRooms();
@@ -151,14 +152,15 @@ const RoomManagement = () => {
             required
           />
           <select
-            value={formData.status}
+            value={formData.condition}
             onChange={(e) =>
-              setFormData({ ...formData, status: e.target.value })
+              setFormData({ ...formData, condition: e.target.value })
             }
             className="input"
           >
-            <option>Available</option>
-            <option>Occupied</option>
+            {conditions.map((c) => (
+              <option key={c}>{c}</option>
+            ))}
           </select>
         </div>
         <button
@@ -181,7 +183,7 @@ const RoomManagement = () => {
                 department: departments[0],
                 type: roomTypes[0],
                 capacity: 1,
-                status: "Available",
+                condition: "Good",
               });
             }}
             className="ml-4 bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"
@@ -201,7 +203,7 @@ const RoomManagement = () => {
                 <th>Department</th>
                 <th>Type</th>
                 <th>Capacity</th>
-                <th>Status</th>
+                <th>Condition</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -212,7 +214,7 @@ const RoomManagement = () => {
                   <td>{room.department}</td>
                   <td>{room.type}</td>
                   <td>{room.capacity}</td>
-                  <td>{room.status}</td>
+                  <td>{room.condition}</td>
                   <td>
                     <button
                       className="text-blue-500 hover:text-blue-700"
