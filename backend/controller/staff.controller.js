@@ -1,7 +1,28 @@
-// controllers/staff.controller.js
 import Staff from "../models/staff.model.js";
 
-// Get all staff members
+// Static department-role mapping
+const departmentRoles = {
+  Cardiology: ["Cardiologist", "Cardiology Nurse", "Technician"],
+  Radiology: ["Radiologist", "Radiology Technician"],
+  HR: ["HR Manager", "Recruiter"],
+  ICU: ["ICU Doctor", "ICU Nurse", "Respiratory Therapist"],
+  Surgery: ["Surgeon", "Surgical Nurse", "Anesthetist"],
+  Maternity: ["Gynecologist", "Maternity Nurse"],
+  "General Ward": ["General Physician", "Ward Nurse", "Compounder"],
+  Neurology: ["Neurologist", "Neuro Nurse"],
+  Orthopedics: ["Orthopedic Doctor", "Ortho Technician"],
+  Emergency: ["Emergency Doctor", "Emergency Nurse", "Paramedic", "Compounder"],
+  Reception: ["Receptionist", "Front Desk Officer"],
+};
+
+// Get roles by department
+export const getRolesByDepartment = async (req, res) => {
+  const { department } = req.params;
+  const roles = departmentRoles[department] || [];
+  res.json(roles);
+};
+
+// Existing handlers
 export const getAllStaff = async (req, res) => {
   try {
     const staffList = await Staff.find();
@@ -11,20 +32,16 @@ export const getAllStaff = async (req, res) => {
   }
 };
 
-// Create new staff member
 export const createStaff = async (req, res) => {
-  //console.log("🛠 Incoming staff payload:", req.body);
   try {
     const newStaff = new Staff(req.body);
     const savedStaff = await newStaff.save();
     res.status(201).json(savedStaff);
   } catch (error) {
-    //console.error("🔥 Mongoose error:", error.message);
     res.status(400).json({ message: error.message });
   }
 };
 
-// Update staff member
 export const updateStaff = async (req, res) => {
   try {
     const updated = await Staff.findByIdAndUpdate(req.params.id, req.body, {
@@ -36,7 +53,6 @@ export const updateStaff = async (req, res) => {
   }
 };
 
-// Delete staff member
 export const deleteStaff = async (req, res) => {
   try {
     await Staff.findByIdAndDelete(req.params.id);
