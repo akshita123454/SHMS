@@ -1,6 +1,14 @@
 // controllers/inventory.controller.js
 import Inventory from "../models/inventory.model.js";
 
+// Auto status check
+const computeStatus = (item) => {
+  const now = new Date();
+  if (item.expiryDate && new Date(item.expiryDate) < now) return "Expired";
+  if (item.quantity < item.threshold) return "Low Stock";
+  return "In Stock";
+};
+
 // Get all inventory items
 export const getInventory = async (req, res) => {
   try {
@@ -14,7 +22,9 @@ export const getInventory = async (req, res) => {
 // Create new inventory item
 export const createInventoryItem = async (req, res) => {
   try {
-    const newItem = new Inventory(req.body);
+    const itemData = req.body;
+    itemData.status = computeStatus(itemData);
+    const newItem = new Inventory(itemData);
     const savedItem = await newItem.save();
     res.status(201).json(savedItem);
   } catch (error) {
@@ -25,9 +35,15 @@ export const createInventoryItem = async (req, res) => {
 // Update inventory item
 export const updateInventoryItem = async (req, res) => {
   try {
-    const updated = await Inventory.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const updatedData = req.body;
+    updatedData.status = computeStatus(updatedData);
+    const updated = await Inventory.findByIdAndUpdate(
+      req.params.id,
+      updatedData,
+      {
+        new: true,
+      }
+    );
     res.json(updated);
   } catch (error) {
     res.status(400).json({ message: error.message });

@@ -4,10 +4,26 @@ import {
   addStaff,
   updateStaff,
   deleteStaff,
+  fetchRolesByDepartment,
 } from "../../api/admin/staff.api.js";
+
+const departments = [
+  "Cardiology",
+  "Radiology",
+  "HR",
+  "ICU",
+  "Surgery",
+  "Maternity",
+  "General Ward",
+  "Neurology",
+  "Orthopedics",
+  "Emergency",
+  "Reception",
+];
 
 const StaffManagement = () => {
   const [staffList, setStaffList] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
     department: "",
@@ -32,6 +48,21 @@ const StaffManagement = () => {
     }
   };
 
+  const loadRoles = async (department) => {
+    try {
+      const { data } = await fetchRolesByDepartment(department);
+      setRoles(data);
+    } catch (/** @type {any} */ err) {
+      setRoles([]);
+    }
+  };
+
+  const handleDepartmentChange = async (e) => {
+    const selected = e.target.value;
+    setFormData({ ...formData, department: selected, role: "" });
+    loadRoles(selected);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -49,6 +80,7 @@ const StaffManagement = () => {
         email: "",
         status: "Active",
       });
+      setRoles([]);
       setEditingId(null);
       loadStaff();
     } catch (/** @type {any} */ err) {
@@ -59,6 +91,7 @@ const StaffManagement = () => {
   const handleEdit = (staff) => {
     setFormData(staff);
     setEditingId(staff._id);
+    loadRoles(staff.department);
   };
 
   const handleDelete = async (id) => {
@@ -95,24 +128,36 @@ const StaffManagement = () => {
             className="input"
             required
           />
-          <input
-            type="text"
-            placeholder="Department"
+
+          <select
             value={formData.department}
-            onChange={(e) =>
-              setFormData({ ...formData, department: e.target.value })
-            }
+            onChange={handleDepartmentChange}
             className="input"
             required
-          />
-          <input
-            type="text"
-            placeholder="Role"
+          >
+            <option value="">Select Department</option>
+            {departments.map((dept) => (
+              <option key={dept} value={dept}>
+                {dept}
+              </option>
+            ))}
+          </select>
+
+          <select
             value={formData.role}
             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             className="input"
             required
-          />
+            disabled={!roles.length}
+          >
+            <option value="">Select Role</option>
+            {roles.map((role) => (
+              <option key={role} value={role}>
+                {role}
+              </option>
+            ))}
+          </select>
+
           <input
             type="email"
             placeholder="Email"
@@ -123,6 +168,7 @@ const StaffManagement = () => {
             className="input"
             required
           />
+
           <select
             value={formData.status}
             onChange={(e) =>
@@ -159,6 +205,7 @@ const StaffManagement = () => {
                   email: "",
                   status: "Active",
                 });
+                setRoles([]);
               }}
               className="ml-4 bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"
             >
