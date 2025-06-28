@@ -6,12 +6,11 @@ const roomSchema = new mongoose.Schema(
     department: { type: String, required: true },
     capacity: { type: Number, required: true },
     type: { type: String, required: true },
-    status: {
+    condition: {
       type: String,
-      enum: ["Available", "Occupied"],
-      default: "Available",
+      enum: ["Good", "Damaged"],
+      default: "Good",
     },
-    occupied: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
