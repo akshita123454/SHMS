@@ -12,7 +12,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <h1 className="text-5xl font-bold text-blue-900">SHMS</h1>
           <nav className="space-x-6 text-sm md:text-base">
-            <Link to="/reception" className="hover:text-blue-600 font-medium">Book Appointment</Link>
+            <Link to="/patient" className="hover:text-blue-600 font-medium">Book Appointment</Link>
             <Link to="/emergency" className="hover:text-blue-600 font-medium">Emergency</Link>
             <Link to="/login" className="hover:text-blue-600 font-medium">Login</Link>
             <Link to="/signup" className="hover:text-blue-600 font-medium">Signup</Link>
@@ -38,7 +38,7 @@ export default function Home() {
       Smart Hospital Management System (SHMS) is designed to streamline hospital operations,
       enhance patient care, and provide seamless communication between departments.
     </p>
-    <Link to="/reception">
+    <Link to="/patient">
       <button className="bg-blue-900 text-white px-6 py-2 rounded hover:bg-blue-800">
         Book an Appointment
       </button>
