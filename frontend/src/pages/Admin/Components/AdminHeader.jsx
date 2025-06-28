@@ -18,8 +18,8 @@ const AdminHeader = () => {
     { name: "Inventory", path: "/admin/inventory" },
     { name: "Payroll", path: "admin/payroll" },
     { name: "Emergency Cases", path: "/admin/emergency" },
-    { name: "Reports", path: "/admin/reports" },
     { name: "Ambulance Tracking", path: "/admin/ambulance" },
+    { name: "Room Mangement", path: "/admin/rooms" },
     // Add more Admin pages here as you create them
   ];
 
