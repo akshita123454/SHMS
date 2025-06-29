@@ -1,73 +1,127 @@
-import { useState } from 'react';
+// File: src/components/PrescriptionForm.jsx
+import React, { useState, useMemo } from 'react';
 import { toast } from 'react-toastify';
-import { User, Stethoscope, Clipboard, FileText, TestTube, Calendar, Briefcase } from 'lucide-react';
-import {createPrescription} from '../../api/doctor/prescription'
+import { createPrescription } from '../../api/doctor/prescription';
 
 export default function PrescriptionForm() {
   const initialMed = { drug: '', directions: '', qty: '', refills: '' };
-  const payload={
-    // Member info
+  const payload = {
     patientId: '',
     patientName: '',
     dateOfBirth: '',
     gender: '',
     phone: '',
     allergies: [],
-    // Prescription meds
-    medication: [ { ...initialMed } ],
-    // Prescriber info
+    medication: [{ ...initialMed }],
     prescriberName: '',
     prescriberDate: '',
     prescriberPhone: '',
-    prescriberReview: ''
-  }
-
-  const [form, setForm] = useState(payload);
-
-  const [submitting, setSubmitting] = useState(false);
-
-  const handleChange = e => {
-    const { name, value } = e.target;
-    setForm(f => ({ ...f, [name]: value }));
+    prescriberReview: '',
   };
 
-  const handleAllergy = e => {
+  const [form, setForm] = useState(payload);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Generic change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
+  };
+
+  // Phone-only change
+  const handlePhoneChange = (e) => {
+    const raw = e.target.value.replace(/\D/g, '').slice(0, 10);
+    setForm((f) => ({ ...f, [e.target.name]: raw }));
+  };
+
+  // Allergy checkbox
+  const handleAllergy = (e) => {
     const { value, checked } = e.target;
-    setForm(f => ({
+    setForm((f) => ({
       ...f,
       allergies: checked
         ? [...f.allergies, value]
-        : f.allergies.filter(a => a !== value)
+        : f.allergies.filter((a) => a !== value),
     }));
   };
 
-  const handleMedChange = (idx, field, value) => {
-    setForm(f => {
-      const meds = [ ...f.medication ];
-      meds[idx] = { ...meds[idx], [field]: value };
+  // Medication row change
+  const handleMedChange = (idx, field, rawValue) => {
+    // For qty/refills: force digits only
+    const val =
+      field === 'qty' || field === 'refills'
+        ? rawValue.replace(/\D/g, '')
+        : rawValue;
+    setForm((f) => {
+      const meds = [...f.medication];
+      meds[idx] = { ...meds[idx], [field]: val };
       return { ...f, medication: meds };
     });
   };
 
   const addMedication = () => {
-    setForm(f => ({ ...f, medication: [ ...f.medication, { ...initialMed } ] }));
+    setForm((f) => ({
+      ...f,
+      medication: [...f.medication, { ...initialMed }],
+    }));
   };
 
-  const handleSubmit = async e => {
+  // Check validity of entire form
+  const isFormValid = useMemo(() => {
+    // required top‐level
+    const needed = [
+      form.patientId,
+      form.patientName,
+      form.dateOfBirth,
+      form.gender,
+      form.prescriberName,
+      form.prescriberDate,
+    ];
+    if (needed.some((v) => !v.trim())) return false;
+
+    // phone must be 10 digits (or empty)
+    if (form.phone && form.phone.length !== 10) return false;
+    if (form.prescriberPhone && form.prescriberPhone.length !== 10)
+      return false;
+
+    // each medication line filled
+    for (let med of form.medication) {
+      if (
+        !med.drug.trim() ||
+        !med.directions.trim() ||
+        med.qty === '' ||
+        med.refills === ''
+      ) {
+        return false;
+      }
+    }
+    return true;
+  }, [form]);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isFormValid) return;
     setSubmitting(true);
     try {
       await createPrescription(form);
       toast.success('Prescription submitted successfully');
-      setForm(payload);
-    } catch {
+      setForm({ ...payload });
+    } catch (err) {
+      console.error(err);
       toast.error('Error submitting prescription');
     } finally {
       setSubmitting(false);
     }
   };
 
-  const allergyOptions = ['Aspirin','Codeine','Penicillin','Peanuts','Sulfa','Other'];
+  const allergyOptions = [
+    'Aspirin',
+    'Codeine',
+    'Penicillin',
+    'Peanuts',
+    'Sulfa',
+    'Other',
+  ];
 
   return (
     <div className="bg-white p-6 rounded-lg shadow max-w-2xl mx-auto">
@@ -78,7 +132,7 @@ export default function PrescriptionForm() {
         {/* Member Information */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block">Patient ID</label>
+            <label className="block font-medium">Patient ID*</label>
             <input
               name="patientId"
               value={form.patientId}
@@ -87,8 +141,9 @@ export default function PrescriptionForm() {
               className="w-full border p-2 rounded"
             />
           </div>
+
           <div className="col-span-2">
-            <label className="block">Patient Name</label>
+            <label className="block font-medium">Patient Name*</label>
             <input
               name="patientName"
               value={form.patientName}
@@ -97,8 +152,9 @@ export default function PrescriptionForm() {
               className="w-full border p-2 rounded"
             />
           </div>
+
           <div>
-            <label className="block">Date of Birth</label>
+            <label className="block font-medium">Date of Birth*</label>
             <input
               name="dateOfBirth"
               type="date"
@@ -108,12 +164,14 @@ export default function PrescriptionForm() {
               className="w-full border p-2 rounded"
             />
           </div>
+
           <div>
-            <label className="block">Gender</label>
+            <label className="block font-medium">Gender*</label>
             <select
               name="gender"
               value={form.gender}
               onChange={handleChange}
+              required
               className="w-full border p-2 rounded"
             >
               <option value="">Select</option>
@@ -121,20 +179,24 @@ export default function PrescriptionForm() {
               <option>Female</option>
             </select>
           </div>
+
           <div className="col-span-2">
-            <label className="block">Phone Number</label>
+            <label className="block font-medium">Phone Number</label>
             <input
               name="phone"
               type="tel"
+              maxLength={10}
               value={form.phone}
-              onChange={handleChange}
+              onChange={handlePhoneChange}
+              placeholder="10 digits"
               className="w-full border p-2 rounded"
             />
           </div>
+
           <div className="col-span-2">
-            <label className="block mb-1">Allergies</label>
+            <label className="block font-medium mb-1">Allergies</label>
             <div className="flex flex-wrap gap-3">
-              {allergyOptions.map(opt => (
+              {allergyOptions.map((opt) => (
                 <label key={opt} className="flex items-center space-x-1">
                   <input
                     type="checkbox"
@@ -154,28 +216,36 @@ export default function PrescriptionForm() {
         {form.medication.map((m, i) => (
           <div key={i} className="grid grid-cols-4 gap-4 mb-2">
             <input
-              placeholder="Drug & Strength"
+              placeholder="Drug & Strength*"
               value={m.drug}
-              onChange={e => handleMedChange(i, 'drug', e.target.value)}
+              onChange={(e) => handleMedChange(i, 'drug', e.target.value)}
               className="border p-2 rounded"
+              required
             />
             <input
-              placeholder="Directions"
+              placeholder="Directions*"
               value={m.directions}
-              onChange={e => handleMedChange(i, 'directions', e.target.value)}
+              onChange={(e) => handleMedChange(i, 'directions', e.target.value)}
               className="border p-2 rounded"
+              required
             />
             <input
-              placeholder="Qty"
+              placeholder="Qty*"
+              type="number"
+              min={0}
               value={m.qty}
-              onChange={e => handleMedChange(i, 'qty', e.target.value)}
+              onChange={(e) => handleMedChange(i, 'qty', e.target.value)}
               className="border p-2 rounded"
+              required
             />
             <input
-              placeholder="Refills"
+              placeholder="Refills*"
+              type="number"
+              min={0}
               value={m.refills}
-              onChange={e => handleMedChange(i, 'refills', e.target.value)}
+              onChange={(e) => handleMedChange(i, 'refills', e.target.value)}
               className="border p-2 rounded"
+              required
             />
           </div>
         ))}
@@ -187,11 +257,11 @@ export default function PrescriptionForm() {
           + Add Line
         </button>
 
-        {/* Prescriber Information */}
+        {/* Doctor's Information */}
         <h3 className="text-xl font-semibold mt-6">Doctor's Information</h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block">Name</label>
+            <label className="block font-medium">Name*</label>
             <input
               name="prescriberName"
               value={form.prescriberName}
@@ -201,40 +271,48 @@ export default function PrescriptionForm() {
             />
           </div>
           <div>
-            <label className="block">Date</label>
+            <label className="block font-medium">Date*</label>
             <input
               name="prescriberDate"
               type="date"
               value={form.prescriberDate}
               onChange={handleChange}
+              required
               className="w-full border p-2 rounded"
             />
           </div>
           <div>
-            <label className="block">Phone</label>
+            <label className="block font-medium">Phone</label>
             <input
               name="prescriberPhone"
+              type="tel"
+              maxLength={10}
               value={form.prescriberPhone}
-              onChange={handleChange}
+              onChange={handlePhoneChange}
+              placeholder="10 digits"
               className="w-full border p-2 rounded"
             />
           </div>
           <div className="col-span-2">
-            <label className="block">Review</label>
+            <label className="block font-medium">Review</label>
             <textarea
-              name="prescriberSignature"
+              name="prescriberReview"
               value={form.prescriberReview}
               onChange={handleChange}
               className="w-full border p-2 rounded resize-none"
-              rows={5}
+              rows={4}
             />
           </div>
         </div>
 
         <button
           type="submit"
-          disabled={submitting}
-          className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          disabled={!isFormValid || submitting}
+          className={`w-full py-2 rounded transition ${
+            isFormValid
+              ? 'bg-blue-600 text-white hover:bg-blue-700'
+              : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+          }`}
         >
           {submitting ? 'Submitting...' : 'Submit Prescription'}
         </button>
@@ -242,133 +320,3 @@ export default function PrescriptionForm() {
     </div>
   );
 }
-
-
-
-
-
-
-
-// import { useState } from 'react';
-// import { toast } from 'react-toastify';
-// import { createPrescription } from '../../api/doctor/prescription';
-
-// import { User, Stethoscope, Clipboard, FileText, TestTube, Calendar, Briefcase } from 'lucide-react';
-
-// export default function PrescriptionForm() {
-//   const [form, setForm] = useState({
-//     patientName: '',
-//     doctorName: '',
-//     diagnosis: '',
-//     referral: '',
-//     medication: '',
-//     labTests: '',
-//     notes: ''
-//   });
-//   const [submitting, setSubmitting] = useState(false);
-
-//   const handleChange = e => setForm({ ...form, [e.target.name]: e.target.value });
-
-//   const handleSubmit = async e => {
-//     e.preventDefault();
-//     setSubmitting(true);
-//     try {
-//       await createPrescription(form);
-//       toast.success('Prescription submitted successfully');
-//       setForm({ patientName: '', doctorName: '', diagnosis: '', referral: '', medication: '', labTests: '', notes: '' });
-//     } catch (err) {
-//       toast.error('Error submitting prescription');
-//     } finally {
-//       setSubmitting(false);
-//     }
-//   };
-
-//   return (
-//     <div className="bg-white rounded-lg shadow-md p-6 max-w-lg mx-auto">
-//       <h2 className="text-2xl font-semibold mb-6">Prescription Form</h2>
-//       <form onSubmit={handleSubmit} className="space-y-4">
-//         <div className="flex items-center space-x-2">
-//           <User />
-//           <input
-//             name="patientName"
-//             value={form.patientName}
-//             onChange={handleChange}
-//             required
-//             placeholder="Patient Name"
-//             className="w-full p-2 border rounded"
-//           />
-//         </div>
-//         <div className="flex items-center space-x-2">
-//           <Stethoscope />
-//           <input
-//             name="doctorName"
-//             value={form.doctorName}
-//             onChange={handleChange}
-//             required
-//             placeholder="Doctor Name"
-//             className="w-full p-2 border rounded"
-//           />
-//         </div>
-//         <div className="flex items-center space-x-2">
-//           <Clipboard />
-//           <input
-//             name="diagnosis"
-//             value={form.diagnosis}
-//             onChange={handleChange}
-//             required
-//             placeholder="Diagnosis"
-//             className="w-full p-2 border rounded"
-//           />
-//         </div>
-//         <div className="flex items-center space-x-2">
-//           <Briefcase />
-//           <input
-//             name="referral"
-//             value={form.referral}
-//             onChange={handleChange}
-//             placeholder="Referral"
-//             className="w-full p-2 border rounded"
-//           />
-//         </div>
-//         <div className="flex items-center space-x-2">
-//           <FileText />
-//           <textarea
-//             name="medication"
-//             value={form.medication}
-//             onChange={handleChange}
-//             required
-//             placeholder="Medication Details"
-//             className="w-full p-2 border rounded h-20"
-//           />
-//         </div>
-//         <div className="flex items-center space-x-2">
-//           <TestTube />
-//           <textarea
-//             name="labTests"
-//             value={form.labTests}
-//             onChange={handleChange}
-//             placeholder="Lab Tests Prescribed"
-//             className="w-full p-2 border rounded h-20"
-//           />
-//         </div>
-//         <div className="flex items-center space-x-2">
-//           <Calendar />
-//           <textarea
-//             name="notes"
-//             value={form.notes}
-//             onChange={handleChange}
-//             placeholder="Additional Notes"
-//             className="w-full p-2 border rounded h-16"
-//           />
-//         </div>
-//         <button
-//           type="submit"
-//           disabled={submitting}
-//           className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-//         >
-//           {submitting ? 'Submitting...' : 'Submit Prescription'}
-//         </button>
-//       </form>
-//     </div>
-//   );
-// }

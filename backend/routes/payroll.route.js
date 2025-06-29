@@ -6,12 +6,13 @@ import {
   updatePayroll,
   deletePayroll,
 } from "../controller/payroll.controller.js";
+import { authorizeRoles, protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/", getPayrolls);
-router.post("/", createPayroll);
-router.put("/:id", updatePayroll);
-router.delete("/:id", deletePayroll);
+router.get("/",protect, authorizeRoles('admin'),  getPayrolls);
+router.post("/",protect, authorizeRoles('admin'),  createPayroll);
+router.put("/:id",protect, authorizeRoles('admin'),  updatePayroll);
+router.delete("/:id",protect, authorizeRoles('admin'),  deletePayroll);
 
 export default router;
