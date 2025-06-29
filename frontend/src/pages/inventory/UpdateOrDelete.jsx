@@ -4,6 +4,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import image from '../../../public/inventory.jpeg'
 
 export default function UpdateOrDeleteItem() {
   const [searchId, setSearchId] = useState('');
@@ -47,7 +48,11 @@ export default function UpdateOrDeleteItem() {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gray-50">
+
+    <div className="p-6 bg-gray-50 flex flex-col lg:flex-row items-start gap-8">
+  
+  {/* LEFT: form section */}
+    <div className="flex-1">
       <h2 className="text-2xl font-bold mb-6 text-blue-700">Update or Delete Inventory Item</h2>
 
       <div className="flex flex-col md:flex-row gap-4 mb-8 max-w-xl">
@@ -136,5 +141,17 @@ export default function UpdateOrDeleteItem() {
         </motion.div>
       )}
     </div>
+
+  {/* RIGHT: image */}
+   <div className="w-80 h-140 border border-gray-300 rounded-xl overflow-hidden">
+    <img
+      src={image}
+      alt="Inventory"
+      className="w-full h-full object-cover"
+    />
+  </div>
+
+</div>
+    
   );
 }
