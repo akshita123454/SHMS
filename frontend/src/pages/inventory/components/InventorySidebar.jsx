@@ -5,7 +5,6 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  LogOut,
 } from 'lucide-react';
 import { useState } from 'react';
 import LogoutButton from '../../../utils/LogoutButton';
@@ -28,7 +27,7 @@ export default function InventorySidebar({ activeKey, onChange }) {
     >
       <div className="flex justify-between items-center mb-8">
         {!collapsed && (
-          <h1 className="text-xl font-bold tracking-tight">SHMS</h1>
+          <h1 className="text-xl font-bold tracking-tight">INVENTORY</h1>
         )}
         <button
           onClick={() => setCollapsed((prev) => !prev)}
