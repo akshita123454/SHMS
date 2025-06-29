@@ -7,6 +7,7 @@ import InventoryDashboard from './InventoryDashboard';
 import InventoryHeader from './components/InventoryHeader';
 import InventorySidebar from './components/InventorySidebar';
 import AddItemForm from './AddItemList';
+import UpdateOrDeleteItem from './UpdateOrDelete';
 
 function Inventory() {
   const [section, setSection] = useState('dashboard');
@@ -15,6 +16,7 @@ function Inventory() {
     switch (section) {
       case 'items': return <ItemsList />;
       case 'additems': return <AddItemForm />;
+      case 'updateOrDelete': return <UpdateOrDeleteItem />;
     //   case 'patients': return <Patients />;
     //   case 'calendar': return <CalendarSection />;
     //   case 'appointments': return <Appointments />;
