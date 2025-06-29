@@ -43,7 +43,7 @@ const StaffManagement = () => {
     try {
       const { data } = await fetchStaff();
       setStaffList(data);
-    } catch (/** @type {any} */ err) {
+    } catch (err) {
       showToast("Failed to load staff");
     }
   };
@@ -52,20 +52,30 @@ const StaffManagement = () => {
     try {
       const { data } = await fetchRolesByDepartment(department);
       setRoles(data);
-    } catch (/** @type {any} */ err) {
+      setFormData((prev) => ({
+        ...prev,
+        department: department,
+        role: data.length > 0 ? data[0] : "",
+      }));
+    } catch (err) {
       setRoles([]);
     }
   };
 
-  const handleDepartmentChange = async (e) => {
-    const selected = e.target.value;
-    setFormData({ ...formData, department: selected, role: "" });
-    loadRoles(selected);
+  const handleDepartmentChange = (e) => {
+    const selectedDept = e.target.value;
+    loadRoles(selectedDept);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Submitting staff:", formData); // ✅ Debug log
     try {
+      if (!formData.role) {
+        showToast("Please select a role.");
+        return;
+      }
+
       if (editingId) {
         await updateStaff(editingId, formData);
         showToast("Staff updated");
@@ -83,7 +93,7 @@ const StaffManagement = () => {
       setRoles([]);
       setEditingId(null);
       loadStaff();
-    } catch (/** @type {any} */ err) {
+    } catch (err) {
       showToast("Error saving staff");
     }
   };
@@ -99,7 +109,7 @@ const StaffManagement = () => {
       await deleteStaff(id);
       showToast("Staff deleted");
       loadStaff();
-    } catch (/** @type {any} */ err) {
+    } catch (err) {
       showToast("Failed to delete staff");
     }
   };
@@ -124,7 +134,9 @@ const StaffManagement = () => {
             type="text"
             placeholder="Name"
             value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, name: e.target.value })
+            }
             className="input"
             required
           />
@@ -145,7 +157,9 @@ const StaffManagement = () => {
 
           <select
             value={formData.role}
-            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, role: e.target.value })
+            }
             className="input"
             required
             disabled={!roles.length}
