@@ -1,4 +1,3 @@
-// src/pages/Admin/RoomManagement.jsx
 import React, { useEffect, useState } from "react";
 import {
   fetchRooms,
@@ -48,7 +47,8 @@ const RoomManagement = () => {
     try {
       const { data } = await fetchRooms();
       setRooms(data);
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
+      console.error("Failed to fetch rooms", err);
       showToast("Failed to load rooms");
     }
   };
@@ -73,6 +73,7 @@ const RoomManagement = () => {
       setEditingId(null);
       loadRooms();
     } catch (/** @type {any} */ err) {
+      console.error("Error saving room", err);
       showToast(err?.response?.data?.message || "Error saving room");
     }
   };
@@ -88,6 +89,7 @@ const RoomManagement = () => {
       showToast("Room deleted");
       loadRooms();
     } catch (/** @type {any} */ err) {
+      console.error("Error deleting room", err);
       showToast("Failed to delete room");
     }
   };
