@@ -8,10 +8,10 @@ import { protect, authorizeRoles } from '../middleware/auth.middleware.js';
 const router = express.Router();
 
 // TODO: protect the other routes as well for that.
-// router.post('/prescriptions', protect, authorizeRoles('doctor'), createPrescription);
-// router.get('/prescriptions', protect, authorizeRoles('doctor'), getAllPrescriptions);
-router.post('/prescriptions', createPrescription);
-router.get('/prescriptions', getAllPrescriptions);
+router.post('/prescriptions', protect, authorizeRoles('doctor'), createPrescription);
+router.get('/prescriptions', protect, authorizeRoles('doctor'), getAllPrescriptions);
+// router.post('/prescriptions', createPrescription);
+// router.get('/prescriptions', getAllPrescriptions);
 
 export default router;
 

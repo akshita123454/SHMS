@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import image from '../../../public/inventory.jpeg'
+import image2 from '../../../public/inven.jpg'
 
 export default function UpdateOrDeleteItem() {
   const [searchId, setSearchId] = useState('');
@@ -145,7 +146,7 @@ export default function UpdateOrDeleteItem() {
   {/* RIGHT: image */}
    <div className="w-80 h-140 border border-gray-300 rounded-xl overflow-hidden">
     <img
-      src={image}
+      src={image2}
       alt="Inventory"
       className="w-full h-full object-cover"
     />
