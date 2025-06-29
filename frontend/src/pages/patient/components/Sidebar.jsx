@@ -77,9 +77,9 @@ const Sidebar = ({activeKey,onChange}) => {
   return (
      <aside className="w-64 h-screen bg-gray-900 text-white flex flex-col justify-between p-4">
       <div>
-        <h2 className="text-2xl font-bold mb-6 text-center">Emergency Panel</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Patient Panel</h2>
         <p className="mb-6 text-sm text-center">
-          Role: <span className="font-medium">Emergency Staff</span>
+          Role: <span className="font-medium">Patient</span>
         </p>
 
         <ul className="space-y-2">

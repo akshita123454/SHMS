@@ -1,3 +1,4 @@
+// src/pages/Admin/Inventory.jsx
 import React, { useEffect, useState } from "react";
 import {
   fetchInventory,
@@ -6,14 +7,28 @@ import {
   deleteInventory,
 } from "../../api/admin/inventory.api.js";
 
+const categories = [
+  "Medicine",
+  "Surgical Tools",
+  "Equipment",
+  "PPE",
+  "Stationery",
+  "Disposables",
+  "Lab Supplies",
+];
+
 const Inventory = () => {
   const [inventoryData, setInventoryData] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
+    category: "",
     quantity: 0,
     unit: "pcs",
-    status: "In Stock",
+    threshold: 10,
+    vendor: "",
+    purchaseDate: "",
     expiryDate: "",
+    status: "In Stock",
   });
   const [editingId, setEditingId] = useState(null);
   const [toast, setToast] = useState("");
@@ -44,10 +59,14 @@ const Inventory = () => {
       }
       setFormData({
         name: "",
+        category: "",
         quantity: 0,
         unit: "pcs",
-        status: "In Stock",
+        threshold: 10,
+        vendor: "",
+        purchaseDate: "",
         expiryDate: "",
+        status: "In Stock",
       });
       setEditingId(null);
       loadInventory();
@@ -86,7 +105,7 @@ const Inventory = () => {
       )}
 
       <form onSubmit={handleSubmit} className="mb-6 space-y-2">
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-6 gap-4">
           <input
             type="text"
             placeholder="Item Name"
@@ -95,6 +114,19 @@ const Inventory = () => {
             className="input"
             required
           />
+          <select
+            value={formData.category}
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
+            className="input"
+            required
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat) => (
+              <option key={cat}>{cat}</option>
+            ))}
+          </select>
           <input
             type="number"
             placeholder="Quantity"
@@ -112,6 +144,33 @@ const Inventory = () => {
             className="input"
           />
           <input
+            type="number"
+            placeholder="Threshold"
+            value={formData.threshold}
+            onChange={(e) =>
+              setFormData({ ...formData, threshold: parseInt(e.target.value) })
+            }
+            className="input"
+          />
+          <input
+            type="text"
+            placeholder="Vendor"
+            value={formData.vendor}
+            onChange={(e) =>
+              setFormData({ ...formData, vendor: e.target.value })
+            }
+            className="input"
+          />
+          <input
+            type="date"
+            placeholder="Purchase Date"
+            value={formData.purchaseDate}
+            onChange={(e) =>
+              setFormData({ ...formData, purchaseDate: e.target.value })
+            }
+            className="input"
+          />
+          <input
             type="date"
             value={formData.expiryDate}
             onChange={(e) =>
@@ -120,58 +179,57 @@ const Inventory = () => {
             className="input"
             required
           />
-          <select
-            value={formData.status}
-            onChange={(e) =>
-              setFormData({ ...formData, status: e.target.value })
-            }
-            className="input"
-          >
-            <option>In Stock</option>
-            <option>Low Stock</option>
-            <option>Expired</option>
-          </select>
         </div>
-        <button
-          type="submit"
-          className={`${
-            editingId
-              ? "bg-yellow-500 hover:bg-yellow-600"
-              : "bg-blue-500 hover:bg-blue-600"
-          } text-white px-4 py-2 rounded-lg`}
-        >
-          {editingId ? "Update Item" : "Add Item"}
-        </button>
-        {editingId && (
+        <div className="mt-4">
           <button
-            type="button"
-            onClick={() => {
-              setEditingId(null);
-              setFormData({
-                name: "",
-                quantity: 0,
-                unit: "pcs",
-                status: "In Stock",
-                expiryDate: "",
-              });
-            }}
-            className="ml-4 bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"
+            type="submit"
+            className={`${
+              editingId
+                ? "bg-yellow-500 hover:bg-yellow-600"
+                : "bg-blue-500 hover:bg-blue-600"
+            } text-white px-4 py-2 rounded-lg`}
           >
-            Cancel
+            {editingId ? "Update Item" : "Add Item"}
           </button>
-        )}
+          {editingId && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditingId(null);
+                setFormData({
+                  name: "",
+                  category: "",
+                  quantity: 0,
+                  unit: "pcs",
+                  threshold: 10,
+                  vendor: "",
+                  purchaseDate: "",
+                  expiryDate: "",
+                  status: "In Stock",
+                });
+              }}
+              className="ml-4 bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
 
       <div className="module-card">
-        <div className="table-container">
+        <div className="table-container overflow-auto">
           <table className="w-full">
             <thead>
               <tr>
                 <th>Item</th>
-                <th>Quantity</th>
+                <th>Category</th>
+                <th>Qty</th>
                 <th>Unit</th>
+                <th>Threshold</th>
                 <th>Status</th>
-                <th>Expiry Date</th>
+                <th>Vendor</th>
+                <th>Purchase Date</th>
+                <th>Expiry</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -179,8 +237,10 @@ const Inventory = () => {
               {inventoryData.map((item) => (
                 <tr key={item._id}>
                   <td>{item.name}</td>
+                  <td>{item.category}</td>
                   <td>{item.quantity}</td>
                   <td>{item.unit}</td>
+                  <td>{item.threshold}</td>
                   <td>
                     <span
                       className={`status-badge ${
@@ -194,6 +254,8 @@ const Inventory = () => {
                       {item.status}
                     </span>
                   </td>
+                  <td>{item.vendor}</td>
+                  <td>{item.purchaseDate?.split("T")[0]}</td>
                   <td>{item.expiryDate?.split("T")[0]}</td>
                   <td>
                     <button
