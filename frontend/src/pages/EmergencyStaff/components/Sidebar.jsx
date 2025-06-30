@@ -12,7 +12,7 @@ const items = [
   { key: 'triage', icon: <Activity />, label: 'Triage' },
   { key: 'ambulance', icon: <Ambulance />, label: 'Ambulance Tracker' },
   { key: 'notifications', icon: <Bell />, label: 'Notifications' },
-  { key: 'room-allotment', icon: <BedDouble />, label: 'Room Allotment' },
+  
 ];
 
 export default function Sidebar({ activeKey, onChange }) {
