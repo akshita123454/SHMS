@@ -13,7 +13,6 @@ const items = [
   { key: 'triage', icon: <Activity className="w-5 h-5" />, label: 'Triage' },
   { key: 'ambulance', icon: <Ambulance className="w-5 h-5" />, label: 'Ambulance Tracker' },
   { key: 'notifications', icon: <Bell className="w-5 h-5" />, label: 'Notifications' },
-  { key: 'room-allotment', icon: <BedDouble className="w-5 h-5" />, label: 'Room Allotment' },
 ];
 
 export default function Sidebar({ activeKey, onChange }) {
