@@ -5,7 +5,7 @@ import {
   updatePayroll,
   deletePayroll,
 } from "../../api/admin/payroll.api.js";
-import { fetchStaff } from "../../api/admin/staff.api.js"; // if you have this API
+import { fetchStaff } from "../../api/admin/staff.api.js";
 
 const Payroll = () => {
   const [payrolls, setPayrolls] = useState([]);
@@ -29,15 +29,17 @@ const Payroll = () => {
       const { data } = await fetchPayrolls();
       setPayrolls(data);
     } catch (/** @type {any} */ err) {
+      console.error("Failed to load payrolls", err);
       showToast("Failed to load payrolls");
     }
   };
 
   const loadStaffList = async () => {
     try {
-      const { data } = await fetchStaff(); // or use fetch("/api/staff")
+      const { data } = await fetchStaff();
       setStaffList(data);
     } catch (/** @type {any} */ err) {
+      console.error("Failed to load staff", err);
       showToast("Failed to load staff");
     }
   };
@@ -56,13 +58,14 @@ const Payroll = () => {
       setEditingId(null);
       loadPayrolls();
     } catch (/** @type {any} */ err) {
+      console.error("Error saving payroll", err);
       showToast("Error saving payroll");
     }
   };
 
   const handleEdit = (item) => {
     setFormData({
-      staffId: item.staffId._id || item.staffId, // handles both populated or plain
+      staffId: item.staffId._id || item.staffId,
       month: item.month,
       salary: item.salary,
       status: item.status,
@@ -76,6 +79,7 @@ const Payroll = () => {
       showToast("Payroll deleted");
       loadPayrolls();
     } catch (/** @type {any} */ err) {
+      console.error("Failed to delete payroll", err);
       showToast("Failed to delete payroll");
     }
   };
@@ -122,7 +126,6 @@ const Payroll = () => {
           </select>
           <input
             type="month"
-            placeholder="Month"
             value={formData.month}
             onChange={(e) =>
               setFormData({ ...formData, month: e.target.value })
@@ -132,7 +135,6 @@ const Payroll = () => {
           />
           <input
             type="number"
-            placeholder="Salary"
             value={formData.salary}
             onChange={(e) =>
               setFormData({ ...formData, salary: parseInt(e.target.value) })

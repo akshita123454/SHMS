@@ -20,7 +20,7 @@ const NotificationList = () => {
 
   return (
     <div className="bg-white p-6 rounded shadow">
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">🔔 Notifications</h2>
+      <h2 className="text-xl font-semibold mb-4 "> Notifications</h2>
       <div className="space-y-3">
         {notifications.length > 0 ? (
           notifications.map((n, idx) => (

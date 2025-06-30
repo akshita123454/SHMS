@@ -91,6 +91,7 @@ export default function SignupForm() {
               <option value="doctor">Doctor</option>
               <option value="admin">Admin</option>
               <option value="reception">Reception</option>
+              <option value="emergency">Emergency</option>
               <option value="developer">Developer</option>
             </select>
 

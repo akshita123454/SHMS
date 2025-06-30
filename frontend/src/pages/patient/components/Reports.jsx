@@ -1,6 +1,5 @@
 // src/pages/patient/components/Reports.jsx
 import React, { useEffect, useState } from "react";
-import { FileText } from "lucide-react";
 import axios from "axios";
 
 const Reports = () => {
@@ -14,11 +13,8 @@ const Reports = () => {
   }, []);
 
   return (
-    <div className="bg-white rounded-xl shadow">
-      <div className="flex items-center space-x-2 mb-4">
-        <FileText className="w-5 h-5" />
-        <h2 className="text-xl font-semibold">Reports</h2>
-      </div>
+    <div className="bg-white rounded-xl shadow p-4">
+      <h2 className="text-xl font-semibold mb-4">Reports</h2>
       <div className="border rounded-md divide-y">
         {reports.length > 0 ? (
           reports.map((report, index) => (
@@ -46,3 +42,4 @@ const Reports = () => {
 };
 
 export default Reports;
+

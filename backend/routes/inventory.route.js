@@ -6,12 +6,13 @@ import {
   updateInventoryItem,
   deleteInventoryItem,
 } from "../controller/inventory.controller.js";
+import { authorizeRoles, protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/", getInventory);
-router.post("/", createInventoryItem);
-router.put("/:id", updateInventoryItem);
-router.delete("/:id", deleteInventoryItem);
+router.get("/",protect, authorizeRoles('admin'),  getInventory);
+router.post("/",protect, authorizeRoles('admin'),  createInventoryItem);
+router.put("/:id", protect, authorizeRoles('admin'), updateInventoryItem);
+router.delete("/:id",protect, authorizeRoles('admin'),  deleteInventoryItem);
 
 export default router;

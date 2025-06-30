@@ -6,12 +6,13 @@ import {
   updateAmbulance,
   deleteAmbulance,
 } from "../controller/ambulance.controller.js";
+import { authorizeRoles, protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/", getAllAmbulances);
-router.post("/", createAmbulance);
-router.put("/:id", updateAmbulance);
-router.delete("/:id", deleteAmbulance);
+router.get("/", protect, authorizeRoles('admin'), getAllAmbulances);
+router.post("/",protect, authorizeRoles('admin'),  createAmbulance);
+router.put("/:id",protect, authorizeRoles('admin'),  updateAmbulance);
+router.delete("/:id",protect, authorizeRoles('admin'),  deleteAmbulance);
 
 export default router;

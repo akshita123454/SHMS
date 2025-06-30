@@ -21,9 +21,10 @@ const AmbulanceTracking = () => {
     setTimeout(() => setToast(""), 3000);
   };
 
-  const loadAmbulances = async () => {
+  // i have fixed teh code you can see this.
+  const loadAmbulances =async() => {
     try {
-      const { data } = await fetchAmbulances();
+      const {data} = await fetchAmbulances();
       setAmbulances(data);
     } catch (err) {
       showToast("Failed to load ambulances");
