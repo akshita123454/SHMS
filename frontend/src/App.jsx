@@ -46,8 +46,22 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/reception" element={<ReceptionPage />} />
-          <Route path="/emergency" element={<EmergencyStaffPage />} />
+          <Route
+            path="/emergency"
+            element={
+              <ProtectedRoute acceptedRoles={['emergency']}>
+                <EmergencyStaffPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reception"
+            element={
+              // <ProtectedRoute acceptedRoles={['reception']}>
+                <ReceptionPage />
+              // </ProtectedRoute>
+            }
+          />
           <Route path="/patient" element={<PatientPage />} />
           <Route path="/home" element={<Home />} />
           <Route path="/inventory" element={<Inventory/>} />

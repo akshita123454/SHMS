@@ -2,12 +2,21 @@
 import axios from 'axios';
 const BASE_URL = "http://localhost:3000";
 
+// TODO: API routes of the recpition not under admin.
+
+
 // Create a new appointment
 export const bookAppointment = async (data) => {
   try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user?.token;
+
     const response = await axios.post(`${BASE_URL}/reception/appointments`, data, {
-      headers: { 'Content-Type': 'application/json' },
-      withCredentials: true,
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -19,8 +28,15 @@ export const bookAppointment = async (data) => {
 // Fetch all appointments
 export const getAllAppointments = async () => {
   try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user?.token;
+  
     const response = await axios.get(`${BASE_URL}/reception/appointments`, {
-      withCredentials: true,
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -32,8 +48,15 @@ export const getAllAppointments = async () => {
 // Cancel a specific appointment
 export const cancelAppointment = async (id) => {
   try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user?.token;
+
     const response = await axios.delete(`${BASE_URL}/reception/appointments/${id}`, {
-      withCredentials: true,
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
