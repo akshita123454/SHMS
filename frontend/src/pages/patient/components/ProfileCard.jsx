@@ -24,7 +24,7 @@ const ProfileCard = () => {
 
   return (
     <div className=" bg-white p-6 rounded shadow ">
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">👤 Profile</h2>
+      <h2 className="text-xl font-semibold mb-4 "> Profile</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
