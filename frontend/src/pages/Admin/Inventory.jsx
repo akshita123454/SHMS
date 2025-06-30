@@ -42,7 +42,8 @@ const Inventory = () => {
     try {
       const { data } = await fetchInventory();
       setInventoryData(data);
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
+      console.error("Error loading inventory", err);
       showToast("Failed to load inventory");
     }
   };
@@ -70,7 +71,8 @@ const Inventory = () => {
       });
       setEditingId(null);
       loadInventory();
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
+      console.error("Error saving item", err);
       showToast("Error saving item");
     }
   };
@@ -85,7 +87,8 @@ const Inventory = () => {
       await deleteInventory(id);
       showToast("Item deleted");
       loadInventory();
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
+      console.error("Error deleting item", err);
       showToast("Failed to delete item");
     }
   };
