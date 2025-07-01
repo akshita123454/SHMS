@@ -4,8 +4,15 @@ const BASE_URL = "http://localhost:3000";
 
 export const getAllDepartmentsWithDoctors = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/reception/doctors/departments`, {
-      withCredentials: true,
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user?.token;
+
+    const response = await axios.get(`${BASE_URL}/reception/doctors/departments`,{
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      withCredentials: true
     });
     return response.data;
   } catch (error) {
@@ -16,8 +23,15 @@ export const getAllDepartmentsWithDoctors = async () => {
 
 export const getDoctorSchedule = async (doctorName) => {
   try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user?.token;
+
     const response = await axios.get(`${BASE_URL}/reception/doctors/schedule/${encodeURIComponent(doctorName)}`, {
-      withCredentials: true,
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      withCredentials: true
     });
     return response.data;
   } catch (error) {

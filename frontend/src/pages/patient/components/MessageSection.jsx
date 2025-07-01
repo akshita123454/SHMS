@@ -47,7 +47,7 @@ const MessageSection = () => {
 
   return (
     <div className="bg-white p-4 rounded shadow ">
-      <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">💬 Messages</h2>
+      <h2 className="text-xl font-semibold mb-3 "> Messages</h2>
 
       <div className="max-h-64 overflow-y-auto pr-2 mb-4">
         {messages.map((msg, idx) => (

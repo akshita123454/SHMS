@@ -14,7 +14,7 @@ export default function RegisterPatient() {
     // Lifestyle
     smoker: '', alcoholPerWeek: '', caffeinePerDay: '', recreationalDrugs: '',
     // Medical
-    allergies: '', currentMedications: '', bloodGroup: '', conditions: ''
+    allergies: '', currentMedications: '', bloodGroup: '', conditions: '', roomtype: '',bedtype: ''
   });
 
   const [submitting, setSubmitting] = useState(false);
@@ -128,6 +128,24 @@ export default function RegisterPatient() {
           <textarea name="currentMedications" value={form.currentMedications} onChange={handleChange} placeholder="Current Medications" className="border p-2 rounded" />
           <textarea name="allergies" value={form.allergies} onChange={handleChange} placeholder="Known Allergies" className="border p-2 rounded" />
           <textarea name="conditions" value={form.conditions} onChange={handleChange} placeholder="Past Conditions / Surgeries" className="border p-2 rounded" />
+        </div>
+      </section>
+
+      {/* ROOM ALLOTMENT */}
+      <section>
+        <h3 className="text-xl font-semibold border-b mb-4 pb-2">Room Allotment (Optional)</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <select name="roomType" value={form.roomType} onChange={handleChange} className="border p-2 rounded">
+            <option value="">Select Room Type</option>
+            <option value="General">General</option>
+            <option value="ICU">ICU</option>
+            <option value="Private">Private</option>
+          </select>
+          <select name="bedType" value={form.bedType} onChange={handleChange} className="border p-2 rounded">
+            <option value="">Select Bed Type</option>
+            <option value="Single">Single</option>
+            <option value="Shared">Shared</option>
+          </select>
         </div>
       </section>
 

@@ -1,7 +1,6 @@
 // src/pages/patient/components/MedicalHistory.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { FileText } from "lucide-react";
 
 const MedicalHistory = () => {
   const [history, setHistory] = useState([]);
@@ -14,11 +13,8 @@ const MedicalHistory = () => {
   }, []);
 
   return (
-    <div className="bg-white rounded-xl shadow-md ">
-      <div className="flex items-center space-x-2 mb-4">
-        <FileText className="w-5 h-5 text-blue-600" />
-        <h2 className="text-xl font-semibold">Medical History</h2>
-      </div>
+    <div className="bg-white rounded-xl shadow-md p-4">
+      <h2 className="text-xl font-semibold mb-4">Medical History</h2>
 
       <div className="border rounded-md divide-y">
         {history.length > 0 ? (
@@ -29,7 +25,9 @@ const MedicalHistory = () => {
             </div>
           ))
         ) : (
-          <div className="p-3 text-sm text-gray-500">No medical history found.</div>
+          <div className="p-3 text-sm text-gray-500">
+            No medical history found.
+          </div>
         )}
       </div>
     </div>
@@ -37,3 +35,4 @@ const MedicalHistory = () => {
 };
 
 export default MedicalHistory;
+

@@ -37,10 +37,8 @@ const AppointmentHistory = () => {
   };
 
   return (
-    <div className="bg-white p-4 rounded shadow">
-      <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
-        ⏰ Appointment History
-      </h2>
+    <div className="bg-white p-4 rounded shadow ">
+      <h2 className="text-xl font-semibold mb-3 "> Appointment History</h2>
       <div className="space-y-3">
         {appointments.length > 0 ? (
           appointments.map((appt, idx) => (

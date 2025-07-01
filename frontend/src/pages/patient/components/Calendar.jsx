@@ -38,7 +38,7 @@ const MyCalendar = () => {
     <div className="flex gap-6 p-6">
       {/* Calendar Left */}
       <div className="bg-white rounded-lg shadow p-4">
-        <h2 className="text-2xl font-bold mb-4">📅 Your Calendar</h2>
+        <h2 className="text-2xl font-bold mb-4">Your Calendar</h2>
         <Calendar onChange={setDate} value={date} />
         <p className="mt-4 text-gray-600">
           Selected date: <strong>{date.toDateString()}</strong>

@@ -17,8 +17,8 @@ const Dashboard = () => {
       try {
         const { data } = await fetchDashboardStats();
         setStats(data);
-      } catch (err) {
-        console.error("Failed to fetch stats");
+      } catch (/** @type {any} */ err) {
+        console.error("Failed to fetch stats", err);
       }
     };
     loadStats();
@@ -54,15 +54,14 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* System Modules Section - Now Clickable */}
+      {/* System Modules Section */}
       <h3 className="text-2xl font-semibold text-gray-800 mb-6">
         System Modules
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        {/* Inventory Module */}
         <Link
           to="/admin/inventory"
-          className="module-card block cursor-pointer hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+          className="module-card block hover:shadow-xl transform hover:scale-105 transition-all duration-300"
         >
           <h4 className="text-xl font-semibold text-teal-600 mb-2">
             Inventory Module
@@ -72,10 +71,9 @@ const Dashboard = () => {
           </p>
         </Link>
 
-        {/* Staff Management */}
         <Link
           to="/admin/staff"
-          className="module-card block cursor-pointer hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+          className="module-card block hover:shadow-xl transform hover:scale-105 transition-all duration-300"
         >
           <h4 className="text-xl font-semibold text-blue-600 mb-2">
             Staff Management
@@ -85,10 +83,9 @@ const Dashboard = () => {
           </p>
         </Link>
 
-        {/* Payroll */}
         <Link
           to="/admin/payroll"
-          className="module-card block cursor-pointer hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+          className="module-card block hover:shadow-xl transform hover:scale-105 transition-all duration-300"
         >
           <h4 className="text-xl font-semibold text-purple-600 mb-2">
             Payroll
@@ -98,10 +95,9 @@ const Dashboard = () => {
           </p>
         </Link>
 
-        {/* Ambulance Tracking */}
         <Link
           to="/admin/ambulance"
-          className="module-card block cursor-pointer hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+          className="module-card block hover:shadow-xl transform hover:scale-105 transition-all duration-300"
         >
           <h4 className="text-xl font-semibold text-yellow-600 mb-2">
             Ambulance Tracking
@@ -111,10 +107,9 @@ const Dashboard = () => {
           </p>
         </Link>
 
-        {/* Room Management */}
         <Link
           to="/admin/rooms"
-          className="module-card block cursor-pointer hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+          className="module-card block hover:shadow-xl transform hover:scale-105 transition-all duration-300"
         >
           <h4 className="text-xl font-semibold text-red-600 mb-2">
             Room Management

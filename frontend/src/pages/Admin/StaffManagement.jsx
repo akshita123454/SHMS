@@ -1,3 +1,4 @@
+// src/pages/Admin/StaffManagement.jsx
 import React, { useEffect, useState } from "react";
 import {
   fetchStaff,
@@ -43,7 +44,8 @@ const StaffManagement = () => {
     try {
       const { data } = await fetchStaff();
       setStaffList(data);
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
+      console.error("Error loading staff", err);
       showToast("Failed to load staff");
     }
   };
@@ -52,12 +54,14 @@ const StaffManagement = () => {
     try {
       const { data } = await fetchRolesByDepartment(department);
       setRoles(data);
+
       setFormData((prev) => ({
         ...prev,
         department: department,
         role: data.length > 0 ? data[0] : "",
       }));
     } catch (err) {
+      console.error("Error loading roles", err);
       setRoles([]);
     }
   };
@@ -93,7 +97,8 @@ const StaffManagement = () => {
       setRoles([]);
       setEditingId(null);
       loadStaff();
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
+      console.error("Error saving staff", err);
       showToast("Error saving staff");
     }
   };
@@ -109,7 +114,8 @@ const StaffManagement = () => {
       await deleteStaff(id);
       showToast("Staff deleted");
       loadStaff();
-    } catch (err) {
+    } catch (/** @type {any} */ err) {
+      console.error("Error deleting staff", err);
       showToast("Failed to delete staff");
     }
   };
