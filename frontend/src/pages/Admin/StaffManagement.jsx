@@ -8,19 +8,7 @@ import {
   fetchRolesByDepartment,
 } from "../../api/admin/staff.api.js";
 
-const departments = [
-  "Cardiology",
-  "Radiology",
-  "HR",
-  "ICU",
-  "Surgery",
-  "Maternity",
-  "General Ward",
-  "Neurology",
-  "Orthopedics",
-  "Emergency",
-  "Reception",
-];
+const departments = ["Doctor", "Nurse", "Reception", "Support Staff", "Admin"];
 
 const StaffManagement = () => {
   const [staffList, setStaffList] = useState([]);
@@ -30,7 +18,9 @@ const StaffManagement = () => {
     department: "",
     role: "",
     email: "",
-    status: "Active",
+    contact: "",
+    password: "",
+    baseSalary: "",
   });
   const [editingId, setEditingId] = useState(null);
   const [toast, setToast] = useState("");
@@ -76,12 +66,15 @@ const StaffManagement = () => {
         await addStaff(formData);
         showToast("Staff added");
       }
+
       setFormData({
         name: "",
         department: "",
         role: "",
         email: "",
-        status: "Active",
+        contact: "",
+        password: "",
+        baseSalary: "",
       });
       setRoles([]);
       setEditingId(null);
@@ -93,7 +86,15 @@ const StaffManagement = () => {
   };
 
   const handleEdit = (staff) => {
-    setFormData(staff);
+    setFormData({
+      name: staff.name,
+      department: staff.department,
+      role: staff.role,
+      email: staff.email,
+      contact: staff.contact,
+      password: staff.password,
+      baseSalary: staff.baseSalary,
+    });
     setEditingId(staff._id);
     loadRoles(staff.department);
   };
@@ -124,11 +125,12 @@ const StaffManagement = () => {
       )}
 
       <form onSubmit={handleSubmit} className="mb-6 space-y-2">
-        <div className="grid grid-cols-5 gap-4">
+        <div className="grid grid-cols-6 gap-4">
           <input
             type="text"
             placeholder="Name"
             value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="input"
             required
@@ -150,6 +152,7 @@ const StaffManagement = () => {
 
           <select
             value={formData.role}
+            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             className="input"
             required
@@ -174,17 +177,40 @@ const StaffManagement = () => {
             required
           />
 
-          <select
-            value={formData.status}
+          <input
+            type="text"
+            placeholder="Contact"
+            value={formData.contact}
             onChange={(e) =>
-              setFormData({ ...formData, status: e.target.value })
+              setFormData({ ...formData, contact: e.target.value })
             }
             className="input"
-          >
-            <option>Active</option>
-            <option>On Leave</option>
-            <option>Inactive</option>
-          </select>
+            required
+          />
+
+          <input
+            type="text"
+            placeholder="Password"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+            className="input"
+            required
+          />
+        </div>
+
+        <div className="grid grid-cols-6 gap-4 mt-2">
+          <input
+            type="number"
+            placeholder="Base Salary"
+            value={formData.baseSalary}
+            onChange={(e) =>
+              setFormData({ ...formData, baseSalary: e.target.value })
+            }
+            className="input"
+            required
+          />
         </div>
 
         <div className="mt-4">
@@ -208,7 +234,9 @@ const StaffManagement = () => {
                   department: "",
                   role: "",
                   email: "",
-                  status: "Active",
+                  contact: "",
+                  password: "",
+                  baseSalary: "",
                 });
                 setRoles([]);
               }}
@@ -225,32 +253,28 @@ const StaffManagement = () => {
           <table className="w-full">
             <thead>
               <tr>
+                <th>Employee ID</th>
                 <th>Name</th>
                 <th>Department</th>
                 <th>Role</th>
                 <th>Email</th>
-                <th>Status</th>
+                <th>Contact</th>
+                <th>Password</th>
+                <th>Base Salary</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {staffList.map((staff) => (
                 <tr key={staff._id}>
+                  <td>{staff.employeeId}</td>
                   <td>{staff.name}</td>
                   <td>{staff.department}</td>
                   <td>{staff.role}</td>
                   <td>{staff.email}</td>
-                  <td>
-                    <span
-                      className={`status-badge ${
-                        staff.status === "Active"
-                          ? "status-active"
-                          : "status-pending"
-                      }`}
-                    >
-                      {staff.status}
-                    </span>
-                  </td>
+                  <td>{staff.contact}</td>
+                  <td>{staff.password}</td>
+                  <td>₹{staff.baseSalary}</td>
                   <td>
                     <button
                       className="text-blue-500 hover:text-blue-700"
