@@ -1,8 +1,8 @@
+// frontend/src/pages/Admin/Payroll.jsx
 import React, { useEffect, useState } from "react";
 import {
   fetchPayrolls,
   addPayroll,
-  updatePayroll,
   deletePayroll,
 } from "../../api/admin/payroll.api.js";
 import { fetchStaff } from "../../api/admin/staff.api.js";
@@ -10,18 +10,28 @@ import { fetchStaff } from "../../api/admin/staff.api.js";
 const Payroll = () => {
   const [payrolls, setPayrolls] = useState([]);
   const [staffList, setStaffList] = useState([]);
-  const [formData, setFormData] = useState({
-    staffId: "",
-    month: "",
-    salary: 0,
-    status: "Pending",
-  });
-  const [editingId, setEditingId] = useState(null);
+  const [departments, setDepartments] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState("");
+  const [selectedStaff, setSelectedStaff] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [generatedPayslip, setGeneratedPayslip] = useState(null);
   const [toast, setToast] = useState("");
 
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(""), 3000);
+  };
+
+  const loadStaff = async () => {
+    try {
+      const { data } = await fetchStaff();
+      setStaffList(data);
+      const depts = [...new Set(data.map((s) => s.department))];
+      setDepartments(depts);
+    } catch (/** @type {any} */ err) {
+      console.error("Failed to load staff", err);
+      showToast("Failed to load staff");
+    }
   };
 
   const loadPayrolls = async () => {
@@ -30,47 +40,28 @@ const Payroll = () => {
       setPayrolls(data);
     } catch (/** @type {any} */ err) {
       console.error("Failed to load payrolls", err);
-      showToast("Failed to load payrolls");
     }
   };
 
-  const loadStaffList = async () => {
+  const handleGeneratePayslip = async () => {
     try {
-      const { data } = await fetchStaff();
-      setStaffList(data);
-    } catch (/** @type {any} */ err) {
-      console.error("Failed to load staff", err);
-      showToast("Failed to load staff");
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editingId) {
-        await updatePayroll(editingId, formData);
-        showToast("Payroll updated");
-      } else {
-        await addPayroll(formData);
-        showToast("Payroll added");
+      if (!selectedStaff || !selectedMonth) {
+        showToast("Please select staff and month");
+        return;
       }
-      setFormData({ staffId: "", month: "", salary: 0, status: "Pending" });
-      setEditingId(null);
+
+      const { data } = await addPayroll({
+        staffId: selectedStaff,
+        month: selectedMonth,
+      });
+
+      setGeneratedPayslip(data);
+      showToast("Payslip generated");
       loadPayrolls();
     } catch (/** @type {any} */ err) {
-      console.error("Error saving payroll", err);
-      showToast("Error saving payroll");
+      console.error("Failed to generate payslip", err);
+      showToast("Error generating payslip");
     }
-  };
-
-  const handleEdit = (item) => {
-    setFormData({
-      staffId: item.staffId._id || item.staffId,
-      month: item.month,
-      salary: item.salary,
-      status: item.status,
-    });
-    setEditingId(item._id);
   };
 
   const handleDelete = async (id) => {
@@ -80,22 +71,17 @@ const Payroll = () => {
       loadPayrolls();
     } catch (/** @type {any} */ err) {
       console.error("Failed to delete payroll", err);
-      showToast("Failed to delete payroll");
     }
   };
 
   useEffect(() => {
+    loadStaff();
     loadPayrolls();
-    loadStaffList();
   }, []);
 
-  const totalSalary = payrolls.reduce((sum, p) => sum + p.salary, 0);
-  const processedCount = payrolls.filter(
-    (p) => p.status === "Processed"
-  ).length;
-  const processedPercentage = payrolls.length
-    ? Math.round((processedCount / payrolls.length) * 100)
-    : 0;
+  const filteredStaff = staffList.filter(
+    (s) => s.department === selectedDepartment
+  );
 
   return (
     <section id="payroll" className="section">
@@ -107,172 +93,145 @@ const Payroll = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="mb-6 space-y-2">
-        <div className="grid grid-cols-4 gap-4">
-          <select
-            value={formData.staffId}
-            onChange={(e) =>
-              setFormData({ ...formData, staffId: e.target.value })
-            }
-            className="input"
-            required
-          >
-            <option value="">Select Staff</option>
-            {staffList.map((staff) => (
-              <option key={staff._id} value={staff._id}>
-                {staff.name} ({staff.role})
-              </option>
-            ))}
-          </select>
-          <input
-            type="month"
-            value={formData.month}
-            onChange={(e) =>
-              setFormData({ ...formData, month: e.target.value })
-            }
-            className="input"
-            required
-          />
-          <input
-            type="number"
-            value={formData.salary}
-            onChange={(e) =>
-              setFormData({ ...formData, salary: parseInt(e.target.value) })
-            }
-            className="input"
-            required
-          />
-          <select
-            value={formData.status}
-            onChange={(e) =>
-              setFormData({ ...formData, status: e.target.value })
-            }
-            className="input"
-          >
-            <option>Pending</option>
-            <option>Processed</option>
-          </select>
-        </div>
-        <button
-          type="submit"
-          className={`${
-            editingId
-              ? "bg-yellow-500 hover:bg-yellow-600"
-              : "bg-blue-500 hover:bg-blue-600"
-          } text-white px-4 py-2 rounded-lg`}
+      <div className="grid grid-cols-4 gap-4 mb-4">
+        <select
+          className="input"
+          value={selectedDepartment}
+          onChange={(e) => {
+            setSelectedDepartment(e.target.value);
+            setSelectedStaff("");
+          }}
         >
-          {editingId ? "Update Payroll" : "Add Payroll"}
+          <option value="">Select Department</option>
+          {departments.map((d) => (
+            <option key={d} value={d}>
+              {d}
+            </option>
+          ))}
+        </select>
+
+        <select
+          className="input"
+          value={selectedStaff}
+          onChange={(e) => setSelectedStaff(e.target.value)}
+        >
+          <option value="">Select Staff</option>
+          {filteredStaff.map((s) => (
+            <option key={s._id} value={s._id}>
+              {s.name} ({s.role})
+            </option>
+          ))}
+        </select>
+
+        <input
+          type="month"
+          className="input"
+          value={selectedMonth}
+          onChange={(e) => setSelectedMonth(e.target.value)}
+        />
+
+        <button
+          onClick={handleGeneratePayslip}
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        >
+          Generate Payslip
         </button>
-        {editingId && (
-          <button
-            type="button"
-            onClick={() => {
-              setEditingId(null);
-              setFormData({
-                staffId: "",
-                month: "",
-                salary: 0,
-                status: "Pending",
-              });
-            }}
-            className="ml-4 bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"
-          >
-            Cancel
-          </button>
-        )}
-      </form>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div className="module-card">
-          <h3 className="text-lg font-semibold mb-4">Monthly Overview</h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span>Total Salary</span>
-              <span className="font-semibold">
-                ₹{totalSalary.toLocaleString("en-IN")}
-              </span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>Processed</span>
-              <span className="font-semibold">{processedPercentage}%</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span>Pending</span>
-              <span className="font-semibold">
-                {100 - processedPercentage}%
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="module-card">
-          <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
-          <div className="space-y-3">
-            <button
-              className="w-full bg-blue-50 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-100"
-              onClick={() => showToast("Payslips generated (mock)")}
-            >
-              Generate Payslips
-            </button>
-            <button
-              className="w-full bg-green-50 text-green-700 px-4 py-2 rounded-lg hover:bg-green-100"
-              onClick={() => showToast("Reports exported (mock)")}
-            >
-              Export Reports
-            </button>
-            <button
-              className="w-full bg-purple-50 text-purple-700 px-4 py-2 rounded-lg hover:bg-purple-100"
-              onClick={() => showToast("Taxes calculated (mock)")}
-            >
-              Tax Calculations
-            </button>
-          </div>
-        </div>
       </div>
 
-      <div className="module-card">
-        <h3 className="text-lg font-semibold mb-4">Payroll Table</h3>
-        <div className="table-container">
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th>Staff</th>
-                <th>Month</th>
-                <th>Salary</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {payrolls.map((p) => (
-                <tr key={p._id}>
-                  <td>
-                    {typeof p.staffId === "object"
-                      ? `${p.staffId.name} (${p.staffId.role})`
-                      : p.staffId}
-                  </td>
-                  <td>{p.month}</td>
-                  <td>₹{p.salary.toLocaleString("en-IN")}</td>
-                  <td>{p.status}</td>
-                  <td>
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => handleEdit(p)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700 ml-3"
-                      onClick={() => handleDelete(p._id)}
-                    >
-                      Delete
-                    </button>
-                  </td>
+      {generatedPayslip && generatedPayslip.staffId && (
+        <div className="module-card border border-gray-300 p-6 mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-blue-800">Payslip</h3>
+            <button
+              onClick={() => setGeneratedPayslip(null)}
+              className="text-sm bg-gray-200 px-3 py-1 rounded hover:bg-gray-300"
+            >
+              Close Payslip
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6 text-sm">
+            <div>
+              <p className="font-bold">EMPLOYEE INFORMATION</p>
+              <p>{generatedPayslip.staffId.name || "N/A"}</p>
+              <p>{generatedPayslip.employeeId || "N/A"}</p>
+              <p>{generatedPayslip.staffId.email || "N/A"}</p>
+              <p>{generatedPayslip.staffId.contact || "N/A"}</p>
+            </div>
+
+            <div>
+              <p className="font-bold">PAY DETAILS</p>
+              <p>Pay Date: {new Date().toLocaleDateString()}</p>
+              <p>Pay Period: {generatedPayslip.month}</p>
+              <p>Payroll #: {generatedPayslip._id?.slice(-6)}</p>
+              <p>Tax Code: 1250L</p>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <p className="font-bold text-gray-700 mb-2">EARNINGS</p>
+            <table className="w-full table-auto text-sm border mb-6">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="border px-2 py-1">Type</th>
+                  <th className="border px-2 py-1">Hours</th>
+                  <th className="border px-2 py-1">Rate</th>
+                  <th className="border px-2 py-1">Amount</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {generatedPayslip.earnings?.map((e, i) => (
+                  <tr key={i}>
+                    <td className="border px-2 py-1">{e.type}</td>
+                    <td className="border px-2 py-1">{e.hours}</td>
+                    <td className="border px-2 py-1">₹{e.rate}</td>
+                    <td className="border px-2 py-1">₹{e.amount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div>
+            <p className="font-bold text-gray-700 mb-2">DEDUCTIONS</p>
+            <table className="w-full table-auto text-sm border mb-6">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="border px-2 py-1">Type</th>
+                  <th className="border px-2 py-1">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {generatedPayslip.deductions?.map((d, i) => (
+                  <tr key={i}>
+                    <td className="border px-2 py-1">{d.type}</td>
+                    <td className="border px-2 py-1">₹{d.amount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex justify-end">
+            <div className="text-right">
+              <p>
+                <span className="font-semibold">Gross Pay:</span> ₹
+                {generatedPayslip.grossPay}
+              </p>
+              <p>
+                <span className="font-semibold">Total Deductions:</span> ₹
+                {generatedPayslip.deductions?.reduce(
+                  (sum, d) => sum + d.amount,
+                  0
+                )}
+              </p>
+              <p className="text-lg font-bold text-green-700">
+                Net Pay: ₹{generatedPayslip.netPay}
+              </p>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 };

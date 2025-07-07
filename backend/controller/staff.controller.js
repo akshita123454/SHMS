@@ -1,28 +1,21 @@
 import Staff from "../models/staff.model.js";
 
-// Static department-role mapping
+// ✅ Updated department-role mapping with top-level categories
 const departmentRoles = {
-  Cardiology: ["Cardiologist", "Cardiology Nurse", "Technician"],
-  Radiology: ["Radiologist", "Radiology Technician"],
-  HR: ["HR Manager", "Recruiter"],
-  ICU: ["ICU Doctor", "ICU Nurse", "Respiratory Therapist"],
-  Surgery: ["Surgeon", "Surgical Nurse", "Anesthetist"],
-  Maternity: ["Gynecologist", "Maternity Nurse"],
-  "General Ward": ["General Physician", "Ward Nurse", "Compounder"],
-  Neurology: ["Neurologist", "Neuro Nurse"],
-  Orthopedics: ["Orthopedic Doctor", "Ortho Technician"],
-  Emergency: ["Emergency Doctor", "Emergency Nurse", "Paramedic", "Compounder"],
+  Doctor: ["Cardiologist", "Neurologist", "Surgeon", "General Physician"],
+  Nurse: ["ICU Nurse", "Ward Nurse", "Surgical Nurse", "Maternity Nurse"],
+  Admin: ["HR", "Finance", "IT", "Operations Manager"],
   Reception: ["Receptionist", "Front Desk Officer"],
+  Lab: ["Pathologist", "Lab Technician"],
+  Pharmacy: ["Pharmacist", "Inventory Manager"],
 };
 
-// Get roles by department
 export const getRolesByDepartment = async (req, res) => {
   const { department } = req.params;
   const roles = departmentRoles[department] || [];
   res.json(roles);
 };
 
-// Existing handlers
 export const getAllStaff = async (req, res) => {
   try {
     const staffList = await Staff.find();

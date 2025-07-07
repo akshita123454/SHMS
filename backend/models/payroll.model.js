@@ -1,5 +1,17 @@
-// models/payroll.model.js
+// backend/models/payroll.model.js
 import mongoose from "mongoose";
+
+const earningSchema = new mongoose.Schema({
+  type: { type: String, required: true },
+  hours: { type: Number, default: 0 },
+  rate: { type: Number, default: 0 },
+  amount: { type: Number, default: 0 },
+});
+
+const deductionSchema = new mongoose.Schema({
+  type: { type: String, required: true },
+  amount: { type: Number, default: 0 },
+});
 
 const payrollSchema = new mongoose.Schema(
   {
@@ -8,17 +20,36 @@ const payrollSchema = new mongoose.Schema(
       ref: "Staff",
       required: true,
     },
-    month: { type: String, required: true }, // e.g., "2025-06"
-    salary: { type: Number, required: true },
+    employeeId: {
+      type: String,
+      required: true,
+    },
+    month: {
+      type: String,
+      required: true,
+    },
+    baseSalary: {
+      type: Number,
+      required: true,
+    },
+    earnings: [earningSchema],
+    deductions: [deductionSchema],
+    grossPay: {
+      type: Number,
+      required: true,
+    },
+    netPay: {
+      type: Number,
+      required: true,
+    },
     status: {
       type: String,
-      enum: ["Processed", "Pending"],
-      default: "Pending",
+      enum: ["Pending", "Processed"],
+      default: "Processed",
     },
   },
   { timestamps: true }
 );
 
 const Payroll = mongoose.model("Payroll", payrollSchema);
-
 export default Payroll;
