@@ -141,8 +141,6 @@ const StaffManagement = () => {
             type="text"
             placeholder="Name"
             value={formData.name}
-
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className="input"
             required
@@ -164,8 +162,6 @@ const StaffManagement = () => {
 
           <select
             value={formData.role}
-
-            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             className="input"
             required
