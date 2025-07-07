@@ -8,7 +8,7 @@ import RoomAndBed from './RoomAndBed';
 import DoctorAvailability from './DoctorAvailability';
 import Sanitation from './Sanitation';
 import StaffAttendance from './StaffAttendance';
-
+import RegisteredPatients from './RegisteredPatients';
 
 
 function ReceptionPage() {
@@ -22,7 +22,7 @@ function ReceptionPage() {
       case 'doctor-availability': return <DoctorAvailability />;
       case 'sanitation': return <Sanitation />;
       case 'staff-attendance': return <StaffAttendance />;
-
+      case 'registered-patients': return <RegisteredPatients />;
       default: return <RegisterPatient />;
     }
   };
