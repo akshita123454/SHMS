@@ -6,7 +6,8 @@ import {
   UserCheck,
   Brush,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ClipboardCheck
 } from 'lucide-react';
 import { useState } from 'react';
 import LogoutButton from '../../../utils/LogoutButton';
@@ -18,6 +19,8 @@ const items = [
   { key: 'room-bed', icon: <BedDouble className="w-5 h-5" />, label: 'Room & Bed' },
   { key: 'doctor-availability', icon: <UserCheck className="w-5 h-5" />, label: 'Doctor Availability' },
   { key: 'sanitation', icon: <Brush className="w-5 h-5" />, label: 'Sanitation' },
+  { key: 'staff-attendance', icon: <ClipboardCheck />, label: 'Staff Attendance' },
+
 ];
 
 export default function Sidebar({ activeKey, onChange }) {
