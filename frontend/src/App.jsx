@@ -21,6 +21,7 @@ function App() {
     <Router>
       <div className="min-h-screen bg-gray-100">
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
           <Route
             path="/login"
@@ -46,10 +47,23 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/reception" element={<ReceptionPage />} />
-          <Route path="/emergency" element={<EmergencyStaffPage />} />
+          <Route
+            path="/emergency"
+            element={
+              <ProtectedRoute acceptedRoles={['emergency']}>
+                <EmergencyStaffPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reception"
+            element={
+              // <ProtectedRoute acceptedRoles={['reception']}>
+                <ReceptionPage />
+              // </ProtectedRoute>
+            }
+          />
           <Route path="/patient" element={<PatientPage />} />
-          <Route path="/home" element={<Home />} />
           <Route path="/inventory" element={<Inventory/>} />
 
            <Route

@@ -1,6 +1,4 @@
-// frontend/src/api/admin/staff.api.js
 import axios from "axios";
-
 const API = "http://localhost:3000/api/staff";
 
 export const fetchStaff = async () => {

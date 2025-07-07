@@ -4,7 +4,7 @@ import Header from './components/Header';
 import Triage from './Triage';
 import AmbulanceTracker from './AmbulanceTracker';
 import Notifications from './Notifications';
-import RoomAllotment from './RoomAllotment';
+
 
 function EmergencyStaffPage() {
   const [section, setSection] = useState('triage');
@@ -14,8 +14,7 @@ function EmergencyStaffPage() {
       case 'triage': return <Triage />;
       case 'ambulance': return <AmbulanceTracker />;
       case 'notifications': return <Notifications />;
-      case 'room': return <RoomAllotment />;
-      default: return <RoomAllotment />;
+      default: return <Triage />;
     }
   };
 

@@ -2,10 +2,17 @@
 import axios from 'axios';
 const BASE_URL = "http://localhost:3000";
 
+
 export const addBillingEntry = async (data) => {
   try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user?.token;
+
     const response = await axios.post(`${BASE_URL}/reception/billing`, data, {
-      headers: { 'Content-Type': 'application/json' },
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       withCredentials: true
     });
     return response.data;
@@ -17,7 +24,14 @@ export const addBillingEntry = async (data) => {
 
 export const getAllBillingEntries = async () => {
   try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user?.token;
+
     const response = await axios.get(`${BASE_URL}/reception/billing`, {
+       headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       withCredentials: true
     });
     return response.data;
