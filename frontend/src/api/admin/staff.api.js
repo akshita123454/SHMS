@@ -1,6 +1,8 @@
 import axios from "axios";
 const API = "http://localhost:3000/api/staff";
 
+const BASE_URL = "http://localhost:3000";
+
 export const fetchStaff = async () => {
   try {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -25,8 +27,9 @@ export const addStaff = async (staff) => {
   try {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.token;
+    console.log(staff)
 
-    const { data } = await axios.post(API, staff, {
+    const { data } = await axios.post(`${BASE_URL}/api/auth/signup`, staff, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -81,12 +84,13 @@ export const deleteStaff = async (id) => {
   }
 };
 
-export const fetchRolesByDepartment = async (department) => {
+export const fetchDepartmentByRole = async (role) => {
   try {
     const user = JSON.parse(localStorage.getItem("user"));
     const token = user?.token;
+    // console.log("i am bing hig")
 
-    const { data } = await axios.get(`${API}/roles/${department}`, {
+    const { data } = await axios.get(`${API}/roles/${role}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

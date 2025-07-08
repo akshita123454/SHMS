@@ -1,12 +1,13 @@
 // backend/controller/payroll.controller.js
 import Payroll from "../models/payroll.model.js";
-import Staff from "../models/staff.model.js";
+// import Staff from "../models/staff.model.js";
+import User from "../models/user.model.js"
 
 export const createPayroll = async (req, res) => {
   try {
     const { staffId, month } = req.body;
 
-    const staff = await Staff.findById(staffId);
+    const staff = await User.findById(staffId);
     if (!staff) return res.status(404).json({ error: "Staff not found" });
 
     const baseSalary = parseFloat(staff.baseSalary);
