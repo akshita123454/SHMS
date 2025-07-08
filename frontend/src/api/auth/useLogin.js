@@ -15,6 +15,14 @@ export const useLogin = () => {
         headers: { 'Content-Type': 'application/json' },
         withCredentials: true
       });
+          // ✅ Save only email and role to localStorage
+      localStorage.setItem("user", JSON.stringify({
+  _id: response.data._id, // or email
+  email: response.data.email,
+  role: response.data.role,
+  name: response.data.name
+}));
+
       localStorage.setItem('user', JSON.stringify(response.data));
       return response.data;
     } catch (err) {

@@ -7,6 +7,8 @@ import EmergencyStaffPage from "./pages/EmergencyStaff/EmergencyStaffPage";
 import Home from "./pages/Home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Inventory from "./pages/inventory/Inventory";
+import SignupForm from "./pages/auth/SignupForm";
+import LoginForm from "./pages/auth/LoginForm";
 
 function App() {
   return (
@@ -21,6 +23,10 @@ function App() {
           <Route path="/patient" element={<PatientPage />} />
           <Route path="/home" element={<Home />} />
           <Route path="/inventory" element={<Inventory/>} />
+          <Route path="/Signup" element={<SignupForm/>} />
+          <Route path="/login" element={<LoginForm/>} />
+         
+          
 
           {/* Fix this admin route not correct. */}
           <Route path="/admin/*" element={<AdminLayout />} />

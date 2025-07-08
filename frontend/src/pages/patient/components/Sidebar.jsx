@@ -19,16 +19,21 @@ import AppointmentForm from './AppointmentForm';
 import NotificationList from './NotificationList';
 import AppointmentHistory from './AppointmentHistory';
 import LogoutButton from "../../../utils/LogoutButton";
+import PatientDashboard from './PatientDashboard';
+import { Gauge } from "lucide-react"; // icon
+
+
 
 const Sidebar = ({activeKey,onChange}) => {
 
   const items = [
-    {
-      key: 'profile',
-      icon: <UserCircle />,
-      label: 'Profile',
-      component: <ProfileCard />,
-    },
+ {
+    key: 'dashboard',
+    icon: <Gauge />,  // Optional: import an icon for dashboard
+    label: 'Dashboard',
+    component: <PatientDashboard />,
+  },
+      
     {
       key: 'appointment',
       icon: <Stethoscope />,

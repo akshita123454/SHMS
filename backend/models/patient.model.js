@@ -3,7 +3,9 @@ import mongoose from "mongoose";
 const appointmentSchema = new mongoose.Schema({
   doctor: String,
   date: Date,
-  status: { type: String, default: "Pending" },
+  time: String, // NEW
+  reason: String, // NEW
+  status: { type: String, default: "Pending" }
 });
 
 const messageSchema = new mongoose.Schema({
@@ -35,13 +37,24 @@ const patientSchema = new mongoose.Schema({
   name: String,
   email: String,
   phone: String,
+  dob: Date, // for age
+  gender: String,
+  pronouns: String,
+  profilePicture: String, // store image URL or base64
+  address: {
+    city: String,
+    state: String,
+    pinCode: String,
+  },
+  bloodGroup: String,
+  occupation: String,
+  maritalStatus: String,
   appointments: [appointmentSchema],
   messages: [messageSchema],
   medicalHistory: [medicalHistorySchema],
-   notifications: [notificationSchema], 
-    reports: [reportSchema],
+  notifications: [notificationSchema],
+  reports: [reportSchema],
 });
-
 
 
 
