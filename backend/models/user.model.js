@@ -10,7 +10,25 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'doctor', 'reception', 'patient','developer','emergency'],
     default: 'patient',
   },
-});
+  contact: {
+      type: String,
+      required: true,
+    },
+  baseSalary: {
+      type: Number,
+      required: true,
+    },
+  department: { type: String, required: true },
+  employeeId: {
+      type: String,
+      unique: true,
+      required: true,
+      default: () => `EMP${Date.now()}`,
+    },
+   
+},
+ { timestamps: true }
+);
 
 // Hash password before save
 userSchema.pre('save', async function () {

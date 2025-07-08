@@ -1,10 +1,11 @@
-import Staff from "../models/staff.model.js";
+// import Staff from "../models/staff.model.js";
 import { Ambulance } from "../models/ambulance.model.js";
 import Room from "../models/room.model.js";
+import User from "../models/user.model.js";
 
 export const getDashboardStats = async (req, res) => {
   try {
-    const totalStaff = await Staff.countDocuments();
+    const totalStaff = await User.countDocuments();
     const totalAmbulances = await Ambulance.countDocuments();
     const totalRooms = await Room.countDocuments();
     const availableRooms = await Room.countDocuments({ status: "Available" });

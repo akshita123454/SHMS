@@ -4,7 +4,7 @@ import {
   createStaff,
   updateStaff,
   deleteStaff,
-  getRolesByDepartment,
+  getDepartmentByRoles,
 } from "../controller/staff.controller.js";
 import { authorizeRoles, protect } from "../middleware/auth.middleware.js";
 
@@ -17,10 +17,10 @@ router.delete("/:id", protect, authorizeRoles("admin"), deleteStaff);
 
 // ✅ Protected role lookup route
 router.get(
-  "/roles/:department",
+  "/roles/:role",
   protect,
   authorizeRoles("admin"),
-  getRolesByDepartment
+  getDepartmentByRoles
 );
 
 export default router;

@@ -5,18 +5,19 @@ import {
   addStaff,
   updateStaff,
   deleteStaff,
-  fetchRolesByDepartment,
+  fetchDepartmentByRole,
 } from "../../api/admin/staff.api.js";
 
-const departments = ["Doctor", "Nurse", "Reception", "Support Staff", "Admin"];
+// static list of roles
+const rolesList = ['admin', 'doctor', 'reception', 'patient', 'developer', 'emergency'];
 
 const StaffManagement = () => {
   const [staffList, setStaffList] = useState([]);
-  const [roles, setRoles] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
-    department: "",
     role: "",
+    department: "",
     email: "",
     contact: "",
     password: "",
@@ -34,39 +35,40 @@ const StaffManagement = () => {
     try {
       const { data } = await fetchStaff();
       setStaffList(data);
-    } catch (/** @type {any} */ err) {
+    } catch (err) {
       console.error("Error loading staff", err);
       showToast("Failed to load staff");
     }
   };
 
-  const loadRoles = async (department) => {
+  // fetch departments for a given role
+  const loadDepartments = async (selectedRole) => {
     try {
-      const { data } = await fetchRolesByDepartment(department);
-      setRoles(data);
-
+      const { data } = await fetchDepartmentByRole(selectedRole);
+      console.log("heelo")
+      console.log(data);
+      setDepartments(data);
       setFormData((prev) => ({
         ...prev,
-        department: department,
-        role: data.length > 0 ? data[0] : "",
+        role: selectedRole,
+        department: data.length > 0 ? data[0] : "",
       }));
     } catch (err) {
-      console.error("Error loading roles", err);
-      setRoles([]);
+      console.error("Error loading departments", err);
+      setDepartments([]);
     }
   };
 
-  const handleDepartmentChange = (e) => {
-    const selectedDept = e.target.value;
-    loadRoles(selectedDept);
+  const handleRoleChange = (e) => {
+    const selectedRole = e.target.value;
+    loadDepartments(selectedRole);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting staff:", formData); // ✅ Debug log
     try {
-      if (!formData.role) {
-        showToast("Please select a role.");
+      if (!formData.department) {
+        showToast("Please select a department.");
         return;
       }
 
@@ -78,19 +80,11 @@ const StaffManagement = () => {
         showToast("Staff added");
       }
 
-      setFormData({
-        name: "",
-        department: "",
-        role: "",
-        email: "",
-        contact: "",
-        password: "",
-        baseSalary: "",
-      });
-      setRoles([]);
+      setFormData({ name: "", role: "", department: "", email: "", contact: "", password: "", baseSalary: "" });
+      setDepartments([]);
       setEditingId(null);
       loadStaff();
-    } catch (/** @type {any} */ err) {
+    } catch (err) {
       console.error("Error saving staff", err);
       showToast("Error saving staff");
     }
@@ -99,15 +93,15 @@ const StaffManagement = () => {
   const handleEdit = (staff) => {
     setFormData({
       name: staff.name,
-      department: staff.department,
       role: staff.role,
+      department: staff.department,
       email: staff.email,
       contact: staff.contact,
       password: staff.password,
       baseSalary: staff.baseSalary,
     });
     setEditingId(staff._id);
-    loadRoles(staff.department);
+    loadDepartments(staff.role);
   };
 
   const handleDelete = async (id) => {
@@ -115,25 +109,19 @@ const StaffManagement = () => {
       await deleteStaff(id);
       showToast("Staff deleted");
       loadStaff();
-    } catch (/** @type {any} */ err) {
+    } catch (err) {
       console.error("Error deleting staff", err);
       showToast("Failed to delete staff");
     }
   };
 
-  useEffect(() => {
-    loadStaff();
-  }, []);
+  useEffect(() => { loadStaff(); }, []);
 
   return (
     <section id="staff" className="section">
       <h2 className="text-xl font-semibold mb-4">Staff Management</h2>
 
-      {toast && (
-        <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">
-          {toast}
-        </div>
-      )}
+      {toast && <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded">{toast}</div>}
 
       <form onSubmit={handleSubmit} className="mb-6 space-y-2">
         <div className="grid grid-cols-6 gap-4">
@@ -147,41 +135,31 @@ const StaffManagement = () => {
           />
 
           <select
-            value={formData.department}
-            onChange={handleDepartmentChange}
+            value={formData.role}
+            onChange={handleRoleChange}
             className="input"
             required
           >
-            <option value="">Select Department</option>
-            {departments.map((dept) => (
-              <option key={dept} value={dept}>
-                {dept}
-              </option>
-            ))}
+            <option value="">Select Role</option>
+            {rolesList.map((r) => (<option key={r} value={r}>{r}</option>))}
           </select>
 
           <select
-            value={formData.role}
-            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+            value={formData.department}
+            onChange={(e) => setFormData({ ...formData, department: e.target.value })}
             className="input"
             required
-            disabled={!roles.length}
+            disabled={!departments.length}
           >
-            <option value="">Select Role</option>
-            {roles.map((role) => (
-              <option key={role} value={role}>
-                {role}
-              </option>
-            ))}
+            <option value="">Select Department</option>
+            {departments.map((dept) => (<option key={dept} value={dept}>{dept}</option>))}
           </select>
 
           <input
             type="email"
             placeholder="Email"
             value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             className="input"
             required
           />
@@ -190,20 +168,16 @@ const StaffManagement = () => {
             type="text"
             placeholder="Contact"
             value={formData.contact}
-            onChange={(e) =>
-              setFormData({ ...formData, contact: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
             className="input"
             required
           />
 
           <input
-            type="text"
+            type="password"
             placeholder="Password"
             value={formData.password}
-            onChange={(e) =>
-              setFormData({ ...formData, password: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             className="input"
             required
           />
@@ -214,9 +188,7 @@ const StaffManagement = () => {
             type="number"
             placeholder="Base Salary"
             value={formData.baseSalary}
-            onChange={(e) =>
-              setFormData({ ...formData, baseSalary: e.target.value })
-            }
+            onChange={(e) => setFormData({ ...formData, baseSalary: e.target.value })}
             className="input"
             required
           />
@@ -225,30 +197,14 @@ const StaffManagement = () => {
         <div className="mt-4">
           <button
             type="submit"
-            className={`${
-              editingId
-                ? "bg-yellow-500 hover:bg-yellow-600"
-                : "bg-blue-500 hover:bg-blue-600"
-            } text-white px-4 py-2 rounded-lg`}
+            className={`${editingId ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-blue-500 hover:bg-blue-600'} text-white px-4 py-2 rounded-lg`}
           >
             {editingId ? "Update Staff" : "Add Staff"}
           </button>
           {editingId && (
             <button
               type="button"
-              onClick={() => {
-                setEditingId(null);
-                setFormData({
-                  name: "",
-                  department: "",
-                  role: "",
-                  email: "",
-                  contact: "",
-                  password: "",
-                  baseSalary: "",
-                });
-                setRoles([]);
-              }}
+              onClick={() => { setEditingId(null); setFormData({ name: "", role: "", department: "", email: "", contact: "", password: "", baseSalary: "" }); setDepartments([]); }}
               className="ml-4 bg-gray-300 text-black px-4 py-2 rounded-lg hover:bg-gray-400"
             >
               Cancel
@@ -264,11 +220,11 @@ const StaffManagement = () => {
               <tr>
                 <th>Employee ID</th>
                 <th>Name</th>
-                <th>Department</th>
                 <th>Role</th>
+                <th>Department</th>
                 <th>Email</th>
                 <th>Contact</th>
-                <th>Password</th>
+                {/* <th>Password</th> */}
                 <th>Base Salary</th>
                 <th>Actions</th>
               </tr>
@@ -278,25 +234,15 @@ const StaffManagement = () => {
                 <tr key={staff._id}>
                   <td>{staff.employeeId}</td>
                   <td>{staff.name}</td>
-                  <td>{staff.department}</td>
                   <td>{staff.role}</td>
+                  <td>{staff.department}</td>
                   <td>{staff.email}</td>
                   <td>{staff.contact}</td>
-                  <td>{staff.password}</td>
+                  {/* <td>{staff.password}</td> */}
                   <td>₹{staff.baseSalary}</td>
                   <td>
-                    <button
-                      className="text-blue-500 hover:text-blue-700"
-                      onClick={() => handleEdit(staff)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="text-red-500 hover:text-red-700 ml-3"
-                      onClick={() => handleDelete(staff._id)}
-                    >
-                      Delete
-                    </button>
+                    <button className="text-blue-500 hover:text-blue-700" onClick={() => handleEdit(staff)}>Edit</button>
+                    <button className="text-red-500 hover:text-red-700 ml-3" onClick={() => handleDelete(staff._id)}>Delete</button>
                   </td>
                 </tr>
               ))}
