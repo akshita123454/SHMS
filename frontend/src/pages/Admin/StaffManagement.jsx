@@ -9,7 +9,7 @@ import {
 } from "../../api/admin/staff.api.js";
 
 // static list of roles
-const rolesList = ['admin', 'doctor', 'reception', 'patient', 'developer', 'emergency'];
+const rolesList = ['admin', 'doctor', 'reception', 'emergency'];
 
 const StaffManagement = () => {
   const [staffList, setStaffList] = useState([]);
