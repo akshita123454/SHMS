@@ -7,7 +7,8 @@ import {
   Brush,
   ChevronLeft,
   ChevronRight,
-  ClipboardCheck
+  ClipboardCheck,
+  Users
 } from 'lucide-react';
 import { useState } from 'react';
 import LogoutButton from '../../../utils/LogoutButton';
@@ -20,6 +21,7 @@ const items = [
   { key: 'doctor-availability', icon: <UserCheck className="w-5 h-5" />, label: 'Doctor Availability' },
   { key: 'sanitation', icon: <Brush className="w-5 h-5" />, label: 'Sanitation' },
   { key: 'staff-attendance', icon: <ClipboardCheck />, label: 'Staff Attendance' },
+  { key: 'registered-patients', icon: <Users />, label: 'Registered Patients' },
 
 ];
 
