@@ -43,26 +43,6 @@ export const addPayroll = async (payroll) => {
   }
 };
 
-export const updatePayroll = async (id, updates) => {
-  try {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const token = user?.token;
-
-    const { data } = await axios.put(`${API}/${id}`, updates, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      withCredentials: true,
-    });
-
-    return { data };
-  } catch (/** @type {any} */ err) {
-    console.error("Failed to update payroll", err);
-    throw err;
-  }
-};
-
 export const deletePayroll = async (id) => {
   try {
     const user = JSON.parse(localStorage.getItem("user"));

@@ -3,9 +3,10 @@ import mongoose from "mongoose";
 
 const earningSchema = new mongoose.Schema({
   type: { type: String, required: true },
-  hours: { type: Number, default: 0 },
-  rate: { type: Number, default: 0 },
-  amount: { type: Number, default: 0 },
+  monthlyRate: { type: Number, default: 0 },
+  currentMonth: { type: Number, default: 0 },
+  arrears: { type: Number, default: 0 },
+  total: { type: Number, default: 0 },
 });
 
 const deductionSchema = new mongoose.Schema({
@@ -20,28 +21,20 @@ const payrollSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    employeeId: {
-      type: String,
-      required: true,
-    },
-    month: {
-      type: String,
-      required: true,
-    },
-    baseSalary: {
-      type: Number,
-      required: true,
-    },
+    employeeId: { type: String, required: true },
+    month: { type: String, required: true },
+    ctc: { type: Number, required: true },
     earnings: [earningSchema],
     deductions: [deductionSchema],
-    grossPay: {
-      type: Number,
-      required: true,
-    },
-    netPay: {
-      type: Number,
-      required: true,
-    },
+    grossPay: { type: Number, required: true },
+    netPay: { type: Number, required: true },
+    netPayInWords: String,
+    pfAccount: String,
+    designation: String,
+    joiningDate: Date,
+    location: String,
+    lopDays: { type: Number, default: 0 },
+    refundDays: { type: Number, default: 0 },
     status: {
       type: String,
       enum: ["Pending", "Processed"],
@@ -51,5 +44,4 @@ const payrollSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Payroll = mongoose.model("Payroll", payrollSchema);
-export default Payroll;
+export default mongoose.model("Payroll", payrollSchema);

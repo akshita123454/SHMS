@@ -1,7 +1,5 @@
-// import Staff from "../models/staff.model.js";
 import User from "../models/user.model.js";
 
-// ✅ Updated department-role mapping with top-level categories
 const department = {
   doctor: ["Cardiologist", "Neurologist", "Surgeon", "General Physician"],
   nurse: ["ICU Nurse", "Ward Nurse", "Surgical Nurse", "Maternity Nurse"],
@@ -9,8 +7,8 @@ const department = {
   reception: ["Receptionist", "Front Desk Officer"],
   lab: ["Pathologist", "Lab Technician"],
   pharmacy: ["Pharmacist", "Inventory Manager"],
-  emergency:["emergency",],
-  patient:["patient"],
+  emergency: ["Emergency"],
+  patient: ["Patient"],
 };
 
 export const getDepartmentByRoles = async (req, res) => {
@@ -40,7 +38,9 @@ export const createStaff = async (req, res) => {
 
 export const updateStaff = async (req, res) => {
   try {
-    const updated = await User.findByIdAndUpdate(req.params.id, req.body, {
+    const updateData = { ...req.body };
+    if (!updateData.password) delete updateData.password;
+    const updated = await User.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
     });
     res.json(updated);
