@@ -1,32 +1,56 @@
-// === FILE: backend/controller/staff.controller.js ===
+// <<<<<<< superman
+// // === FILE: backend/controller/staff.controller.js ===
 
-import Staff from "../models/staff.model.js";
+// import Staff from "../models/staff.model.js";
 
-const departmentRoles = {
-  Cardiology: ["Cardiologist", "Cardiology Nurse", "Technician"],
-  Radiology: ["Radiologist", "Radiology Technician"],
-  HR: ["HR Manager", "Recruiter"],
-  ICU: ["ICU Doctor", "ICU Nurse", "Respiratory Therapist"],
-  Surgery: ["Surgeon", "Surgical Nurse", "Anesthetist"],
-  Maternity: ["Gynecologist", "Maternity Nurse"],
-  "General Ward": ["General Physician", "Ward Nurse", "Compounder"],
-  Neurology: ["Neurologist", "Neuro Nurse"],
-  Orthopedics: ["Orthopedic Doctor", "Ortho Technician"],
-  Emergency: ["Emergency Doctor", "Emergency Nurse", "Paramedic", "Compounder"],
-  Reception: ["Receptionist", "Front Desk Officer"],
+// const departmentRoles = {
+//   Cardiology: ["Cardiologist", "Cardiology Nurse", "Technician"],
+//   Radiology: ["Radiologist", "Radiology Technician"],
+//   HR: ["HR Manager", "Recruiter"],
+//   ICU: ["ICU Doctor", "ICU Nurse", "Respiratory Therapist"],
+//   Surgery: ["Surgeon", "Surgical Nurse", "Anesthetist"],
+//   Maternity: ["Gynecologist", "Maternity Nurse"],
+//   "General Ward": ["General Physician", "Ward Nurse", "Compounder"],
+//   Neurology: ["Neurologist", "Neuro Nurse"],
+//   Orthopedics: ["Orthopedic Doctor", "Ortho Technician"],
+//   Emergency: ["Emergency Doctor", "Emergency Nurse", "Paramedic", "Compounder"],
+//   Reception: ["Receptionist", "Front Desk Officer"],
+// };
+
+// // ✅ Get Roles for a department
+// export const getRolesByDepartment = async (req, res) => {
+//   const { department } = req.params;
+//   const roles = departmentRoles[department] || [];
+//   res.json(roles);
+// };
+
+// // ✅ Get all staff
+// =======
+// import Staff from "../models/staff.model.js";
+import User from "../models/user.model.js";
+
+// ✅ Updated department-role mapping with top-level categories
+const department = {
+  doctor: ["Cardiologist", "Neurologist", "Surgeon", "General Physician"],
+  nurse: ["ICU Nurse", "Ward Nurse", "Surgical Nurse", "Maternity Nurse"],
+  admin: ["HR", "Finance", "IT", "Operations Manager"],
+  reception: ["Receptionist", "Front Desk Officer"],
+  lab: ["Pathologist", "Lab Technician"],
+  pharmacy: ["Pharmacist", "Inventory Manager"],
+  emergency:["emergency",],
+  patient:["patient"],
 };
 
-// ✅ Get Roles for a department
-export const getRolesByDepartment = async (req, res) => {
-  const { department } = req.params;
-  const roles = departmentRoles[department] || [];
+export const getDepartmentByRoles = async (req, res) => {
+  const { role } = req.params;
+  const roles = department[role] || [];
   res.json(roles);
 };
 
-// ✅ Get all staff
+// >>>>>>> main
 export const getAllStaff = async (req, res) => {
   try {
-    const staffList = await Staff.find();
+    const staffList = await User.find();
     res.json(staffList);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -42,7 +66,11 @@ export const createStaff = async (req, res) => {
   }
 
   try {
+// <<<<<<< superman
     const newStaff = new Staff({ name, department, role, email, status });
+// =======
+    const newStaff = new User(req.body);
+// >>>>>>> main
     const savedStaff = await newStaff.save();
     res.status(201).json(savedStaff);
   } catch (error) {
@@ -53,7 +81,7 @@ export const createStaff = async (req, res) => {
 // ✅ Update existing staff
 export const updateStaff = async (req, res) => {
   try {
-    const updated = await Staff.findByIdAndUpdate(req.params.id, req.body, {
+    const updated = await User.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
     res.json(updated);
@@ -65,7 +93,7 @@ export const updateStaff = async (req, res) => {
 // ✅ Delete staff
 export const deleteStaff = async (req, res) => {
   try {
-    await Staff.findByIdAndDelete(req.params.id);
+    await User.findByIdAndDelete(req.params.id);
     res.json({ message: "Staff deleted successfully" });
   } catch (error) {
     res.status(400).json({ message: error.message });

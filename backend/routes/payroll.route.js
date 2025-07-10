@@ -1,17 +1,16 @@
-// routes/payroll.route.js
+// backend/routes/payroll.route.js
 import express from "express";
 import {
-  getPayrolls,
   createPayroll,
-  updatePayroll,
+  getPayrolls,
   deletePayroll,
 } from "../controller/payroll.controller.js";
+import { protect, authorizeRoles } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.get("/", getPayrolls);
-router.post("/", createPayroll);
-router.put("/:id", updatePayroll);
-router.delete("/:id", deletePayroll);
+router.get("/", protect, authorizeRoles("admin"), getPayrolls);
+router.post("/", protect, authorizeRoles("admin"), createPayroll);
+router.delete("/:id", protect, authorizeRoles("admin"), deletePayroll);
 
 export default router;

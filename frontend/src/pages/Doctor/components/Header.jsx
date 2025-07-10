@@ -1,16 +1,25 @@
-
-
-// File: src/components/Header.jsx
-import React from 'react';
-import { Calendar as CalIcon } from 'lucide-react';
+import { UserIcon } from 'lucide-react';
 
 export default function Header({ doctorName }) {
+  // const [doctor, setDoctor] = useState(null);
+
+  // useEffect(() => {
+  //   const fetchDoctor = async () => {
+  //     try {
+  //       const res = await axios.get('/api/user'); // Replace with your actual endpoint
+  //       setDoctor(res.data);
+  //     } catch (error) {
+  //       console.error("Error fetching doctor data:", error);
+  //     }
+  //   };
+
+  //   fetchDoctor();
+  // }, []);
   return (
     <header className="flex justify-end items-center bg-white p-4 shadow-md">
       <div className="flex items-center">
-        <img src="https://via.placeholder.com/40" alt="Avatar" className="rounded-full mr-3" />
+        <div className="rounded-full mr-3"><UserIcon/></div>
         <span className="font-medium mr-1">{doctorName}</span>
-        <CalIcon />
       </div>
     </header>
   );

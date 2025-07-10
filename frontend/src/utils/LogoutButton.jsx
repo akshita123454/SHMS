@@ -3,7 +3,7 @@ import { LogOut } from 'lucide-react';
 import { useAuth } from '../api/auth/useAuth';
 import { useNavigate } from 'react-router-dom';
 
-export default function LogoutButton() {
+export default function LogoutButton({ collapsed = false, className = '' }) {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [loggingOut, setLoggingOut] = useState(false);
@@ -11,8 +11,8 @@ export default function LogoutButton() {
   const handleLogout = () => {
     const confirmed = window.confirm('Are you sure you want to logout?');
     if (confirmed) {
-      setLoggingOut(true); // Set flag to watch for logout completion
-      logout();            // Clears auth data
+      setLoggingOut(true);
+      logout();
     }
   };
 
@@ -25,9 +25,12 @@ export default function LogoutButton() {
   return (
     <button
       onClick={handleLogout}
-      className="flex bg-red-600 items-center w-full p-2 rounded-lg hover:bg-gray-700 transition mt-6"
+      className={`flex items-center w-full px-4 py-2 rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition ${
+        collapsed ? 'justify-center' : 'gap-2'
+      } ${className}`}
     >
-      <span className="mr-2"><LogOut /></span>Logout
+      <LogOut className="w-5 h-5" />
+      {!collapsed && <span>Logout</span>}
     </button>
   );
 }

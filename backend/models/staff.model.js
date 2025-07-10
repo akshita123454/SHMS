@@ -1,3 +1,4 @@
+
 // models/staff.model.js
 // backend/models/staff.model.js
 import mongoose from "mongoose";
@@ -20,3 +21,4 @@ const staffSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 export default mongoose.model("Staff", staffSchema);
+

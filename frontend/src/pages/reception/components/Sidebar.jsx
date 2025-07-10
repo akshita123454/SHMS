@@ -5,44 +5,67 @@ import {
   BedDouble,
   UserCheck,
   Brush,
-  LogOut,
-  Home
+  ChevronLeft,
+  ChevronRight,
+  ClipboardCheck,
+  Users
 } from 'lucide-react';
+import { useState } from 'react';
 import LogoutButton from '../../../utils/LogoutButton';
 
 const items = [
-  { key: 'register', icon: <UserPlus />, label: 'Register Patient' },
-  { key: 'appointments', icon: <CalendarCheck />, label: 'Appointments' },
-  { key: 'billing', icon: <FileText />, label: 'Billing' },
-  { key: 'room-bed', icon: <BedDouble />, label: 'Room & Bed' },
-  { key: 'doctor-availability', icon: <UserCheck />, label: 'Doctor Availability' },
-  { key: 'sanitation', icon: <Brush />, label: 'Sanitation' },
+  { key: 'register', icon: <UserPlus className="w-5 h-5" />, label: 'Register Patient' },
+  { key: 'appointments', icon: <CalendarCheck className="w-5 h-5" />, label: 'Appointments' },
+  { key: 'billing', icon: <FileText className="w-5 h-5" />, label: 'Billing' },
+  { key: 'room-bed', icon: <BedDouble className="w-5 h-5" />, label: 'Room & Bed' },
+  { key: 'doctor-availability', icon: <UserCheck className="w-5 h-5" />, label: 'Doctor Availability' },
+  { key: 'sanitation', icon: <Brush className="w-5 h-5" />, label: 'Sanitation' },
+  { key: 'staff-attendance', icon: <ClipboardCheck />, label: 'Staff Attendance' },
+  { key: 'registered-patients', icon: <Users />, label: 'Registered Patients' },
 
 ];
 
 export default function Sidebar({ activeKey, onChange }) {
+  const [collapsed, setCollapsed] = useState(false);
+
   return (
-    <aside className="w-60 bg-gray-800 text-white flex flex-col p-6">
-      <h1 className="text-3xl font-bold text-center mb-8">Reception</h1>
-      <div className="flex-1 flex flex-col justify-between">
-        <nav className="space-y-2">
-          {items.map(item => (
-            <button
-              key={item.key}
-              onClick={() => onChange(item.key)}
-              className={`flex items-center w-full p-2 rounded-lg hover:bg-gray-700 transition ${activeKey === item.key ? 'bg-gray-700' : ''}`}
-            >
-              <span className="mr-3">{item.icon}</span>{item.label}
-            </button>
-          ))}
-        </nav>
-        <LogoutButton/>
-        {/* <button
-          onClick={() => console.log('Logout')}
-          className="flex items-center bg-red-600 w-full p-2 rounded-lg hover:bg-red-700 transition mt-6"
+    <aside
+      className={`${
+        collapsed ? 'w-20' : 'w-64'
+      } bg-blue-50 text-blue-900 border-r border-blue-200 min-h-screen transition-all duration-300 flex flex-col p-4`}
+    >
+      <div className="flex justify-between items-center mb-6">
+        {!collapsed && (
+          <h1 className="text-xl font-bold tracking-tight">Reception</h1>
+        )}
+        <button
+          onClick={() => setCollapsed((prev) => !prev)}
+          className="text-blue-700 hover:text-blue-900"
         >
-          <span className="mr-2"><LogOut /></span>Logout
-        </button> */}
+          {collapsed ? <ChevronRight /> : <ChevronLeft />}
+        </button>
+      </div>
+
+      <nav className="flex-1 space-y-2">
+        {items.map((item) => (
+          <button
+            key={item.key}
+            onClick={() => onChange(item.key)}
+            className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg font-medium transition-all
+              ${
+                activeKey === item.key
+                  ? 'bg-blue-100 text-blue-700 shadow-sm'
+                  : 'hover:bg-blue-100'
+              }`}
+          >
+            {item.icon}
+            {!collapsed && <span className="truncate">{item.label}</span>}
+          </button>
+        ))}
+      </nav>
+
+      <div className="mt-auto pt-4">
+        <LogoutButton collapsed={collapsed} />
       </div>
     </aside>
   );
