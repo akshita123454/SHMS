@@ -7,6 +7,8 @@ import EmergencyStaffPage from "./pages/EmergencyStaff/EmergencyStaffPage";
 import Home from "./pages/Home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Inventory from "./pages/inventory/Inventory";
+import SignupForm from "./pages/auth/SignupForm";
+import LoginForm from "./pages/auth/LoginForm";
 
 import PublicRoute from "./pages/auth/PublicRoute";
 import ProtectedRoute from "./pages/auth/ProtectedRoute";
@@ -65,6 +67,10 @@ function App() {
           />
           <Route path="/patient" element={<PatientPage />} />
           <Route path="/inventory" element={<Inventory/>} />
+          <Route path="/Signup" element={<SignupForm/>} />
+          <Route path="/login" element={<LoginForm/>} />
+         
+          
 
            <Route
             path="/admin/*"

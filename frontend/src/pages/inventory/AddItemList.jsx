@@ -35,8 +35,19 @@ export default function AddItemForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Dummy POST request
-      await axios.post('/api/items', form);
+      const payload = {
+        name: form.name,
+        description: form.description,
+        quantity: Number(form.quantity),
+        batch: form.batch,
+        expiryDate: form.expiry,
+        category: form.category,
+      };
+
+      // ✅ API CALL
+      await axios.post('http://localhost:3000/api/_inventory/add-item', payload);
+
+
       setSubmitted(true);
       setForm(initialFormState);
     } catch (err) {

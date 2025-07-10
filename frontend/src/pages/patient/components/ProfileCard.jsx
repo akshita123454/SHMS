@@ -1,9 +1,10 @@
 // src/pages/patient/components/ProfileCard.jsx
 // ✅ Modified ProfileCard.jsx
+// ProfileCard.jsx
 import React, { useState } from "react";
 import axios from "axios";
 
-const ProfileCard = () => {
+const ProfileCard = ({ onProfileSubmit, setSection }) => {
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -34,19 +35,8 @@ const ProfileCard = () => {
     try {
       await axios.post("http://localhost:3000/api/patients", profile);
       setMessage("✅ Profile submitted!");
-      setProfile({
-        name: "",
-        email: "",
-        phone: "",
-        dob: "",
-        gender: "",
-        pronouns: "",
-        profilePicture: "",
-        address: { city: "", state: "", pinCode: "" },
-        bloodGroup: "",
-        occupation: "",
-        maritalStatus: ""
-      });
+      onProfileSubmit(profile);
+      setSection('dashboard');
     } catch (error) {
       setMessage("❌ Failed to submit profile.");
       console.error(error);
@@ -63,10 +53,15 @@ const ProfileCard = () => {
   };
 
   return (
+// <<<<<<< superman
+    <div className="bg-white p-6 rounded shadow">
+      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">👤 Profile Details Form</h2>
+// =======
 
-    <div className=" bg-white p-6 rounded shadow ">
-      <h2 className="text-xl font-semibold mb-4 "> Profile</h2>
+//     <div className=" bg-white p-6 rounded shadow ">
+//       <h2 className="text-xl font-semibold mb-4 "> Profile</h2>
 
+// >>>>>>> main
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -157,7 +152,7 @@ const ProfileCard = () => {
         </div>
 
         <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-          Update Profile
+          Submit Profile form
         </button>
       </form>
 
