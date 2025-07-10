@@ -11,14 +11,17 @@ function EmergencyStaffPage() {
 
   const renderSection = () => {
     switch (section) {
-      case 'triage': return <Triage />;
+      case 'triage': return <Triage setSection={setSection} />;
       case 'ambulance': return <AmbulanceTracker />;
       case 'notifications': return <Notifications />;
-      default: return <Triage />;
+      default: return <Triage setSection={setSection} />;
     }
   };
 
+ 
+
   return (
+    
     <div className="flex h-screen bg-gray-100 text-gray-800 overflow-hidden">
           <Sidebar activeKey={section} onChange={setSection} />
           <div className="flex-1 flex flex-col overflow-hidden">
