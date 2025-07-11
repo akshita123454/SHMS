@@ -1,5 +1,6 @@
 // src/api/reception/appointments.js
-import axios from 'axios';
+import axios from '../axios'; // ✅ updated import
+
 const BASE_URL = 'http://localhost:3000';
 
 // TODO: API routes of the recpition not under admin.

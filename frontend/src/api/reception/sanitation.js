@@ -1,4 +1,5 @@
-import axios from 'axios';
+import axios from '../axios'; // ✅ updated import
+
 const BASE_URL = "http://localhost:3000";
 
 // Get all rooms (sanitized and unsanitized)

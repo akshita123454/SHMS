@@ -1,8 +1,12 @@
 import express from 'express';
-import { getAllBillings, createBilling } from '../controllers/billings.controller.js';
+import {
+  addBillingEntry,
+  getAllBillingEntries,
+} from '../controller/billings.controller.js';
+
 const router = express.Router();
 
-router.get('/', getAllBillings);
-router.post('/', createBilling);
+router.get('/', getAllBillingEntries);
+router.post('/', addBillingEntry);
 
 export default router;

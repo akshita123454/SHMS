@@ -1,5 +1,5 @@
 // src/api/reception/room.js
-import axios from 'axios';
+import axios from '../axios'; // ✅ updated import
 
 const BASE_URL = 'http://localhost:3000'; // Update if backend URL changes
 

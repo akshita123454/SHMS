@@ -1,8 +1,14 @@
 import express from 'express';
-import { getAllDoctors, createDoctor } from '../controllers/doctors.controller.js';
+import {
+  getAllDepartmentsWithDoctors,
+  getDoctorSchedule,
+  addDoctor,
+} from '../controller/doctors.controller.js';
+
 const router = express.Router();
 
-router.get('/', getAllDoctors);
-router.post('/', createDoctor);
+router.get('/departments', getAllDepartmentsWithDoctors);
+router.get('/schedule/:name', getDoctorSchedule);
+router.post('/', addDoctor); // Optional: add doctor manually
 
 export default router;

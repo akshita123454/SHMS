@@ -17,6 +17,14 @@ import payrollRoutes from "./routes/payroll.route.js";
 import roomRoutes from "./routes/room.route.js";
 import reportsRoute from "./routes/reports.route.js";
 
+import appointmentRoutes from './routes/appointments.routes.js';
+import billingRoutes from './routes/billings.routes.js';
+import newdoctorRoutes from './routes/doctors.routes.js';
+import newpatientRoutes from './routes/patients.routes.js';
+import newroomRoutes from './routes/rooms.routes.js';
+import sanitationRoutes from './routes/sanitations.routes.js';
+
+
 dotenv.config();
 
 const app = express();
@@ -58,6 +66,15 @@ app.use("/api/reports", reportsRoute);
 
 // Auth
 app.use("/api/auth", authRoute);
+
+app.use('/api/appointments', appointmentRoutes);
+app.use('/api/billings', billingRoutes);
+app.use('/api/doctors', newdoctorRoutes);
+app.use('/api/patients', newpatientRoutes);
+app.use('/api/rooms', newroomRoutes);
+app.use('/api/sanitations', sanitationRoutes);
+
+
 
 // Connect DB and Start server
 connectDB().then(() => {
