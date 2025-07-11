@@ -21,19 +21,75 @@ import AppointmentForm from './AppointmentForm';
 import NotificationList from './NotificationList';
 import AppointmentHistory from './AppointmentHistory';
 import LogoutButton from "../../../utils/LogoutButton";
+import PatientDashboard from './PatientDashboard';
+import { Gauge } from "lucide-react"; // icon
+
+
 
 const Sidebar = ({ activeKey, onChange }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const items = [
-    { key: 'profile', icon: <UserCircle className="w-5 h-5" />, label: 'Profile', component: <ProfileCard /> },
-    { key: 'appointment', icon: <Stethoscope className="w-5 h-5" />, label: 'Appointment', component: <AppointmentForm /> },
-    { key: 'notification', icon: <Bell className="w-5 h-5" />, label: 'Notifications', component: <NotificationList /> },
-    { key: 'message', icon: <MessageSquare className="w-5 h-5" />, label: 'Messages', component: <MessageSection /> },
-    { key: 'history', icon: <History className="w-5 h-5" />, label: 'Medical History', component: <MedicalHistory /> },
-    { key: 'reports', icon: <FileBarChart2 className="w-5 h-5" />, label: 'Reports', component: <Reports /> },
-    { key: 'appointment-history', icon: <FileText className="w-5 h-5" />, label: 'Appointment History', component: <AppointmentHistory /> },
-    { key: 'calendar', icon: <CalendarDays className="w-5 h-5" />, label: 'Calendar', component: <MyCalendar /> },
+// <<<<<<< superman
+ {
+    key: 'dashboard',
+    icon: <Gauge />,  // Optional: import an icon for dashboard
+    label: 'Dashboard',
+    component: <PatientDashboard />,
+  },
+      
+    {
+      key: 'appointment',
+      icon: <Stethoscope />,
+      label: 'Appointment',
+      component: <AppointmentForm />,
+    },
+    {
+      key: 'notification',
+      icon: <Bell />,
+      label: 'Notifications',
+      component: <NotificationList />,
+    },
+    {
+      key: 'message',
+      icon: <MessageSquare />,
+      label: 'Messages',
+      component: <MessageSection />,
+    },
+    {
+      key: 'history',
+      icon: <History />,
+      label: 'Medical History',
+      component: <MedicalHistory />,
+    },
+    {
+      key: 'reports',
+      icon: <FileBarChart2 />,
+      label: 'Reports',
+      component: <Reports />,
+    },
+    {
+      key: 'appointment-history',
+      icon: <FileText />,
+      label: 'Appointment History',
+      component: <AppointmentHistory />,
+    },
+    {
+      key: 'calendar',
+      icon: <CalendarDays />,
+      label: 'Calendar',
+      component: <MyCalendar />,
+    },
+// =======
+//     { key: 'profile', icon: <UserCircle className="w-5 h-5" />, label: 'Profile', component: <ProfileCard /> },
+//     { key: 'appointment', icon: <Stethoscope className="w-5 h-5" />, label: 'Appointment', component: <AppointmentForm /> },
+//     { key: 'notification', icon: <Bell className="w-5 h-5" />, label: 'Notifications', component: <NotificationList /> },
+//     { key: 'message', icon: <MessageSquare className="w-5 h-5" />, label: 'Messages', component: <MessageSection /> },
+//     { key: 'history', icon: <History className="w-5 h-5" />, label: 'Medical History', component: <MedicalHistory /> },
+//     { key: 'reports', icon: <FileBarChart2 className="w-5 h-5" />, label: 'Reports', component: <Reports /> },
+//     { key: 'appointment-history', icon: <FileText className="w-5 h-5" />, label: 'Appointment History', component: <AppointmentHistory /> },
+//     { key: 'calendar', icon: <CalendarDays className="w-5 h-5" />, label: 'Calendar', component: <MyCalendar /> },
+// >>>>>>> main
   ];
 
   return (

@@ -12,11 +12,25 @@ router.post('/', async (req, res) => {
 });
 
 // Anyone can book an appointment (Appointment form)
-router.post('/appointments', async (req, res) => {
-  const patient = new Patient({ appointments: [req.body] });
-  await patient.save();
-  res.status(201).json(patient);
+// Simple appointment save — no patientId needed
+// Always works, no patientId, saves directly
+router.post("/appointments", async (req, res) => {
+  try {
+    const { doctor, date, time, reason } = req.body;
+
+    const patient = new Patient({
+      appointments: [{ doctor, date, time, reason }]
+    });
+
+    await patient.save();
+
+    res.status(201).json({ message: "Appointment saved", appointment: patient.appointments[0] });
+  } catch (err) {
+    console.error("❌ ERROR while saving appointment:", err.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
 
 // Anyone can send a message (Message form)
 router.post('/messages', async (req, res) => {
@@ -27,17 +41,23 @@ router.post('/messages', async (req, res) => {
 
 // Get all appointments (for Appointment History page)
 // patientRoutes.js
-router.get('/all-appointments', async (req, res) => {
-  const patients = await Patient.find({ "appointments.0": { $exists: true } });
-  const allAppointments = patients.flatMap(p =>
-    p.appointments.map(a => ({
-      doctor: a.doctor || "",
-      date: a.date || "",
-      status: a.status || "",
-      _id: p._id
-    }))
-  );
-  res.json(allAppointments);
+// Get all appointments (used by AppointmentHistory)
+router.get("/all-appointments", async (req, res) => {
+  try {
+    const patients = await Patient.find({ "appointments.0": { $exists: true } });
+    const allAppointments = patients.flatMap((p) =>
+      p.appointments.map((a) => ({
+        doctor: a.doctor || "",
+        date: a.date || "",
+        time: a.time || "",
+        reason: a.reason || "",
+        status: a.status || "Pending",
+      }))
+    );
+    res.json(allAppointments);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Get all medical histories (for Medical History page)
@@ -117,6 +137,23 @@ router.get('/all-reports', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// PUT /api/patients/:email → update patient by email
+router.put('/:email', async (req, res) => {
+  try {
+    const updated = await Patient.findOneAndUpdate(
+      { email: req.params.email },
+      req.body,
+      { new: true, upsert: true } // create if not exists
+    );
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
 
 export default router;
 
