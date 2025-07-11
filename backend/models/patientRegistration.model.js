@@ -1,28 +1,32 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-const patientRegistration = new mongoose.Schema({
+// Define the schema
+const patientRegSchema = new mongoose.Schema({
   name: String,
-  email: { type: String, unique: true },
-  password: String,
+  email: { type: String, unique: true, required: true },
+  password: { type: String, required: true },
+  contact: { type: Number, required: true },
   role: {
     type: String,
-    enum: ['admin', 'doctor', 'reception', 'patient','developer','emergency'],
+    enum: ['admin', 'doctor', 'reception', 'patient', 'developer', 'emergency'],
     default: 'patient',
   },
 });
 
-// Hash password before save
-patientRegistration.pre('save', async function () {
-  if (!this.isModified('password')) return;
+// Pre-save hook to hash the password
+patientRegSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
+  next();
 });
 
 // Method to compare password
-patientRegistration.methods.matchPassword = function (enteredPassword) { 
+patientRegSchema.methods.matchPassword = function (enteredPassword) {
   return bcrypt.compare(enteredPassword, this.password);
 };
 
-const patientRegistration = mongoose.model('patientRegistration', patientRegistration);
-export default patientRegistration;
+// Export the model with the name patientREGS
+const patientREGS = mongoose.model('patientREGS', patientRegSchema);
+export default patientREGS;
