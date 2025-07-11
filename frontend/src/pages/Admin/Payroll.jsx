@@ -1,4 +1,4 @@
-// frontend/src/pages/Admin/Payroll.jsx
+// ✅ frontend/pages/Admin/Payroll.jsx
 import React, { useEffect, useState } from "react";
 import {
   fetchPayrolls,
@@ -28,7 +28,7 @@ const Payroll = () => {
       setStaffList(data);
       const depts = [...new Set(data.map((s) => s.department))];
       setDepartments(depts);
-    } catch (/** @type {any} */ err) {
+    } catch (err) {
       console.error("Failed to load staff", err);
       showToast("Failed to load staff");
     }
@@ -38,7 +38,7 @@ const Payroll = () => {
     try {
       const { data } = await fetchPayrolls();
       setPayrolls(data);
-    } catch (/** @type {any} */ err) {
+    } catch (err) {
       console.error("Failed to load payrolls", err);
     }
   };
@@ -58,7 +58,7 @@ const Payroll = () => {
       setGeneratedPayslip(data);
       showToast("Payslip generated");
       loadPayrolls();
-    } catch (/** @type {any} */ err) {
+    } catch (err) {
       console.error("Failed to generate payslip", err);
       showToast("Error generating payslip");
     }
@@ -69,7 +69,7 @@ const Payroll = () => {
       await deletePayroll(id);
       showToast("Payroll deleted");
       loadPayrolls();
-    } catch (/** @type {any} */ err) {
+    } catch (err) {
       console.error("Failed to delete payroll", err);
     }
   };
@@ -153,10 +153,19 @@ const Payroll = () => {
           <div className="grid grid-cols-2 gap-6 text-sm">
             <div>
               <p className="font-bold">EMPLOYEE INFORMATION</p>
-              <p>{generatedPayslip.staffId.name || "N/A"}</p>
-              <p>{generatedPayslip.employeeId || "N/A"}</p>
-              <p>{generatedPayslip.staffId.email || "N/A"}</p>
-              <p>{generatedPayslip.staffId.contact || "N/A"}</p>
+              <p>{generatedPayslip.staffId.name}</p>
+              <p>{generatedPayslip.employeeId}</p>
+              <p>{generatedPayslip.staffId.email}</p>
+              <p>{generatedPayslip.staffId.contact}</p>
+              <p>Designation: {generatedPayslip.designation}</p>
+              <p>
+                Joining Date:{" "}
+                {new Date(generatedPayslip.joiningDate).toLocaleDateString()}
+              </p>
+              <p>PF Account: {generatedPayslip.pfAccount}</p>
+              <p>Location: {generatedPayslip.location}</p>
+              <p>LOP Days: {generatedPayslip.lopDays}</p>
+              <p>Refund Days: {generatedPayslip.refundDays}</p>
             </div>
 
             <div>
@@ -174,18 +183,20 @@ const Payroll = () => {
               <thead className="bg-gray-100">
                 <tr>
                   <th className="border px-2 py-1">Type</th>
-                  <th className="border px-2 py-1">Hours</th>
-                  <th className="border px-2 py-1">Rate</th>
-                  <th className="border px-2 py-1">Amount</th>
+                  <th className="border px-2 py-1">Monthly Rate</th>
+                  <th className="border px-2 py-1">Current Month</th>
+                  <th className="border px-2 py-1">Arrears</th>
+                  <th className="border px-2 py-1">Total</th>
                 </tr>
               </thead>
               <tbody>
-                {generatedPayslip.earnings?.map((e, i) => (
+                {generatedPayslip.earnings.map((e, i) => (
                   <tr key={i}>
                     <td className="border px-2 py-1">{e.type}</td>
-                    <td className="border px-2 py-1">{e.hours}</td>
-                    <td className="border px-2 py-1">₹{e.rate}</td>
-                    <td className="border px-2 py-1">₹{e.amount}</td>
+                    <td className="border px-2 py-1">₹{e.monthlyRate}</td>
+                    <td className="border px-2 py-1">₹{e.currentMonth}</td>
+                    <td className="border px-2 py-1">₹{e.arrears}</td>
+                    <td className="border px-2 py-1">₹{e.total}</td>
                   </tr>
                 ))}
               </tbody>
@@ -202,7 +213,7 @@ const Payroll = () => {
                 </tr>
               </thead>
               <tbody>
-                {generatedPayslip.deductions?.map((d, i) => (
+                {generatedPayslip.deductions.map((d, i) => (
                   <tr key={i}>
                     <td className="border px-2 py-1">{d.type}</td>
                     <td className="border px-2 py-1">₹{d.amount}</td>
@@ -220,7 +231,7 @@ const Payroll = () => {
               </p>
               <p>
                 <span className="font-semibold">Total Deductions:</span> ₹
-                {generatedPayslip.deductions?.reduce(
+                {generatedPayslip.deductions.reduce(
                   (sum, d) => sum + d.amount,
                   0
                 )}
@@ -228,6 +239,7 @@ const Payroll = () => {
               <p className="text-lg font-bold text-green-700">
                 Net Pay: ₹{generatedPayslip.netPay}
               </p>
+              <p className="text-sm italic">{generatedPayslip.netPayInWords}</p>
             </div>
           </div>
         </div>

@@ -1,87 +1,89 @@
 // backend/controller/payroll.controller.js
 import Payroll from "../models/payroll.model.js";
-// import Staff from "../models/staff.model.js";
-import User from "../models/user.model.js"
+import User from "../models/user.model.js";
+import numberToWords from "number-to-words";
+const { toWords } = numberToWords;
 
 export const createPayroll = async (req, res) => {
   try {
     const { staffId, month } = req.body;
-
     const staff = await User.findById(staffId);
     if (!staff) return res.status(404).json({ error: "Staff not found" });
 
-    const baseSalary = parseFloat(staff.baseSalary);
+    const ctc = parseFloat(staff.ctc);
+    if (!ctc || ctc <= 0) return res.status(400).json({ error: "Invalid CTC" });
 
-    // Sample working hours
-    const standardHours = 40;
-    const overtimeHours = 5;
-    const holidayHours = 8;
-
-    // Pay rates
-    const standardRate = 12.5;
-    const overtimeRate = 18.75;
-    const holidayRate = 12.5;
+    const basic = +(ctc * 0.4).toFixed(2);
+    const hra = +(ctc * 0.2).toFixed(2);
+    const specialAllowance = +(ctc * 0.2).toFixed(2);
+    const otherAllowances = +(ctc * 0.2).toFixed(2);
 
     const earnings = [
       {
-        type: "Standard Pay",
-        hours: standardHours,
-        rate: standardRate,
-        amount: standardHours * standardRate,
+        type: "Basic",
+        monthlyRate: basic,
+        currentMonth: basic,
+        arrears: 0,
+        total: basic,
       },
       {
-        type: "Overtime Pay",
-        hours: overtimeHours,
-        rate: overtimeRate,
-        amount: overtimeHours * overtimeRate,
+        type: "HRA",
+        monthlyRate: hra,
+        currentMonth: hra,
+        arrears: 0,
+        total: hra,
       },
       {
-        type: "Holiday Pay",
-        hours: holidayHours,
-        rate: holidayRate,
-        amount: holidayHours * holidayRate,
+        type: "Special Allowance",
+        monthlyRate: specialAllowance,
+        currentMonth: specialAllowance,
+        arrears: 0,
+        total: specialAllowance,
       },
       {
-        type: "Basic Pay",
-        hours: 0,
-        rate: 0,
-        amount: baseSalary,
+        type: "Other Allowances",
+        monthlyRate: otherAllowances,
+        currentMonth: otherAllowances,
+        arrears: 0,
+        total: otherAllowances,
       },
     ];
 
-    const grossPay = earnings.reduce((sum, e) => sum + e.amount, 0);
-
+    const grossPay = earnings.reduce((sum, e) => sum + e.total, 0);
+    const pf = +(basic * 0.12).toFixed(2);
+    const incomeTax = +(ctc * 0.1).toFixed(2);
     const deductions = [
-      { type: "PAYE Tax", amount: 250 },
-      { type: "National Insurance", amount: 55 },
-      { type: "Student Loan Repayment", amount: 30 },
-      { type: "Pension", amount: 50 },
-      { type: "Union Fees", amount: 5 },
+      { type: "PF", amount: pf },
+      { type: "Income Tax", amount: incomeTax },
     ];
-
     const totalDeductions = deductions.reduce((sum, d) => sum + d.amount, 0);
-    const netPay = grossPay - totalDeductions;
+    const netPay = +(grossPay - totalDeductions).toFixed(2);
 
     const newPayroll = await Payroll.create({
       staffId: staff._id,
       employeeId: staff.employeeId,
       month,
-      baseSalary,
+      ctc,
       earnings,
       deductions,
       grossPay,
       netPay,
+      netPayInWords: `${toWords(Math.floor(netPay)).toUpperCase()} ONLY`,
+      designation: staff.role,
+      pfAccount: staff.pfAccount || "NA",
+      joiningDate: staff.createdAt,
+      location: staff.location || "Head Office",
+      lopDays: 0,
+      refundDays: 0,
       status: "Processed",
     });
 
-    // ✅ Populate staffId before returning
-    const populatedPayroll = await Payroll.findById(newPayroll._id).populate(
+    const populated = await Payroll.findById(newPayroll._id).populate(
       "staffId"
     );
-
-    res.status(201).json(populatedPayroll);
+    res.status(201).json(populated);
   } catch (err) {
-    console.error("❌ Error creating payroll:", err.message);
+    console.error("Error creating payroll:", err);
     res.status(500).json({ error: "Failed to generate payroll" });
   }
 };
