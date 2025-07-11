@@ -67,7 +67,7 @@ export const createStaff = async (req, res) => {
 
   try {
 // <<<<<<< superman
-    const newStaff = new Staff({ name, department, role, email, status });
+    // const newStaff = new Staff({ name, department, role, email, status });
 // =======
     const newStaff = new User(req.body);
 // >>>>>>> main

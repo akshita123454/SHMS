@@ -6,14 +6,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import image from '../../../public/image.png';
 
 export default function SignupForm() {
-  const { signup, loading } = useSignup();
+  const { patientSignUp, loading } = useSignup();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name: '',
     email: '',
     password: '',
-    role: 'patient',
+    contact: '',
   });
 
   const handleChange = (e) => {
@@ -22,12 +22,16 @@ export default function SignupForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await signup(form);
+      await patientSignUp({
+        ...form,
+        role: 'patient',                     
+      });
+
       toast.success('Signup successful!');
       navigate('/login');
-    } 
-    catch (err) {
+    } catch (err) {
       console.error('Signup failed:', err);
       toast.error(err?.message || 'Signup failed. Please try again.');
     }
@@ -36,7 +40,6 @@ export default function SignupForm() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
-
       <div className="bg-white shadow-2xl rounded-lg overflow-hidden flex w-full max-w-4xl">
         {/* Left Side Image */}
         <div className="w-1/2 hidden md:block">
@@ -49,8 +52,9 @@ export default function SignupForm() {
 
         {/* Signup Form */}
         <div className="w-full md:w-1/2 p-8">
-          <h2 className="text-3xl font-bold text-gray-800 mb-6">Create an Account</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-6">Patient Signup</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Name */}
             <input
               type="text"
               name="name"
@@ -61,6 +65,7 @@ export default function SignupForm() {
               required
             />
 
+            {/* Email */}
             <input
               type="email"
               name="email"
@@ -71,6 +76,7 @@ export default function SignupForm() {
               required
             />
 
+            {/* Password */}
             <input
               type="password"
               name="password"
@@ -81,6 +87,18 @@ export default function SignupForm() {
               required
             />
 
+            {/* Contact */}
+            <input
+              type="text"
+              name="contact"
+              placeholder="Contact Number"
+              value={form.contact}
+              onChange={handleChange}
+              className="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
@@ -89,6 +107,7 @@ export default function SignupForm() {
               {loading ? 'Signing up...' : 'Signup'}
             </button>
 
+            {/* Redirect to login */}
             <p className="text-center text-sm">
               Already have an account?{' '}
               <button
