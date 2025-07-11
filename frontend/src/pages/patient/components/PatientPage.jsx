@@ -11,6 +11,7 @@ import Reports from './Reports';
 import Calendar from './Calendar';
 import AppointmentForm from './AppointmentForm';
 import AppointmentHistory from './AppointmentHistory';
+import MedicalReports from './MedicalReport';
 
 function PatientPage() {
   const [section, setSection] = useState('dashboard');
@@ -30,6 +31,8 @@ function PatientPage() {
         return <NotificationList />;
       case 'message':
         return <MessageSection />;
+        case 'medical-reports':
+  return <MedicalReports />;
       case 'history':
         return <MedicalHistory />;
       case 'reports':

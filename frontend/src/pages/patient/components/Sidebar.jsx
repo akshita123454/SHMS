@@ -22,6 +22,7 @@ import NotificationList from './NotificationList';
 import AppointmentHistory from './AppointmentHistory';
 import LogoutButton from "../../../utils/LogoutButton";
 import PatientDashboard from './PatientDashboard';
+import MedicalReports from './MedicalReport';
 import { Gauge } from "lucide-react"; // icon
 
 
@@ -56,19 +57,15 @@ const Sidebar = ({ activeKey, onChange }) => {
       label: 'Messages',
       component: <MessageSection />,
     },
-    {
-      key: 'history',
-      icon: <History />,
-      label: 'Medical History',
-      component: <MedicalHistory />,
-    },
-    {
-      key: 'reports',
-      icon: <FileBarChart2 />,
-      label: 'Reports',
-      component: <Reports />,
-    },
-    {
+  
+     {
+  key: 'medical-reports',
+  icon: <FileBarChart2 />,
+  label: 'Medical-History & Reports',
+  component: <MedicalReports />,
+}
+,
+ {
       key: 'appointment-history',
       icon: <FileText />,
       label: 'Appointment History',

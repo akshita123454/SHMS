@@ -51,8 +51,8 @@ const AppointmentForm = () => {
 
   return (
     <div className="bg-white p-6 rounded shadow">
-      <h2 className="text-xl font-semibold mb-4 ">
-         Book Appointment
+      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+        📅 Book Appointment
       </h2>
 
       <form className="space-y-4" onSubmit={handleSubmit}>
