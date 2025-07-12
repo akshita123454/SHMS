@@ -1,6 +1,3 @@
- // src/pages/patient/components/AppointmentForm.jsx
-// ✅ Updated AppointmentForm.jsx with time & reason
-// === FILE: frontend/src/pages/patient/components/AppointmentForm.jsx ===
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -15,7 +12,6 @@ const AppointmentForm = () => {
   const [doctors, setDoctors] = useState([]);
   const [message, setMessage] = useState("");
 
-  // Fetch active doctors on load
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
@@ -40,7 +36,7 @@ const AppointmentForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:3000/api/patients/appointments", formData); // ✅ Corrected URL
+      await axios.post("http://localhost:3000/api/patients/appointments", formData);
       setMessage("✅ Appointment booked successfully.");
       setFormData({ doctor: "", date: "", time: "", reason: "" });
     } catch (err) {
@@ -50,12 +46,12 @@ const AppointmentForm = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded shadow">
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        📅 Book Appointment
+    <div className="bg-white p-6 md:p-8 rounded-2xl shadow-lg max-w-2xl mx-auto mt-6">
+      <h2 className="text-2xl font-bold text-blue-700 mb-6 flex items-center gap-2">
+        Book an Appointment
       </h2>
 
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="grid gap-5">
         {/* Doctor Dropdown */}
         <div>
           <label className="block text-sm font-medium mb-1">Choose Doctor</label>
@@ -63,10 +59,10 @@ const AppointmentForm = () => {
             name="doctor"
             value={formData.doctor}
             onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
             required
+            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            <option value="">Choose Doctor</option>
+            <option value="">Select Doctor</option>
             {doctors.map((doc) => (
               <option
                 key={doc._id}
@@ -79,56 +75,45 @@ const AppointmentForm = () => {
         </div>
 
         {/* Date */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Preferred Date</label>
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-        </div>
+        <Input
+          label="Preferred Date"
+          name="date"
+          type="date"
+          value={formData.date}
+          onChange={handleChange}
+        />
 
         {/* Time */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Preferred Time</label>
-          <input
-            type="time"
-            name="time"
-            value={formData.time}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
-        </div>
+        <Input
+          label="Preferred Time"
+          name="time"
+          type="time"
+          value={formData.time}
+          onChange={handleChange}
+        />
 
         {/* Reason */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Reason for Visit</label>
-          <textarea
-            name="reason"
-            value={formData.reason}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-            placeholder="Reason for visit"
-            required
-            rows={3}
-          ></textarea>
-        </div>
+        <Textarea
+          label="Reason for Visit"
+          name="reason"
+          value={formData.reason}
+          onChange={handleChange}
+          placeholder="Describe your symptoms or concern"
+        />
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
-        >
-          Book
-        </button>
+        <div className="text-right">
+          <button
+            type="submit"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-6 py-2 rounded transition"
+          >
+            🚀 Book Appointment
+          </button>
+        </div>
       </form>
 
       {message && (
         <div
-          className={`mt-4 text-sm font-medium text-center ${
+          className={`mt-6 text-sm font-semibold text-center ${
             message.includes("✅") ? "text-green-600" : "text-red-600"
           }`}
         >
@@ -138,5 +123,34 @@ const AppointmentForm = () => {
     </div>
   );
 };
+
+const Input = ({ label, name, type = "text", value, onChange }) => (
+  <div>
+    <label className="block text-sm font-medium mb-1">{label}</label>
+    <input
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+      required
+    />
+  </div>
+);
+
+const Textarea = ({ label, name, value, onChange, placeholder }) => (
+  <div>
+    <label className="block text-sm font-medium mb-1">{label}</label>
+    <textarea
+      name={name}
+      value={value}
+      onChange={onChange}
+      rows={3}
+      placeholder={placeholder}
+      className="w-full border px-3 py-2 rounded resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+      required
+    ></textarea>
+  </div>
+);
 
 export default AppointmentForm;

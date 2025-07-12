@@ -14,6 +14,7 @@ import PrescriptionForm from './Prescription';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import DoctorChat from './DoctorChat';
 
 function DoctorPage() {
   const [section, setSection] = useState('dashboard');
@@ -25,6 +26,7 @@ function DoctorPage() {
       case 'calendar': return <CalendarSection />;
       case 'appointments': return <Appointments />;
       case 'prescription': return <PrescriptionForm />;
+      case 'chats': return <DoctorChat/>
       default: return <Dashboard />;
     //   case 'surgeries': return <Surgeries />;
     //   case 'staff': return <Staff />;

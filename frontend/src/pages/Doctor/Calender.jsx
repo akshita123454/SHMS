@@ -1,52 +1,84 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import { Loader } from 'lucide-react';
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
+import React, { useState, useEffect } from "react";
+import Calendar from "react-calendar";
+import "react-calendar/dist/Calendar.css";
 
-export default function CalendarSection() {
-  const [events, setEvents] = useState([]);
+const dummyAppointments = [
+  {
+    date: "2025-07-12",
+    time: "10:00 AM",
+    patient: "Alice Harper",
+    reason: "Routine check-up",
+  },
+  {
+    date: "2025-07-12",
+    time: "01:30 PM",
+    patient: "Bob Johnson",
+    reason: "Follow-up for diabetes",
+  },
+  {
+    date: "2025-07-13",
+    time: "09:00 AM",
+    patient: "Charlie Rogers",
+    reason: "Blood pressure review",
+  },
+  {
+    date: "2025-07-14",
+    time: "03:00 PM",
+    patient: "Diana Patel",
+    reason: "Back pain consultation",
+  },
+];
 
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+export default function MyCalendar() {
+  const [date, setDate] = useState(new Date());
+  const [filteredAppointments, setFilteredAppointments] = useState([]);
 
   useEffect(() => {
-    axios
-      .get('/api/events')
-      .then((res) => setEvents(res.data))
-      .catch(() => setError('Failed to load calendar events'))
-      .finally(() => setLoading(false)); 
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center p-6">
-        <Loader className="animate-spin mr-2 text-gray-500" size={24} />
-        <span className="text-gray-500">Loading calendar…</span>
-      </div>
+    const selected = date.toISOString().split("T")[0];
+    const filtered = dummyAppointments.filter(
+      (appt) => appt.date === selected
     );
-  }
-  if (error) {
-    return <div className="text-red-500 p-6">{error}</div>;
-  }
+    setFilteredAppointments(filtered);
+  }, [date]);
 
   return (
-    <div className="max-w-5xl mx-auto p-6" >
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800">
-        Calendar
-      </h2>
-
-      {/* removed overflow-hidden to avoid cutting components */}
-      <div className="bg-white rounded-2xl shadow-md p-4">
-        {/* give it a fixed height so FullCalendar knows its bounds */}
-        <div className="h-[500px]">
-          <FullCalendar
-            plugins={[dayGridPlugin]}
-            initialView="dayGridMonth"
-            events={events}
-            headerToolbar={{ left:'prev,next today', center:'title', right:'dayGridMonth,dayGridWeek,dayGridDay' }}
-            height="100%"
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Calendar Section */}
+        <div className="bg-white rounded-lg shadow p-5">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Calendar</h2>
+          <Calendar
+            onChange={setDate}
+            value={date}
+            className="w-full"
           />
+          <p className="mt-4 text-sm text-gray-600">
+            Selected Date: <span className="font-medium">{date.toDateString()}</span>
+          </p>
+        </div>
+
+        {/* Appointment List */}
+        <div className="md:col-span-2 bg-white rounded-lg shadow p-5">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4">
+            Appointments on {date.toDateString()}
+          </h3>
+
+          {filteredAppointments.length > 0 ? (
+            <ul className="space-y-3">
+              {filteredAppointments.map((appt, idx) => (
+                <li
+                  key={idx}
+                  className="border border-gray-200 p-4 rounded-md hover:shadow-sm transition"
+                >
+                  <p className="text-gray-800 font-medium">Patient: {appt.patient}</p>
+                  <p className="text-sm text-gray-600">Time: {appt.time}</p>
+                  <p className="text-sm text-gray-600">Reason: {appt.reason}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-gray-500">No appointments for this date.</p>
+          )}
         </div>
       </div>
     </div>

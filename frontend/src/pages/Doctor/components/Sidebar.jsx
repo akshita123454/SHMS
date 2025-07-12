@@ -7,9 +7,11 @@ import {
   HomeIcon,
   ChevronLeft,
   ChevronRight,
+  Cloud,
 } from 'lucide-react';
 import { useState } from 'react';
 import LogoutButton from '../../../utils/LogoutButton';
+
 
 const items = [
   { key: '/', icon: <HomeIcon className="w-5 h-5" />, label: 'Dashboard' },
@@ -18,6 +20,7 @@ const items = [
   { key: 'calendar', icon: <Calendar className="w-5 h-5" />, label: 'Calendar' },
   { key: 'patients', icon: <Users className="w-5 h-5" />, label: 'Patients' },
   { key: 'reviews', icon: <Star className="w-5 h-5" />, label: 'Reviews' },
+  { key: 'chats', icon: <Cloud className="w-5 h-5" />, label: 'Chats' },
 ];
 
 export default function Sidebar({ activeKey, onChange }) {
