@@ -1,37 +1,21 @@
 // src/pages/patient/components/PatientDashboard.jsx
 // PatientDashboard.jsx
+// src/pages/patient/components/PatientDashboard.jsx
+// PatientDashboard.jsx
 import React from 'react';
 import { useAuth } from '../../../api/auth/useAuth';
 
 const PatientDashboard = ({ setSection, profileData }) => {
   const { user } = useAuth();
-  // if(!user){
-  //   user = {
-  //     email:"test@gmail.com",
-  //     phone:1234567890,
-  //     dob:9090,
-  //     gender:"male",
-  //     pronouns:"he",
-  //     address:{
-  //       city:"ranchi",
-  //       state:"jharkhand",
-  //       pinCode:"834005",
-  //     },
-  //     bloodGroup:"A+",
-  //     occupation:"Student",
-  //     maritalStatus:"unmarried",
-  //     role:"patient"
-  //   }
-  // }
 
-  // if (!user) return <div>Loading...</div>;
+  if (!user) return <div>Loading...</div>;
 
   return (
     <div className="bg-white shadow p-6 rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">👤 Welcome, {profileData?.name || "Not provided"}</h2>
+      <h2 className="text-2xl font-bold mb-4">👤 Welcome, {profileData?.name || user.name}</h2>
 
       <div className="space-y-2 text-sm text-gray-800">
-        <p><strong>Email:</strong> {profileData?.email || "Not Provided"}</p>
+        <p><strong>Email:</strong> {profileData?.email || user.email}</p>
         <p><strong>Phone:</strong> {profileData?.phone || "Not Provided"}</p>
         <p><strong>DOB:</strong> {profileData?.dob || "Not Provided"}</p>
         <p><strong>Gender:</strong> {profileData?.gender || "Not Provided"}</p>
@@ -40,7 +24,7 @@ const PatientDashboard = ({ setSection, profileData }) => {
         <p><strong>Blood Group:</strong> {profileData?.bloodGroup || "Not Provided"}</p>
         <p><strong>Occupation:</strong> {profileData?.occupation || "Not Provided"}</p>
         <p><strong>Marital Status:</strong> {profileData?.maritalStatus || "Not Provided"}</p>
-        <p><strong>Role:</strong> { "patient"}</p>
+        <p><strong>Role:</strong> {user.role}</p>
 
         <button
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
