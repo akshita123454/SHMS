@@ -3,41 +3,44 @@ import axios from 'axios';
 
 const BASE_URL = "http://localhost:3000";
 
-// POST
+// ✅ POST: Register Triage Case
 export const registerTriageCase = async (data) => {
-  try{
+  try {
     const user = JSON.parse(localStorage.getItem('user'));
     const token = user?.token;
 
-    const response = await axios.post(`${BASE_URL}/emergency/triage`, data,{
-      // also add headers to work fine.
-       headers: {
+    const response = await axios.post(`${BASE_URL}/emergency/triage`, data, {
+      headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
       withCredentials: true
     });
-    return response.data;
 
-  }catch(error){
-    console.log("error in registering the case:"+error);
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error in registering triage case:", error);
+    throw error;
   }
 };
 
-// GET (optional for viewing)
+// ✅ GET: Fetch All Triage Cases
 export const getAllTriageCases = async () => {
-  try{
-    const response = await axios.get(`${BASE_URL}/emergency/triage`,{
-        // also add headers to work fine.
-         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        withCredentials: true
-      });
-    return response.data;
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    const token = user?.token;
 
-  } catch(error){
-    console.log("error in registering the case:"+error);
+    const response = await axios.get(`${BASE_URL}/emergency/triage`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      withCredentials: true
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("❌ Error fetching triage cases:", error);
+    throw error;
   }
 };

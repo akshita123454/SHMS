@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { registerTriageCase } from '../../api/emergency/triage';
+import { useNavigate } from 'react-router-dom';
 
 export default function Triage() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     patientName: '',
     age: '',
@@ -10,11 +13,13 @@ export default function Triage() {
     address: '',
     insuranceProvider: '',
     severity: '',
-    notes: ''
+    notes: '',
+    ambulanceNeeded: 'no', // default value
   });
 
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -22,6 +27,9 @@ export default function Triage() {
     try {
       await registerTriageCase(formData);
       alert("Triage case registered!");
+      if (formData.ambulanceNeeded === 'yes') {
+        setSection('ambulance');
+      }
     } catch (error) {
       alert("Error registering case");
       console.error(error);
@@ -50,8 +58,20 @@ export default function Triage() {
           <option value="mild">Mild</option>
         </select>
         <textarea name="notes" onChange={handleChange} className="p-2 border rounded col-span-2" placeholder="Notes" rows="3" />
+
+        {/* ✅ Ambulance Option */}
+        <div className="col-span-2">
+          <label className="block font-medium mb-1">Need Ambulance Service?</label>
+          <select name="ambulanceNeeded" value={formData.ambulanceNeeded} onChange={handleChange} className="border p-2 rounded w-full md:w-1/2">
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
+        </div>
+
         <div className="col-span-2 text-right">
-          <button className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Register Case</button>
+          <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+            Register Case
+          </button>
         </div>
       </form>
     </div>
