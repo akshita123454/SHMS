@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Loader } from 'lucide-react';
 
-// Simple Card components (no external dependency)
+// Basic card structure
 function Card({ children, className = '', ...props }) {
   return (
     <div
-      className={`bg-white rounded-lg shadow border border-gray-200 ${className}`}
+      className={`bg-white rounded-xl shadow-sm border ${className}`}
       {...props}
     >
       {children}
@@ -36,68 +36,75 @@ export default function Appointments() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
 
-  // Uncomment when connected to API
-  // useEffect(() => {
-  //   setLoading(true);
-  //   axios.get('/api/appointments')
-  //     .then(res => setAppointments(res.data))
-  //     .catch(() => setError('Failed to load appointments'))
-  //     .finally(() => setLoading(false));  
-  // }, []);
+  const formatDate = iso =>
+    new Date(iso).toLocaleString(undefined, {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+    });
 
-  if (loading) return (
-    <div className="flex justify-center items-center h-full">
-      <Loader className="animate-spin" />
-      <span className="ml-2">Loading appointments...</span>
-    </div>
+  const filtered = appointments.filter(a =>
+    a.patientName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-  if (error) return <div className="text-red-500 p-4">{error}</div>;
 
-  const formatDate = iso => new Date(iso).toLocaleString(undefined, {
-    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric'
-  });
-
-  // Filter and sort appointments
-  const filtered = appointments
-    .filter(a => a.patientName.toLowerCase().includes(searchTerm.toLowerCase()));
   const sorted = filtered.slice().sort((a, b) => {
     const diff = new Date(a.dateTime) - new Date(b.dateTime);
     return sortOrder === 'asc' ? diff : -diff;
   });
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Loader className="animate-spin" />
+        <span className="ml-2">Loading appointments...</span>
+      </div>
+    );
+  }
+
+  if (error) return <div className="text-red-500 p-4">{error}</div>;
+
   return (
-    <div className="bg-gray-50 rounded-lg shadow border border-gray-200 p-4 flex gap-4 h-full">
-      {/* Sidebar list */}
+    <div className="bg-gray-50 p-6 rounded-2xl shadow-md border border-gray-200 flex gap-6 h-[80vh]">
+      {/* Sidebar */}
       <div className="w-1/3 overflow-y-auto pr-4 border-r border-gray-200">
-        <div className="px-2">
-          <h2 className="text-2xl font-bold mb-4">Upcoming Appointments</h2>
-          <input
-            type="text"
-            placeholder="Search by patient name..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-full mb-2 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-indigo-300"
-          />
-          <select
-            value={sortOrder}
-            onChange={e => setSortOrder(e.target.value)}
-            className="w-full mb-4 px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-indigo-300"
-          >
-            <option value="asc">Sort by Date: Ascending</option>
-            <option value="desc">Sort by Date: Descending</option>
-          </select>
-        </div>
+        <h2 className="text-2xl font-bold mb-4 text-indigo-700">Appointments</h2>
+        <input
+          type="text"
+          placeholder="Search by patient..."
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          className="w-full mb-3 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+        <select
+          value={sortOrder}
+          onChange={e => setSortOrder(e.target.value)}
+          className="w-full mb-4 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        >
+          <option value="asc">Date: Ascending</option>
+          <option value="desc">Date: Descending</option>
+        </select>
+
         <div className="space-y-3">
           {sorted.map(a => (
             <Card
               key={a.id}
               onClick={() => setSelected(a)}
-              className={`cursor-pointer transition-shadow duration-200 ease-in-out hover:shadow-lg p-2 ${
-                selected?.id === a.id ? 'ring ring-indigo-300 border-indigo-300' : 'border-transparent'
-              }`}>
+              className={`cursor-pointer transition duration-150 hover:shadow-lg p-2 ${
+                selected?.id === a.id
+                  ? 'border-indigo-500 ring-2 ring-indigo-300'
+                  : 'border-gray-200'
+              }`}
+            >
               <CardContent>
-                <p className="font-semibold mb-2">{a.patientName}</p>
-                <p className="text-sm text-gray-600">{formatDate(a.dateTime)}</p>
+                <p className="font-semibold text-indigo-600 mb-1">
+                  {a.patientName}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {formatDate(a.dateTime)}
+                </p>
               </CardContent>
             </Card>
           ))}
@@ -107,23 +114,35 @@ export default function Appointments() {
         </div>
       </div>
 
-      {/* Detail panel */}
-      <div className="w-2/3 p-4">
+      {/* Detail Panel */}
+      <div className="w-2/3 h-full">
         {selected ? (
           <Card className="h-full">
             <CardContent>
-              <h3 className="text-2xl font-bold mb-4">{selected.patientName}</h3>
-              <div className="space-y-2 text-gray-700">
-                <p><strong>Date & Time:</strong> {formatDate(selected.dateTime)}</p>
-                <p><strong>Phone:</strong> {selected.phone}</p>
-                <p><strong>Email:</strong> {selected.email}</p>
-                <p><strong>Notes:</strong> {selected.notes}</p>
+              <h3 className="text-3xl font-semibold text-indigo-700 mb-6">
+                {selected.patientName}
+              </h3>
+              <div className="space-y-4 text-gray-700 text-base">
+                <p>
+                  <span className="font-semibold">Date & Time:</span>{' '}
+                  {formatDate(selected.dateTime)}
+                </p>
+                <p>
+                  <span className="font-semibold">Phone:</span> {selected.phone}
+                </p>
+                <p>
+                  <span className="font-semibold">Email:</span> {selected.email}
+                </p>
+                <p>
+                  <span className="font-semibold">Notes:</span>{' '}
+                  {selected.notes}
+                </p>
               </div>
             </CardContent>
           </Card>
         ) : (
-          <div className="h-full flex items-center justify-center text-gray-400">
-            <span>Select an appointment to view details</span>
+          <div className="h-full flex items-center justify-center text-gray-400 text-lg">
+            Select an appointment to view details.
           </div>
         )}
       </div>
