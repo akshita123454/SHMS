@@ -1,4 +1,3 @@
-// backend/routes/payroll.route.js
 import express from "express";
 import {
   createPayroll,
