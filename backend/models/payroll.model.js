@@ -1,4 +1,3 @@
-// backend/models/payroll.model.js
 import mongoose from "mongoose";
 
 const earningSchema = new mongoose.Schema({
@@ -14,6 +13,29 @@ const deductionSchema = new mongoose.Schema({
   amount: { type: Number, default: 0 },
 });
 
+const exemptionSchema = new mongoose.Schema({
+  type: { type: String },
+  amount: { type: Number, default: 0 },
+});
+
+const investmentSchema = new mongoose.Schema({
+  type: { type: String },
+  amount: { type: Number, default: 0 },
+});
+
+const rentDetailSchema = new mongoose.Schema({
+  startDate: Date,
+  endDate: Date,
+  amount: Number,
+});
+
+const slabSchema = new mongoose.Schema({
+  from: Number,
+  to: Number,
+  rate: Number,
+  taxAmount: Number,
+});
+
 const payrollSchema = new mongoose.Schema(
   {
     staffId: {
@@ -24,17 +46,30 @@ const payrollSchema = new mongoose.Schema(
     employeeId: { type: String, required: true },
     month: { type: String, required: true },
     ctc: { type: Number, required: true },
+
     earnings: [earningSchema],
     deductions: [deductionSchema],
-    grossPay: { type: Number, required: true },
-    netPay: { type: Number, required: true },
+    exemptions: [exemptionSchema],
+    investments: [investmentSchema],
+    rentDetails: [rentDetailSchema],
+    taxSlabs: [slabSchema],
+
+    grossPay: Number,
+    netPay: Number,
     netPayInWords: String,
+
+    grossIncome: Number,
+    taxableIncome: Number,
+    taxPayable: Number,
+    taxDeductedThisMonth: Number,
+
     pfAccount: String,
     designation: String,
     joiningDate: Date,
     location: String,
     lopDays: { type: Number, default: 0 },
     refundDays: { type: Number, default: 0 },
+
     status: {
       type: String,
       enum: ["Pending", "Processed"],
