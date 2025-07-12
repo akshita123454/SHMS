@@ -20,7 +20,7 @@ export default function AmbulanceTracker() {
       <table className="w-full text-left border">
         <thead>
           <tr className="bg-gray-100">
-            <th className="p-2 border">Ambulance</th>
+            <th className="p-2 border">Driver Name</th>
             <th className="p-2 border">Status</th>
             <th className="p-2 border">ETA</th>
             <th className="p-2 border">Driver Contact</th>
@@ -40,3 +40,4 @@ export default function AmbulanceTracker() {
     </div>
   );
 }
+
