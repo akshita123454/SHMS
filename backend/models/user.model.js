@@ -33,7 +33,13 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: () => `EMP${Date.now()}`,
     },
+    pfAccount: String,
+    bankAccount: String,
+    designation: String,
+    joiningDate: Date,
+    location: String,
   },
+   
   { timestamps: true }
 );
 
