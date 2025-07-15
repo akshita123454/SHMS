@@ -1,9 +1,20 @@
 import mongoose from 'mongoose';
 
-const AppointmentSchema = new mongoose.Schema({
-  name: String,
-  description: String,
-  date: Date
+const appointmentSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: String, // YYYY-MM-DD
+    required: true,
+  },
+  time: {
+    type: String, // HH:MM
+    required: true,
+  },
 }, { timestamps: true });
 
-export default mongoose.model('Appointment', AppointmentSchema);
+const Appointment = mongoose.model('Appointment', appointmentSchema);
+
+export default Appointment;
