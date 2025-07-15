@@ -35,13 +35,15 @@ const userSchema = new mongoose.Schema(
     },
     pfAccount: String,
     bankAccount: String,
+    esicNumber: String,
     designation: String,
     joiningDate: Date,
     location: String,
-    // New fields for additional income details
+    isMetroCity: { type: Boolean, default: false },
     hostelAllowance: { type: Number, default: 0 },
     childEducationAllowance: { type: Number, default: 0 },
     bonuses: { type: Number, default: 0 },
+    payrollGenerated: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

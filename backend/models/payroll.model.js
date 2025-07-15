@@ -28,6 +28,7 @@ const payrollSchema = new mongoose.Schema(
     joiningDate: Date,
     bankAccount: String,
     pfAccount: String,
+    esicNumber: String, // New field
     standardDays: Number,
     lopDays: Number,
     refundDays: Number,

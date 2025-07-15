@@ -17,7 +17,6 @@ export const getDepartmentByRoles = async (req, res) => {
   res.json(roles);
 };
 
-// >>>>>>> main
 export const getAllStaff = async (req, res) => {
   try {
     const staffList = await User.find();
@@ -36,11 +35,7 @@ export const createStaff = async (req, res) => {
   }
 
   try {
-// <<<<<<< superman
-    // const newStaff = new Staff({ name, department, role, email, status });
-// =======
     const newStaff = new User(req.body);
-// >>>>>>> main
     const savedStaff = await newStaff.save();
     res.status(201).json(savedStaff);
   } catch (error) {
@@ -52,7 +47,10 @@ export const createStaff = async (req, res) => {
 export const updateStaff = async (req, res) => {
   try {
     const updateData = { ...req.body };
-    if (!updateData.password) delete updateData.password;
+    if (updateData.password === "") {
+      // Don't update password if empty string
+      delete updateData.password;
+    }
     const updated = await User.findByIdAndUpdate(req.params.id, updateData, {
       new: true,
     });
@@ -72,14 +70,14 @@ export const deleteStaff = async (req, res) => {
   }
 };
 
-// ✅ Get all active doctors
-export const getDoctors = async (req, res) => {
+// Get staff by ID - EXPORTED
+export const getStaffById = async (req, res) => {
   try {
-    const doctors = await Staff.find({
-      status: "Active",
-      role: { $regex: /Doctor/i },
-    });
-    res.json(doctors);
+    const staff = await User.findById(req.params.id);
+    if (!staff) {
+      return res.status(404).json({ message: "Staff not found" });
+    }
+    res.json(staff);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
