@@ -37,12 +37,14 @@ const userSchema = new mongoose.Schema(
     bankAccount: String,
     designation: String,
     joiningDate: Date,
-    location: String,
+    location: String,
+    // New fields for additional income details
+    hostelAllowance: { type: Number, default: 0 },
+    childEducationAllowance: { type: Number, default: 0 },
+    bonuses: { type: Number, default: 0 },
   },
-   
   { timestamps: true }
 );
-
 
 // Hash password before save
 userSchema.pre("save", async function () {

@@ -1,18 +1,18 @@
 // frontend/src/pages/Admin/Payroll.jsx
 import React, { useEffect, useState } from "react";
 import {
-  fetchPayrolls,
+  // fetchPayrolls, // Can be removed if not needed elsewhere
   addPayroll,
-  deletePayroll,
+  // deletePayroll, // Can be removed if not needed elsewhere
 } from "../../api/admin/payroll.api.js";
 import { fetchStaff } from "../../api/admin/staff.api.js";
 
 const Payroll = () => {
-  const [payrolls, setPayrolls] = useState([]);
   const [staffList, setStaffList] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedStaff, setSelectedStaff] = useState("");
+  // Reverted to selectedMonth to store the "Month Year" string
   const [selectedMonth, setSelectedMonth] = useState("");
   const [generatedPayslip, setGeneratedPayslip] = useState(null);
   const [toast, setToast] = useState("");
@@ -34,54 +34,44 @@ const Payroll = () => {
     }
   };
 
-  const loadPayrolls = async () => {
-    try {
-      const { data } = await fetchPayrolls();
-      setPayrolls(data);
-    } catch (err) {
-      console.error("Failed to load payrolls", err);
+  const handleGeneratePayslip = async (e) => {
+    e.preventDefault();
+    if (!selectedStaff || !selectedMonth) {
+      showToast("Please select a staff member and a month.");
+      return;
     }
-  };
 
-  const handleGeneratePayslip = async () => {
     try {
-      if (!selectedStaff || !selectedMonth) {
-        showToast("Please select staff and month");
-        return;
-      }
-
       const { data } = await addPayroll({
         staffId: selectedStaff,
-        month: selectedMonth,
+        month: selectedMonth, // selectedMonth is already in "Month Year" format
       });
-
       setGeneratedPayslip(data);
-      showToast("Payslip generated");
-      loadPayrolls();
+      showToast("Payslip generated successfully!");
     } catch (err) {
       console.error("Failed to generate payslip", err);
-      showToast("Error generating payslip");
+      showToast(err.response?.data?.error || "Failed to generate payslip");
     }
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await deletePayroll(id);
-      showToast("Payroll deleted");
-      loadPayrolls();
-    } catch (err) {
-      console.error("Failed to delete payroll", err);
-    }
+  const handleClosePayslip = () => {
+    setGeneratedPayslip(null);
   };
 
   useEffect(() => {
     loadStaff();
-    loadPayrolls();
   }, []);
 
-  const filteredStaff = staffList.filter(
-    (s) => s.department === selectedDepartment
-  );
+  const filteredStaff = selectedDepartment
+    ? staffList.filter((staff) => staff.department === selectedDepartment)
+    : staffList;
+
+  // Re-generating last 12 months for dropdown
+  const months = Array.from({ length: 12 }, (_, i) => {
+    const date = new Date();
+    date.setMonth(date.getMonth() - i);
+    return date.toLocaleString("en-US", { month: "long", year: "numeric" });
+  });
 
   return (
     <section id="payroll" className="section">
@@ -93,197 +83,262 @@ const Payroll = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-4 gap-4 mb-4">
-        <select
-          className="input"
-          value={selectedDepartment}
-          onChange={(e) => {
-            setSelectedDepartment(e.target.value);
-            setSelectedStaff("");
-          }}
-        >
-          <option value="">Select Department</option>
-          {departments.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
+      {/* Payroll Generation Form */}
+      <form onSubmit={handleGeneratePayslip} className="mb-6 space-y-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label
+              htmlFor="department"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Select Department:
+            </label>
+            <select
+              id="department"
+              value={selectedDepartment}
+              onChange={(e) => {
+                setSelectedDepartment(e.target.value);
+                setSelectedStaff(""); // Reset staff selection when department changes
+              }}
+              className="input mt-1 block w-full"
+            >
+              <option value="">All Departments</option>
+              {departments.map((dept) => (
+                <option key={dept} value={dept}>
+                  {dept}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <select
-          className="input"
-          value={selectedStaff}
-          onChange={(e) => setSelectedStaff(e.target.value)}
-        >
-          <option value="">Select Staff</option>
-          {filteredStaff.map((s) => (
-            <option key={s._id} value={s._id}>
-              {s.name} ({s.role})
-            </option>
-          ))}
-        </select>
+          <div>
+            <label
+              htmlFor="staff"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Select Staff Member:
+            </label>
+            <select
+              id="staff"
+              value={selectedStaff}
+              onChange={(e) => setSelectedStaff(e.target.value)}
+              className="input mt-1 block w-full"
+              required
+            >
+              <option value="">Select Staff</option>
+              {filteredStaff.map((staff) => (
+                <option key={staff._id} value={staff._id}>
+                  {staff.name} ({staff.employeeId})
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <input
-          type="month"
-          className="input"
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-        />
-
+          <div>
+            <label
+              htmlFor="month"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Select Month:
+            </label>
+            {/* Reverted to select dropdown for month and year */}
+            <select
+              id="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="input mt-1 block w-full"
+              required
+            >
+              <option value="">Select Month</option>
+              {months.map((month, index) => (
+                <option key={index} value={month}>
+                  {month}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
         <button
-          onClick={handleGeneratePayslip}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          type="submit"
+          className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg mt-4"
         >
           Generate Payslip
         </button>
-      </div>
+      </form>
 
+      {/* Generated Payslip Display */}
       {generatedPayslip && (
-        <div className="p-6 bg-white border shadow-md">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-semibold">
-              Payslip - {generatedPayslip.month}
-            </h3>
-            <button
-              onClick={() => setGeneratedPayslip(null)}
-              className="text-sm bg-gray-200 px-3 py-1 rounded"
-            >
-              Close
-            </button>
-          </div>
+        <div className="module-card p-6 border-2 border-gray-300 rounded-lg shadow-lg relative">
+          <button
+            onClick={handleClosePayslip}
+            className="absolute top-2 right-2 bg-red-500 text-white rounded-full h-8 w-8 flex items-center justify-center text-lg font-bold hover:bg-red-600 focus:outline-none"
+            title="Close Payslip"
+          >
+            &times;
+          </button>
+          <h3 className="text-2xl font-bold text-center mb-6 text-gray-800">
+            Payslip for {generatedPayslip.month}
+          </h3>
 
-          <div className="grid grid-cols-2 gap-6 text-sm mb-4">
+          {/* Employee Details Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
               <p>
-                <strong>EMPLOYEE NUMBER:</strong> {generatedPayslip.employeeId}
+                <strong>Employee ID:</strong> {generatedPayslip.employeeId}
               </p>
               <p>
-                <strong>NAME:</strong> {generatedPayslip.staffId.name}
+                <strong>Name:</strong> {generatedPayslip.staffId.name}
               </p>
               <p>
-                <strong>DESIGNATION:</strong> {generatedPayslip.designation}
+                <strong>Role:</strong> {generatedPayslip.staffId.role}
               </p>
               <p>
-                <strong>POSTED LOCATION:</strong> {generatedPayslip.location}
+                <strong>Department:</strong>{" "}
+                {generatedPayslip.staffId.department}
+              </p>
+              <p>
+                <strong>Designation:</strong> {generatedPayslip.designation}
+              </p>
+              <p>
+                <strong>Location:</strong> {generatedPayslip.location}
               </p>
             </div>
             <div>
               <p>
-                <strong>BANK ACCOUNT:</strong> {generatedPayslip.bankAccount}
+                <strong>Email:</strong> {generatedPayslip.staffId.email}
               </p>
               <p>
-                <strong>PF ACCOUNT:</strong> {generatedPayslip.pfAccount}
+                <strong>Contact:</strong> {generatedPayslip.staffId.contact}
               </p>
               <p>
-                <strong>JOINING DATE:</strong>{" "}
-                {new Date(generatedPayslip.joiningDate).toLocaleDateString()}
+                <strong>Joining Date:</strong>{" "}
+                {generatedPayslip.joiningDate
+                  ? new Date(generatedPayslip.joiningDate).toLocaleDateString()
+                  : "N/A"}
               </p>
               <p>
-                <strong>STANDARD DAYS:</strong> {generatedPayslip.standardDays}{" "}
-                | <strong>LOP DAYS:</strong> {generatedPayslip.lopDays} |{" "}
-                <strong>REFUND DAYS:</strong> {generatedPayslip.refundDays}
+                <strong>Bank Account:</strong> {generatedPayslip.bankAccount}
+              </p>
+              <p>
+                <strong>PF Account:</strong> {generatedPayslip.pfAccount}
               </p>
             </div>
           </div>
 
-          <p className="font-bold text-gray-700 mb-2">EARNINGS</p>
-          <table className="w-full table-auto border mb-6 text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border px-2 py-1">Type</th>
-                <th className="border px-2 py-1">Monthly Rate</th>
-                <th className="border px-2 py-1">Current</th>
-                <th className="border px-2 py-1">Arrears</th>
-                <th className="border px-2 py-1">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {generatedPayslip.earnings.map((e, i) => (
-                <tr key={i}>
-                  <td className="border px-2 py-1">{e.type}</td>
-                  <td className="border px-2 py-1">₹{e.monthlyRate}</td>
-                  <td className="border px-2 py-1">₹{e.currentMonth}</td>
-                  <td className="border px-2 py-1">₹{e.arrears}</td>
-                  <td className="border px-2 py-1">₹{e.total}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {/* Earnings and Deductions Table */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
+            <div>
+              <h4 className="font-bold text-gray-700 mb-2">EARNINGS</h4>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="p-2 text-left">Description</th>
+                    <th className="p-2 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {generatedPayslip.earnings.map((earning, index) => (
+                    <tr key={index}>
+                      <td className="p-2">{earning.type}</td>
+                      <td className="p-2 text-right">
+                        ₹{earning.total?.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="font-bold bg-gray-50">
+                    <td className="p-2">GROSS PAY</td>
+                    <td className="p-2 text-right">
+                      ₹{generatedPayslip.grossPay?.toFixed(2)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-          <p className="font-bold text-gray-700 mb-2">DEDUCTIONS</p>
-          <table className="w-full table-auto border mb-6 text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="border px-2 py-1">Type</th>
-                <th className="border px-2 py-1">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {generatedPayslip.deductions.map((d, i) => (
-                <tr key={i}>
-                  <td className="border px-2 py-1">{d.type}</td>
-                  <td className="border px-2 py-1">₹{d.amount}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="text-right text-sm">
-            <p>
-              <strong>Gross Pay:</strong> ₹{generatedPayslip.grossPay}
-            </p>
-            <p>
-              <strong>Total Deductions:</strong> ₹
-              {generatedPayslip.deductions.reduce(
-                (sum, d) => sum + d.amount,
-                0
-              )}
-            </p>
-            <p className="text-lg font-bold text-green-600">
-              Net Pay: ₹{generatedPayslip.netPay}
-            </p>
-            <p className="italic">{generatedPayslip.netPayInWords}</p>
+            <div>
+              <h4 className="font-bold text-gray-700 mb-2">DEDUCTIONS</h4>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="p-2 text-left">Description</th>
+                    <th className="p-2 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {generatedPayslip.deductions.map((deduction, index) => (
+                    <tr key={index}>
+                      <td className="p-2">{deduction.type}</td>
+                      <td className="p-2 text-right">
+                        ₹{deduction.amount?.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="font-bold bg-gray-50">
+                    <td className="p-2">TOTAL DEDUCTIONS</td>
+                    <td className="p-2 text-right">
+                      ₹
+                      {generatedPayslip.deductions
+                        .reduce((sum, d) => sum + d.amount, 0)
+                        ?.toFixed(2)}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {generatedPayslip.taxDeductedDetails && (
-            <div className="mt-8">
-              <h4 className="font-bold text-gray-700 mb-2">
-                INCOME TAX DETAILS
-              </h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="font-semibold mb-1">Exemptions</p>
-                  {generatedPayslip.exemptions.map((x, i) => (
-                    <p key={i}>
-                      {x.label}: ₹{x.value}
-                    </p>
-                  ))}
+          {/* Net Pay and Tax Details */}
+          <div className="bg-blue-100 p-4 rounded-lg text-center mb-6">
+            <h4 className="text-xl font-bold text-blue-800">
+              NET PAY: ₹{generatedPayslip.netPay?.toFixed(2)}
+            </h4>
+            <p className="text-blue-700 italic">
+              ({generatedPayslip.netPayInWords})
+            </p>
+          </div>
 
-                  <p className="font-semibold mt-4 mb-1">Investments</p>
-                  {generatedPayslip.investments.map((x, i) => (
-                    <p key={i}>
-                      {x.label}: ₹{x.value}
-                    </p>
-                  ))}
-                </div>
-                <div>
-                  <p className="font-semibold mb-1">Tax Slabs</p>
-                  {generatedPayslip.slabWiseTax.map((x, i) => (
-                    <p key={i}>
-                      {x.label}: ₹{x.value}
-                    </p>
-                  ))}
+          {generatedPayslip.exemptions &&
+            generatedPayslip.investments &&
+            generatedPayslip.slabWiseTax &&
+            generatedPayslip.taxDeductedDetails && (
+              <div className="mt-8">
+                <h4 className="font-bold text-gray-700 mb-2">
+                  INCOME TAX DETAILS
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="font-semibold mb-1">Exemptions</p>
+                    {generatedPayslip.exemptions.map((x, i) => (
+                      <p key={i}>
+                        {x.label}: ₹{x.value}
+                      </p>
+                    ))}
 
-                  <p className="font-semibold mt-4 mb-1">Tax Deducted</p>
-                  {generatedPayslip.taxDeductedDetails.map((x, i) => (
-                    <p key={i}>
-                      {x.label}: ₹{x.value}
-                    </p>
-                  ))}
+                    <p className="font-semibold mt-4 mb-1">Investments</p>
+                    {generatedPayslip.investments.map((x, i) => (
+                      <p key={i}>
+                        {x.label}: ₹{x.value}
+                      </p>
+                    ))}
+                  </div>
+                  <div>
+                    <p className="font-semibold mb-1">Tax Slabs</p>
+                    {generatedPayslip.slabWiseTax.map((x, i) => (
+                      <p key={i}>
+                        {x.label}: ₹{x.value}
+                      </p>
+                    ))}
+
+                    <p className="font-semibold mt-4 mb-1">Tax Deducted</p>
+                    {generatedPayslip.taxDeductedDetails.map((x, i) => (
+                      <p key={i}>
+                        {x.label}: ₹{x.value}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}
         </div>
       )}
     </section>
