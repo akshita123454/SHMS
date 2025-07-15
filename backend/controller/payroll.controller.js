@@ -42,13 +42,18 @@ export const createPayroll = async (req, res) => {
 
     // earnings and gross
     const earnings = buildEarnings(staff.ctc);
-    const grossPay = earnings.reduce((s, e) => s + e.total, 0);
+    const grossPay = +earnings.reduce((sum, e) => sum + e.total, 0).toFixed(2);
 
-    // simple demo deductions (12% PF, 10% tax)
-    const pf = +(earnings[0].total * 0.12).toFixed(2);
-    const tax = +(grossPay * 0.1).toFixed(2);
+    // DEDUCTIONS (simplified demo values)
+    // Replace with actual complex calculations involving tax slabs, exemptions, and investment declarations
+    const pf = +((staff.ctc * 0.12) / 12).toFixed(2); // Employee's mandatory PF contribution
+    const tax = +((staff.ctc * 0.05) / 12).toFixed(2); // Simplified example tax
+
     const deductions = [
-      { type: "Employee PF", amount: pf },
+      { type: "Employee PF", amount: pf }, // Existing PF, now explicitly labeled
+      { type: "Voluntary PF", amount: 500.0 }, // Added Voluntary PF with a placeholder amount
+      { type: "House Loan 1", amount: 2500.0 }, // Added House Loan 1 with a placeholder amount
+      { type: "House Loan 2", amount: 1500.0 }, // Added House Loan 2 with a placeholder amount
       { type: "Income Tax", amount: tax },
     ];
     const totalDed = deductions.reduce((s, d) => s + d.amount, 0);
@@ -87,10 +92,9 @@ export const createPayroll = async (req, res) => {
     res.status(201).json(populated);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Payroll generation failed" });
+    res.status(500).json({ error: "Failed to generate payroll" });
   }
 };
-
 export const getPayrolls = async (req, res) => {
   const docs = await Payroll.find().populate("staffId");
   res.json(docs);
