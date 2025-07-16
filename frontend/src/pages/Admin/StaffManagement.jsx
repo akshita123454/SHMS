@@ -235,7 +235,7 @@ const StaffManagement = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-5xl mx-auto bg-gray-100 min-h-screen font-sans">
+    <div className="p-6 space-y-6 w-full bg-gray-100 min-h-screen font-sans">
       <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
         Staff Management
       </h2>
@@ -520,7 +520,7 @@ const StaffManagement = () => {
 
       {/* Staff Details Section */}
       {currentStep === 2 && selectedStaffForDetails && (
-        <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-3xl mx-auto mt-8">
+        <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-6xl mx-auto mt-8">
           <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
             Staff Details: {selectedStaffForDetails.name} (
             {selectedStaffForDetails.employeeId})
@@ -800,7 +800,7 @@ const StaffManagement = () => {
           {generatedPayslip && (
             <div className="mt-8 p-2 border border-gray-200 rounded-lg bg-gray-50">
               <h4 className="text-xl font-bold text-gray-800 mb-4 text-center">
-                Generated Payslip
+                Generated Details
               </h4>
               {/* Company Header - Placeholder for actual company details */}
               <div className="text-center mb-6">
