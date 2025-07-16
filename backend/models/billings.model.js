@@ -1,9 +1,27 @@
 import mongoose from 'mongoose';
 
-const BillingSchema = new mongoose.Schema({
-  name: String,
-  description: String,
-  date: Date
-}, { timestamps: true });
+const billingSchema = new mongoose.Schema(
+  {
+    patient: {
+      type: String,
+      required: true,
+    },
+    service: {
+      type: String,
+      required: true,
+    },
+    amount: {
+      type: Number,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['Paid', 'Pending'],
+      default: 'Paid',
+    },
+  },
+  { timestamps: true }
+);
 
-export default mongoose.model('Billing', BillingSchema);
+const Billing = mongoose.model('Billing', billingSchema);
+export default Billing;

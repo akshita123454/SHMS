@@ -1,8 +1,14 @@
 import express from 'express';
-import { getAllSanitations, createSanitation } from '../controllers/sanitations.controller.js';
+import {
+  getSanitationStatus,
+  markRoomSanitized,
+  seedSanitationRooms,
+} from '../controller/sanitations.controller.js';
+
 const router = express.Router();
 
-router.get('/', getAllSanitations);
-router.post('/', createSanitation);
+router.get('/status', getSanitationStatus);
+router.post('/mark', markRoomSanitized);
+router.post('/seed', seedSanitationRooms); // optional
 
 export default router;

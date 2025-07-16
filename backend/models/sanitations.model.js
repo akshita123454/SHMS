@@ -1,9 +1,16 @@
 import mongoose from 'mongoose';
 
-const SanitationSchema = new mongoose.Schema({
-  name: String,
-  description: String,
-  date: Date
+const sanitationSchema = new mongoose.Schema({
+  roomNumber: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  isSanitized: {
+    type: Boolean,
+    default: false,
+  },
 }, { timestamps: true });
 
-export default mongoose.model('Sanitation', SanitationSchema);
+const Sanitation = mongoose.model('Sanitation', sanitationSchema);
+export default Sanitation;

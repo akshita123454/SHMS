@@ -1,11 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const patientSchema = new mongoose.Schema({
   firstName: String,
   middleName: String,
   lastName: String,
-  dob: String,
-  age: String,
+  dob: Date,
+  age: Number,
   gender: String,
   maritalStatus: String,
   address: String,
@@ -13,31 +13,40 @@ const patientSchema = new mongoose.Schema({
   state: String,
   zip: String,
   nationality: String,
+
+  // Contact
   email: String,
   phone: String,
   emergencyName: String,
   emergencyPhone: String,
   emergencyRelation: String,
+
+  // Insurance
   insuranceProvider: String,
   plan: String,
   policyNumber: String,
   groupNumber: String,
   insuredName: String,
   insuredPhone: String,
-  insuredDOB: String,
+  insuredDOB: Date,
+
+  // Lifestyle
   smoker: String,
   alcoholPerWeek: String,
   caffeinePerDay: String,
   recreationalDrugs: String,
+
+  // Medical
   allergies: String,
   currentMedications: String,
   bloodGroup: String,
   conditions: String,
+
+  // Room Allotment
   roomType: String,
   bedType: String,
-}, { timestamps: true });
+}, {
+  timestamps: true
+});
 
-// ✅ FIX: Check if already compiled
-const Patient = mongoose.models.Patient || mongoose.model('Patient', patientSchema);
-
-export default Patient;
+export const Patient = mongoose.models.Patient || mongoose.model("Patient", patientSchema);

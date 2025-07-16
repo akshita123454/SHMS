@@ -1,8 +1,18 @@
 import express from 'express';
-import { getAllRooms, createRoom } from '../controllers/rooms.controller.js';
+import {
+  bookRoom,
+  getAllRoomStatus,
+  getAvailableRooms,
+  checkRoomAvailability,
+  seedRooms,
+} from '../controller/rooms.controller.js';
+
 const router = express.Router();
 
-router.get('/', getAllRooms);
-router.post('/', createRoom);
+router.post('/book', bookRoom);
+router.get('/status', getAllRoomStatus);
+router.post('/available', getAvailableRooms);
+router.post('/check', checkRoomAvailability);
+router.post('/seed', seedRooms); // optional seed route
 
 export default router;
