@@ -155,16 +155,14 @@ const Payroll = () => {
 
           {/* Company Header - Placeholder for actual company details */}
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-900">
-              YOUR COMPANY NAME
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-900">SHMS</h1>
             <p className="text-gray-600">
               Your Company Address, City, State, Zip
             </p>
             <p className="text-gray-600">
-              Phone: (123) 456-7890 | Email: info@yourcompany.com
+              Phone: (123) 456-7890 | Email: info@SHMS.com
             </p>
-            <p className="text-gray-600">Website: www.yourcompany.com</p>
+            <p className="text-gray-600">Website: www.SHMS.com</p>
           </div>
 
           {/* Employee Details - Now in a table for better formatting */}
