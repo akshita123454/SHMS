@@ -25,6 +25,7 @@ import newroomRoutes from './routes/rooms.routes.js';
 import sanitationRoutes from './routes/sanitations.routes.js';
 import RpatientRoutes from "./routes/patientsR.routes.js";
 import attendanceRoutes from './routes/attendance.routes.js';
+import userRoutes from "./routes/user.routes.js" // ✅ Don't use 'import'
 
 dotenv.config();
 
@@ -76,6 +77,9 @@ app.use('/api/rooms', newroomRoutes);
 app.use('/api/sanitations', sanitationRoutes);
 app.use("/api/patients", RpatientRoutes);
 app.use('/api/attendance', attendanceRoutes);
+
+// Below other routes, register:
+app.use('/api/users', userRoutes); // ✅ Add this line
 
 // Connect DB and Start server
 connectDB().then(() => {

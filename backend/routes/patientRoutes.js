@@ -1,6 +1,7 @@
 // ProfileForm: POST /api/patients
 import express from 'express';
 import Patient from '../models/patient.model.js';
+import User from '../models/user.model.js';
 
 const router = express.Router();
 
@@ -151,6 +152,7 @@ router.put('/:email', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 
 

@@ -7,7 +7,8 @@ import {
   updateStaff,
   deleteStaff,
   getDepartmentByRoles,
-  getStaffById, // Ensure getStaffById is imported here
+  getStaffById,
+  // Ensure getStaffById is imported here
 } from "../controller/staff.controller.js";
 import { authorizeRoles, protect } from "../middleware/auth.middleware.js";
 
@@ -27,5 +28,7 @@ router.get(
 );
 // Route to get staff by ID
 router.get("/:id", protect, authorizeRoles("admin"), getStaffById);
+
+
 
 export default router;
