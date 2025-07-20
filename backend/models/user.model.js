@@ -44,6 +44,8 @@ const userSchema = new mongoose.Schema(
     childEducationAllowance: { type: Number, default: 0 },
     bonuses: { type: Number, default: 0 },
     payrollGenerated: { type: Boolean, default: false },
+    basic: { type: Number, default: 0 },
+    specialAllowance: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

@@ -300,16 +300,18 @@ const Payroll = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {generatedPayslip.deductions.map((deduction, i) => (
-                    <tr key={i}>
-                      <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                        {deduction.type}
-                      </td>
-                      <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                        {deduction.amount.toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
+                  {generatedPayslip.deductions
+                    .filter((d) => d.type !== "Professional Tax")
+                    .map((deduction, i) => (
+                      <tr key={i}>
+                        <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
+                          {deduction.type}
+                        </td>
+                        <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
+                          {deduction.amount.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
                   <tr className="bg-gray-100 font-bold">
                     <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700">
                       Net Pay

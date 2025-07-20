@@ -95,13 +95,11 @@ export const createPayroll = async (req, res) => {
     if (grossPay < 15000) {
       esic = +(grossPay * 0.035).toFixed(2); // 3.5% ESIC if gross pay is below 15000
     }
-    const professionalTax = 200; // Example fixed professional tax
     const incomeTax = +(grossPay * 0.05).toFixed(2); // Example income tax
 
     const deductions = [
       { type: "Provident Fund", amount: parseFloat(pf) || 0 },
       { type: "ESIC", amount: parseFloat(esic) || 0 },
-      { type: "Professional Tax", amount: parseFloat(professionalTax) || 0 },
       { type: "Income Tax", amount: parseFloat(incomeTax) || 0 },
     ];
     const totalDed = deductions.reduce(

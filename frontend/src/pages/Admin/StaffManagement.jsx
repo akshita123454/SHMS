@@ -1,4 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useReducer,
+  useMemo,
+} from "react";
 import {
   fetchStaff,
   addStaff,
@@ -17,94 +23,141 @@ const rolesList = [
   "emergency",
 ];
 
-// Define common blood groups for the dropdown
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+const initialFormState = {
+  name: "",
+  role: "",
+  department: "",
+  email: "",
+  contact: "",
+  password: "",
+  ctc: "",
+};
+
+const initialDetailsState = {
+  pfAccount: "",
+  bankAccount: "",
+  esicNumber: "",
+  designation: "",
+  joiningDate: "",
+  location: "",
+  isMetroCity: false,
+  bonuses: 0,
+  emergencyContact: "",
+  previousExperience: "",
+  bloodGroup: "",
+  otherAllowance: 0,
+  basic: 0,
+  specialAllowance: 0,
+};
+
+const formReducer = (state, action) => {
+  switch (action.type) {
+    case "UPDATE_FIELD":
+      return { ...state, [action.field]: action.value };
+    case "RESET":
+      return initialFormState;
+    default:
+      return state;
+  }
+};
+
+const detailsReducer = (state, action) => {
+  switch (action.type) {
+    case "UPDATE_FIELD":
+      return { ...state, [action.field]: action.value };
+    case "RESET":
+      return initialDetailsState;
+    case "SET_DETAILS":
+      return { ...action.payload };
+    default:
+      return state;
+  }
+};
 
 const StaffManagement = () => {
   const [staffList, setStaffList] = useState([]);
   const [departments, setDepartments] = useState([]);
-  const [formData, setFormData] = useState({
-    name: "",
-    role: "",
-    department: "",
-    email: "",
-    contact: "",
-    password: "",
-    ctc: "",
-  });
+  const [formData, dispatchForm] = useReducer(formReducer, initialFormState);
+  const [detailsFormData, dispatchDetails] = useReducer(
+    detailsReducer,
+    initialDetailsState
+  );
   const [editingId, setEditingId] = useState(null);
-  const [toast, setToast] = useState("");
+  const [toast, setToast] = useState({ message: "", type: "success" });
   const [selectedStaffForDetails, setSelectedStaffForDetails] = useState(null);
-  const [detailsFormData, setDetailsFormData] = useState({
-    pfAccount: "",
-    bankAccount: "",
-    esicNumber: "",
-    designation: "",
-    joiningDate: "",
-    location: "",
-    isMetroCity: false,
-    // Removed hostelAllowance and childEducationAllowance
-    bonuses: 0,
-    // NEW FIELDS ADDED HERE
-    emergencyContact: "",
-    previousExperience: "",
-    bloodGroup: "",
-    // Added 'otherAllowance' instead
-    otherAllowance: 0,
-  });
   const [generatedPayslip, setGeneratedPayslip] = useState(null);
   const [isDetailsEditable, setIsDetailsEditable] = useState(true);
   const [currentStep, setCurrentStep] = useState(0); // 0: Add/Edit, 1: Staff List, 2: Staff Details
+  const [isLoading, setIsLoading] = useState(false);
 
-  const showToast = (msg) => {
-    setToast(msg);
-    setTimeout(() => setToast(""), 3000);
-  };
+  const showToast = useCallback((message, type = "success") => {
+    setToast({ message, type });
+    setTimeout(() => setToast({ message: "", type: "success" }), 3000);
+  }, []);
 
-  const loadStaff = async () => {
+  const loadStaff = useCallback(async () => {
+    setIsLoading(true);
     try {
       const { data } = await fetchStaff();
-      setStaffList(data);
+      setStaffList(data || []);
     } catch (err) {
-      console.error("Error loading staff", err);
-      showToast("Failed to load staff");
+      console.error("Error loading staff:", err);
+      showToast("Failed to load staff", "error");
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [showToast]);
+
+  const loadDepartmentsByRole = useCallback(
+    async (role) => {
+      if (!role) {
+        setDepartments([]);
+        dispatchForm({ type: "UPDATE_FIELD", field: "department", value: "" });
+        return;
+      }
+      setIsLoading(true);
+      try {
+        const { data } = await fetchDepartmentByRole(role);
+        setDepartments(data || []);
+        if (!data.includes(formData.department)) {
+          dispatchForm({
+            type: "UPDATE_FIELD",
+            field: "department",
+            value: "",
+          });
+        }
+      } catch (err) {
+        console.error("Error loading departments:", err);
+        showToast("Failed to load departments", "error");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [formData.department, showToast]
+  );
 
   useEffect(() => {
     loadStaff();
-    // Initially display the Add/Edit Staff form
     setCurrentStep(0);
-  }, []);
+  }, [loadStaff]);
 
   useEffect(() => {
-    if (formData.role) {
-      loadDepartmentsByRole(formData.role);
-    }
-  }, [formData.role]);
-
-  const loadDepartmentsByRole = async (role) => {
-    try {
-      const { data } = await fetchDepartmentByRole(role);
-      setDepartments(data);
-      if (!data.includes(formData.department)) {
-        setFormData((prev) => ({ ...prev, department: "" }));
-      }
-    } catch (err) {
-      console.error("Error loading departments", err);
-      showToast("Failed to load departments");
-    }
-  };
+    loadDepartmentsByRole(formData.role);
+  }, [formData.role, loadDepartmentsByRole]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    dispatchForm({ type: "UPDATE_FIELD", field: name, value });
   };
 
   const handleDetailsChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setDetailsFormData({
-      ...detailsFormData,
-      [name]:
+    dispatchDetails({
+      type: "UPDATE_FIELD",
+      field: name,
+      value:
         type === "checkbox"
           ? checked
           : name === "isMetroCity"
@@ -115,6 +168,8 @@ const StaffManagement = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
+    setIsLoading(true);
     try {
       if (editingId) {
         await updateStaff(editingId, formData);
@@ -123,92 +178,133 @@ const StaffManagement = () => {
         await addStaff(formData);
         showToast("Staff added successfully!");
       }
-      setFormData({
-        name: "",
-        role: "",
-        department: "",
-        email: "",
-        contact: "",
-        password: "",
-        ctc: "",
-      });
+      dispatchForm({ type: "RESET" });
       setEditingId(null);
-      await loadStaff(); // Ensure staff list is updated before moving
-      setCurrentStep(1); // Move to Staff List after adding/editing
+      await loadStaff();
+      setCurrentStep(1);
     } catch (err) {
-      console.error("Error saving staff", err);
-      showToast(`Error: ${err.response?.data?.message || err.message}`);
+      console.error("Error saving staff:", err);
+      showToast(
+        `Error: ${err.response?.data?.message || err.message}`,
+        "error"
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleEdit = (staff) => {
-    setFormData({
-      name: staff.name,
-      role: staff.role,
-      department: staff.department,
-      email: staff.email,
-      contact: staff.contact,
-      password: "", // Password should not be pre-filled for security
-      ctc: staff.ctc,
+    dispatchForm({
+      type: "UPDATE_FIELD",
+      field: "name",
+      value: staff.name || "",
+    });
+    dispatchForm({
+      type: "UPDATE_FIELD",
+      field: "role",
+      value: staff.role || "",
+    });
+    dispatchForm({
+      type: "UPDATE_FIELD",
+      field: "department",
+      value: staff.department || "",
+    });
+    dispatchForm({
+      type: "UPDATE_FIELD",
+      field: "email",
+      value: staff.email || "",
+    });
+    dispatchForm({
+      type: "UPDATE_FIELD",
+      field: "contact",
+      value: staff.contact || "",
+    });
+    dispatchForm({
+      type: "UPDATE_FIELD",
+      field: "password",
+      value: "",
+    });
+    dispatchForm({
+      type: "UPDATE_FIELD",
+      field: "ctc",
+      value: staff.ctc || "",
     });
     setEditingId(staff._id);
-    setCurrentStep(0); // Go back to Add/Edit form for editing
+    setCurrentStep(0);
   };
 
   const handleDelete = async (id) => {
+    if (isLoading) return;
     if (window.confirm("Are you sure you want to delete this staff member?")) {
+      setIsLoading(true);
       try {
         await deleteStaff(id);
         showToast("Staff deleted successfully!");
-        loadStaff();
+        await loadStaff();
       } catch (err) {
-        console.error("Error deleting staff", err);
-        showToast(`Error: ${err.response?.data?.message || err.message}`);
+        console.error("Error deleting staff:", err);
+        showToast(
+          `Error: ${err.response?.data?.message || err.message}`,
+          "error"
+        );
+      } finally {
+        setIsLoading(false);
       }
     }
   };
 
   const handleEmployeeIdClick = (staff) => {
     setSelectedStaffForDetails(staff);
-    setDetailsFormData({
-      pfAccount: staff.pfAccount || "",
-      bankAccount: staff.bankAccount || "",
-      esicNumber: staff.esicNumber || "",
-      designation: staff.designation || "",
-      joiningDate: staff.joiningDate
-        ? new Date(staff.joiningDate).toISOString().split("T")[0]
-        : "",
-      location: staff.location || "",
-      isMetroCity: staff.isMetroCity || false,
-      // Removed initialization for hostelAllowance and childEducationAllowance
-      bonuses: staff.bonuses || 0,
-      // Initialize new fields
-      emergencyContact: staff.emergencyContact || "",
-      previousExperience: staff.previousExperience || "",
-      bloodGroup: staff.bloodGroup || "",
-      // Initialize 'otherAllowance'
-      otherAllowance: staff.otherAllowance || 0,
+    dispatchDetails({
+      type: "SET_DETAILS",
+      payload: {
+        pfAccount: staff.pfAccount || "",
+        bankAccount: staff.bankAccount || "",
+        esicNumber: staff.esicNumber || "",
+        designation: staff.designation || "",
+        joiningDate: staff.joiningDate
+          ? new Date(staff.joiningDate).toISOString().split("T")[0]
+          : "",
+        location: staff.location || "",
+        isMetroCity: staff.isMetroCity || false,
+        bonuses: staff.bonuses || 0,
+        emergencyContact: staff.emergencyContact || "",
+        previousExperience: staff.previousExperience || "",
+        bloodGroup: staff.bloodGroup || "",
+        otherAllowance: staff.otherAllowance || 0,
+        basic: staff.basic || 0,
+        specialAllowance: staff.specialAllowance || 0,
+      },
     });
     setGeneratedPayslip(null);
     setIsDetailsEditable(!staff.payrollGenerated);
-    setCurrentStep(2); // Move to Staff Details section
+    setCurrentStep(2);
   };
 
   const handleSaveDetails = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
+    setIsLoading(true);
     try {
       const updatedStaff = { ...selectedStaffForDetails, ...detailsFormData };
       await updateStaff(selectedStaffForDetails._id, updatedStaff);
       showToast("Staff details updated successfully!");
       setSelectedStaffForDetails(updatedStaff);
-      await loadStaff(); // Ensure staff list is updated
+      await loadStaff();
     } catch (err) {
-      console.error("Error saving staff details", err);
-      showToast(`Error: ${err.response?.data?.message || err.message}`);
+      console.error("Error saving staff details:", err);
+      showToast(
+        `Error: ${err.response?.data?.message || err.message}`,
+        "error"
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGeneratePayslip = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
     try {
       const response = await addPayroll({
         staffId: selectedStaffForDetails._id,
@@ -220,10 +316,15 @@ const StaffManagement = () => {
       setGeneratedPayslip(response.data);
       setIsDetailsEditable(false);
       showToast("Payslip generated successfully!");
-      await loadStaff(); // Ensure staff list is updated
+      await loadStaff();
     } catch (err) {
-      console.error("Error generating payslip", err);
-      showToast(`Error: ${err.response?.data?.message || err.message}`);
+      console.error("Error generating payslip:", err);
+      showToast(
+        `Error: ${err.response?.data?.message || err.message}`,
+        "error"
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -231,8 +332,11 @@ const StaffManagement = () => {
     setSelectedStaffForDetails(null);
     setGeneratedPayslip(null);
     setIsDetailsEditable(true);
-    setCurrentStep(1); // Go back to Staff List
+    dispatchDetails({ type: "RESET" });
+    setCurrentStep(1);
   };
+
+  const memoizedStaffList = useMemo(() => staffList, [staffList]);
 
   return (
     <div className="p-6 space-y-6 w-full bg-gray-100 min-h-screen font-sans">
@@ -240,56 +344,62 @@ const StaffManagement = () => {
         Staff Management
       </h2>
 
-      {toast && (
-        <div className="bg-green-200 text-green-800 px-4 py-2 rounded-lg mb-4 text-center">
-          {toast}
+      {toast.message && (
+        <div
+          className={`px-4 py-2 rounded-lg mb-4 text-center ${
+            toast.type === "success"
+              ? "bg-green-200 text-green-800"
+              : "bg-red-200 text-red-800"
+          }`}
+        >
+          {toast.message}
         </div>
       )}
 
-      {/* Navigation buttons - Reduced mb from 8 to 4 */}
+      {isLoading && (
+        <div className="text-center text-gray-600">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+          <span className="ml-2">Loading...</span>
+        </div>
+      )}
+
       <div className="flex justify-center gap-4 mb-4">
         <button
           onClick={() => {
             setCurrentStep(0);
-            setEditingId(null); // Reset editing state when going to Add Staff
-            setFormData({
-              name: "",
-              role: "",
-              department: "",
-              email: "",
-              contact: "",
-              password: "",
-              ctc: "",
-            });
+            setEditingId(null);
+            dispatchForm({ type: "RESET" });
           }}
           className={`px-6 py-3 rounded-lg font-semibold transition duration-300 ${
             currentStep === 0
               ? "bg-blue-600 text-white shadow-lg"
               : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-          }`}
+          } disabled:opacity-50`}
+          disabled={isLoading}
+          aria-label="Navigate to Add/Edit Staff"
         >
           Add/Edit Staff
         </button>
         <button
           onClick={() => {
             setCurrentStep(1);
-            setSelectedStaffForDetails(null); // Clear selected staff when going to list
-            setGeneratedPayslip(null); // Clear generated payslip
-            setIsDetailsEditable(true); // Reset editable state
+            setSelectedStaffForDetails(null);
+            setGeneratedPayslip(null);
+            setIsDetailsEditable(true);
+            dispatchDetails({ type: "RESET" });
           }}
           className={`px-6 py-3 rounded-lg font-semibold transition duration-300 ${
             currentStep === 1
               ? "bg-blue-600 text-white shadow-lg"
               : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-          }`}
+          } disabled:opacity-50`}
+          disabled={isLoading}
+          aria-label="Navigate to Staff List"
         >
           Staff List
         </button>
       </div>
 
-      {/* Conditional Rendering based on currentStep */}
-
-      {/* Add/Edit Staff Form - Reduced mb from 8 to 4 */}
       {currentStep === 0 && (
         <div className="bg-white p-6 rounded-lg shadow-md mb-4">
           <h3 className="text-2xl font-semibold text-gray-700 mb-4">
@@ -298,30 +408,43 @@ const StaffManagement = () => {
           <form
             onSubmit={handleSubmit}
             className="grid grid-cols-1 md:grid-cols-2 gap-4"
+            aria-label={editingId ? "Edit staff form" : "Add new staff form"}
           >
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                className="block text-sm font-medium text-gray-700"
+                htmlFor="name"
+              >
                 Name
               </label>
               <input
                 type="text"
+                id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
                 required
+                disabled={isLoading}
+                aria-required="true"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                className="block text-sm font-medium text-gray-700"
+                htmlFor="role"
+              >
                 Role
               </label>
               <select
+                id="role"
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
                 required
+                disabled={isLoading}
+                aria-required="true"
               >
                 <option value="">Select Role</option>
                 {rolesList.map((role) => (
@@ -332,16 +455,21 @@ const StaffManagement = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                className="block text-sm font-medium text-gray-700"
+                htmlFor="department"
+              >
                 Department
               </label>
               <select
+                id="department"
                 name="department"
                 value={formData.department}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
                 required
-                disabled={!formData.role}
+                disabled={!formData.role || isLoading}
+                aria-required="true"
               >
                 <option value="">Select Department</option>
                 {departments.map((dept) => (
@@ -352,61 +480,87 @@ const StaffManagement = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                className="block text-sm font-medium text-gray-700"
+                htmlFor="email"
+              >
                 Email
               </label>
               <input
                 type="email"
+                id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
                 required
+                disabled={isLoading}
+                aria-required="true"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                className="block text-sm font-medium text-gray-700"
+                htmlFor="contact"
+              >
                 Contact
               </label>
               <input
                 type="text"
+                id="contact"
                 name="contact"
                 value={formData.contact}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
                 required
+                disabled={isLoading}
+                aria-required="true"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                className="block text-sm font-medium text-gray-700"
+                htmlFor="password"
+              >
                 Password
               </label>
               <input
                 type="password"
+                id="password"
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
                 required={!editingId}
+                disabled={isLoading}
+                aria-required={!editingId}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label
+                className="block text-sm font-medium text-gray-700"
+                htmlFor="ctc"
+              >
                 CTC (Cost to Company)
               </label>
               <input
                 type="number"
+                id="ctc"
                 name="ctc"
                 value={formData.ctc}
                 onChange={handleChange}
-                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
                 required
+                disabled={isLoading}
+                aria-required="true"
               />
             </div>
             <div className="col-span-1 md:col-span-2 flex justify-end space-x-2">
               <button
                 type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                disabled={isLoading}
+                aria-label={editingId ? "Update staff" : "Add staff"}
               >
                 {editingId ? "Update Staff" : "Add Staff"}
               </button>
@@ -415,17 +569,11 @@ const StaffManagement = () => {
                   type="button"
                   onClick={() => {
                     setEditingId(null);
-                    setFormData({
-                      name: "",
-                      role: "",
-                      department: "",
-                      email: "",
-                      contact: "",
-                      password: "",
-                      ctc: "",
-                    });
+                    dispatchForm({ type: "RESET" });
                   }}
-                  className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300"
+                  className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300 disabled:bg-gray-200 disabled:cursor-not-allowed"
+                  disabled={isLoading}
+                  aria-label="Cancel edit"
                 >
                   Cancel Edit
                 </button>
@@ -435,13 +583,12 @@ const StaffManagement = () => {
         </div>
       )}
 
-      {/* Staff List */}
       {currentStep === 1 && (
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-2xl font-semibold text-gray-700 mb-4">
             Existing Staff
           </h3>
-          {staffList.length === 0 ? (
+          {memoizedStaffList.length === 0 ? (
             <p className="text-gray-600">No staff added yet.</p>
           ) : (
             <div className="overflow-x-auto">
@@ -472,39 +619,44 @@ const StaffManagement = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {staffList.map((staff) => (
+                  {memoizedStaffList.map((staff) => (
                     <tr key={staff._id} className="hover:bg-gray-50">
                       <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                        {staff.name}
+                        {staff.name || "N/A"}
                       </td>
                       <td
                         className="py-2 px-4 border-b border-gray-200 text-sm text-blue-600 cursor-pointer hover:underline"
                         onClick={() => handleEmployeeIdClick(staff)}
+                        aria-label={`View details for ${staff.name}`}
                       >
-                        {staff.employeeId}
+                        {staff.employeeId || "N/A"}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                        {staff.role}
+                        {staff.role || "N/A"}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                        {staff.department}
+                        {staff.department || "N/A"}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                        {staff.email}
+                        {staff.email || "N/A"}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                        ₹{staff.ctc.toLocaleString()}
+                        ₹{staff.ctc?.toLocaleString() || "N/A"}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-sm">
                         <button
                           onClick={() => handleEdit(staff)}
-                          className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 mr-2 transition duration-300"
+                          className="bg-yellow-500 text-white px-3 py-1 rounded-lg hover:bg-yellow-600 mr-2 transition duration-300 disabled:bg-yellow-300 disabled:cursor-not-allowed"
+                          disabled={isLoading}
+                          aria-label={`Edit ${staff.name}`}
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(staff._id)}
-                          className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition duration-300"
+                          className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition duration-300 disabled:bg-red-300 disabled:cursor-not-allowed"
+                          disabled={isLoading}
+                          aria-label={`Delete ${staff.name}`}
                         >
                           Delete
                         </button>
@@ -518,15 +670,13 @@ const StaffManagement = () => {
         </div>
       )}
 
-      {/* Staff Details Section */}
       {currentStep === 2 && selectedStaffForDetails && (
         <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-6xl mx-auto mt-8">
           <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-            Staff Details: {selectedStaffForDetails.name} (
-            {selectedStaffForDetails.employeeId})
+            Staff Details: {selectedStaffForDetails.name || "N/A"} (
+            {selectedStaffForDetails.employeeId || "N/A"})
           </h3>
 
-          {/* Display initial staff details in a tabular format */}
           <div className="mb-6 p-4 border rounded-lg bg-gray-50 overflow-x-auto">
             <table className="min-w-full bg-transparent">
               <tbody>
@@ -535,7 +685,7 @@ const StaffManagement = () => {
                     Name:
                   </td>
                   <td className="py-2 px-2 text-gray-800 w-1/2">
-                    {selectedStaffForDetails.name}
+                    {selectedStaffForDetails.name || "N/A"}
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200">
@@ -543,7 +693,7 @@ const StaffManagement = () => {
                     Employee ID:
                   </td>
                   <td className="py-2 px-2 text-gray-800">
-                    {selectedStaffForDetails.employeeId}
+                    {selectedStaffForDetails.employeeId || "N/A"}
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200">
@@ -551,7 +701,7 @@ const StaffManagement = () => {
                     Role:
                   </td>
                   <td className="py-2 px-2 text-gray-800">
-                    {selectedStaffForDetails.role}
+                    {selectedStaffForDetails.role || "N/A"}
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200">
@@ -559,7 +709,7 @@ const StaffManagement = () => {
                     Department:
                   </td>
                   <td className="py-2 px-2 text-gray-800">
-                    {selectedStaffForDetails.department}
+                    {selectedStaffForDetails.department || "N/A"}
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200">
@@ -567,7 +717,7 @@ const StaffManagement = () => {
                     Email:
                   </td>
                   <td className="py-2 px-2 text-gray-800">
-                    {selectedStaffForDetails.email}
+                    {selectedStaffForDetails.email || "N/A"}
                   </td>
                 </tr>
                 <tr className="border-b border-gray-200">
@@ -575,7 +725,7 @@ const StaffManagement = () => {
                     Contact:
                   </td>
                   <td className="py-2 px-2 text-gray-800">
-                    {selectedStaffForDetails.contact}
+                    {selectedStaffForDetails.contact || "N/A"}
                   </td>
                 </tr>
                 <tr>
@@ -583,178 +733,222 @@ const StaffManagement = () => {
                     CTC:
                   </td>
                   <td className="py-2 px-2 text-gray-800">
-                    ₹{selectedStaffForDetails.ctc.toLocaleString()}
+                    ₹{selectedStaffForDetails.ctc?.toLocaleString() || "N/A"}
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
 
-          {/* Input form for additional details (conditionally rendered only if payslip not generated) */}
           {!generatedPayslip && (
             <form
               onSubmit={handleSaveDetails}
               className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"
+              aria-label="Staff details form"
             >
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="pfAccount"
+                >
                   PF Account
                 </label>
                 <input
                   type="text"
+                  id="pfAccount"
                   name="pfAccount"
                   value={detailsFormData.pfAccount}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="bankAccount"
+                >
                   Bank Account
                 </label>
                 <input
                   type="text"
+                  id="bankAccount"
                   name="bankAccount"
                   value={detailsFormData.bankAccount}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="esicNumber"
+                >
                   ESIC Number
                 </label>
                 <input
                   type="text"
+                  id="esicNumber"
                   name="esicNumber"
                   value={detailsFormData.esicNumber}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="designation"
+                >
                   Designation
                 </label>
                 <input
                   type="text"
+                  id="designation"
                   name="designation"
                   value={detailsFormData.designation}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="joiningDate"
+                >
                   Joining Date
                 </label>
                 <input
                   type="date"
+                  id="joiningDate"
                   name="joiningDate"
                   value={detailsFormData.joiningDate}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="location"
+                >
                   Location
                 </label>
                 <input
                   type="text"
+                  id="location"
                   name="location"
                   value={detailsFormData.location}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="isMetroCity"
+                >
                   HRA City Type
                 </label>
                 <select
+                  id="isMetroCity"
                   name="isMetroCity"
                   value={detailsFormData.isMetroCity}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 >
                   <option value={false}>Non-Metro City</option>
                   <option value={true}>Metro City</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="bonuses"
+                >
                   Bonuses
                 </label>
                 <input
                   type="number"
+                  id="bonuses"
                   name="bonuses"
                   value={detailsFormData.bonuses}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 />
               </div>
-
-              {/* Added 'Other Allowance' field */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="otherAllowance"
+                >
                   Other Allowance
                 </label>
                 <input
                   type="number"
+                  id="otherAllowance"
                   name="otherAllowance"
                   value={detailsFormData.otherAllowance}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 />
               </div>
-
-              {/* Previously added fields */}
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="emergencyContact"
+                >
                   Emergency Contact
                 </label>
                 <input
                   type="text"
+                  id="emergencyContact"
                   name="emergencyContact"
                   value={detailsFormData.emergencyContact}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="previousExperience"
+                >
                   Previous Experience
                 </label>
                 <input
                   type="text"
+                  id="previousExperience"
                   name="previousExperience"
                   value={detailsFormData.previousExperience}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">
+                <label
+                  className="block text-sm font-medium text-gray-700"
+                  htmlFor="bloodGroup"
+                >
                   Blood Group
                 </label>
                 <select
+                  id="bloodGroup"
                   name="bloodGroup"
                   value={detailsFormData.bloodGroup}
                   onChange={handleDetailsChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500"
-                  disabled={!isDetailsEditable}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                  disabled={!isDetailsEditable || isLoading}
                 >
                   <option value="">Select Blood Group</option>
                   {bloodGroups.map((group) => (
@@ -764,12 +958,13 @@ const StaffManagement = () => {
                   ))}
                 </select>
               </div>
-
               {isDetailsEditable && (
                 <div className="col-span-1 md:col-span-2 flex justify-end space-x-2 mt-4">
                   <button
                     type="submit"
-                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300"
+                    className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                    disabled={isLoading}
+                    aria-label="Save staff details"
                   >
                     Save Details
                   </button>
@@ -782,27 +977,28 @@ const StaffManagement = () => {
             {!generatedPayslip && !selectedStaffForDetails.payrollGenerated && (
               <button
                 onClick={handleGeneratePayslip}
-                className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition duration-300 text-lg font-semibold"
-                disabled={!isDetailsEditable}
+                className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition duration-300 text-lg font-semibold disabled:bg-green-300 disabled:cursor-not-allowed"
+                disabled={!isDetailsEditable || isLoading}
+                aria-label="Generate financial details"
               >
-                Generate Payslip
+                Generate Financial Details
               </button>
             )}
             <button
               onClick={handleCloseDetails}
-              className="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400 transition duration-300 text-lg font-semibold"
+              className="bg-gray-300 text-gray-800 px-6 py-2 rounded-lg hover:bg-gray-400 transition duration-300 text-lg font-semibold disabled:bg-gray-200 disabled:cursor-not-allowed"
+              disabled={isLoading}
+              aria-label="Close staff details"
             >
               Close
             </button>
           </div>
 
-          {/* Display Generated Payslip (conditionally rendered) */}
           {generatedPayslip && (
             <div className="mt-8 p-2 border border-gray-200 rounded-lg bg-gray-50">
               <h4 className="text-xl font-bold text-gray-800 mb-4 text-center">
                 Generated Details
               </h4>
-              {/* Company Header - Placeholder for actual company details */}
               <div className="text-center mb-6">
                 <h1 className="text-3xl font-bold text-gray-900">SHMS</h1>
                 <p className="text-gray-600">
@@ -814,7 +1010,6 @@ const StaffManagement = () => {
                 <p className="text-gray-600">Website: www.shms.com</p>
               </div>
 
-              {/* Employee Details Table */}
               <div className="mb-6">
                 <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
                   <tbody>
@@ -823,13 +1018,13 @@ const StaffManagement = () => {
                         Employee ID:
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-gray-800">
-                        {generatedPayslip.employeeId}
+                        {generatedPayslip.employeeId || "N/A"}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 font-semibold text-gray-700">
                         Month:
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-gray-800">
-                        {generatedPayslip.month}
+                        {generatedPayslip.month || "N/A"}
                       </td>
                     </tr>
                     <tr>
@@ -837,15 +1032,17 @@ const StaffManagement = () => {
                         Name:
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-gray-800">
-                        {selectedStaffForDetails.name}
+                        {selectedStaffForDetails.name || "N/A"}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 font-semibold text-gray-700">
                         Joining Date:
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-gray-800">
-                        {new Date(
-                          generatedPayslip.joiningDate
-                        ).toLocaleDateString()}
+                        {generatedPayslip.joiningDate
+                          ? new Date(
+                              generatedPayslip.joiningDate
+                            ).toLocaleDateString()
+                          : "N/A"}
                       </td>
                     </tr>
                     <tr className="bg-gray-100">
@@ -853,13 +1050,13 @@ const StaffManagement = () => {
                         Designation:
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-gray-800">
-                        {generatedPayslip.designation}
+                        {generatedPayslip.designation || "N/A"}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 font-semibold text-gray-700">
                         Bank Account:
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-gray-800">
-                        {generatedPayslip.bankAccount}
+                        {generatedPayslip.bankAccount || "N/A"}
                       </td>
                     </tr>
                     <tr>
@@ -867,13 +1064,13 @@ const StaffManagement = () => {
                         Location:
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-gray-800">
-                        {generatedPayslip.location}
+                        {generatedPayslip.location || "N/A"}
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 font-semibold text-gray-700">
                         PF Account:
                       </td>
                       <td className="py-2 px-4 border-b border-gray-200 text-gray-800">
-                        {generatedPayslip.pfAccount}
+                        {generatedPayslip.pfAccount || "N/A"}
                       </td>
                     </tr>
                     <tr className="bg-gray-100">
@@ -884,10 +1081,9 @@ const StaffManagement = () => {
                         className="py-2 px-4 border-b border-gray-200 text-gray-800"
                         colSpan="3"
                       >
-                        {generatedPayslip.esicNumber}
+                        {generatedPayslip.esicNumber || "N/A"}
                       </td>
                     </tr>
-                    {/* Display 'Other Allowance' in payslip preview */}
                     {selectedStaffForDetails.otherAllowance > 0 && (
                       <tr>
                         <td className="py-2 px-4 border-b border-gray-200 font-semibold text-gray-700">
@@ -902,7 +1098,6 @@ const StaffManagement = () => {
                         </td>
                       </tr>
                     )}
-                    {/* Previously added fields display */}
                     {selectedStaffForDetails.emergencyContact && (
                       <tr className="bg-gray-100">
                         <td className="py-2 px-4 border-b border-gray-200 font-semibold text-gray-700">
@@ -946,8 +1141,59 @@ const StaffManagement = () => {
                 </table>
               </div>
 
+              <div className="space-y-6 bg-white p-6 shadow rounded">
+                <h3 className="text-xl font-semibold">
+                  Generated Payslip - Editable Fields
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label
+                      className="block text-sm font-medium text-gray-700"
+                      htmlFor="basic"
+                    >
+                      Basic Salary
+                    </label>
+                    <input
+                      type="number"
+                      id="basic"
+                      name="basic"
+                      value={detailsFormData.basic}
+                      onChange={handleDetailsChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                      disabled={isLoading}
+                    />
+                  </div>
+                  <div>
+                    <label
+                      className="block text-sm font-medium text-gray-700"
+                      htmlFor="specialAllowance"
+                    >
+                      Special Allowance
+                    </label>
+                    <input
+                      type="number"
+                      id="specialAllowance"
+                      name="specialAllowance"
+                      value={detailsFormData.specialAllowance}
+                      onChange={handleDetailsChange}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+                      disabled={isLoading}
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleSaveDetails}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                    disabled={isLoading}
+                    aria-label="Save payslip changes"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Earnings Table */}
                 <div>
                   <h4 className="font-bold text-gray-700 mb-2">EARNINGS</h4>
                   <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
@@ -962,13 +1208,13 @@ const StaffManagement = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {generatedPayslip.earnings.map((earning, i) => (
+                      {generatedPayslip.earnings?.map((earning, i) => (
                         <tr key={i}>
                           <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                            {earning.type}
+                            {earning.type || "N/A"}
                           </td>
                           <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                            {earning.total.toLocaleString()}
+                            {earning.total?.toLocaleString() || "N/A"}
                           </td>
                         </tr>
                       ))}
@@ -977,14 +1223,14 @@ const StaffManagement = () => {
                           Gross Pay
                         </td>
                         <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                          ₹{generatedPayslip.grossPay.toLocaleString()}
+                          ₹
+                          {generatedPayslip.grossPay?.toLocaleString() || "N/A"}
                         </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
 
-                {/* Deductions Table */}
                 <div>
                   <h4 className="font-bold text-gray-700 mb-2">DEDUCTIONS</h4>
                   <table className="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
@@ -999,33 +1245,34 @@ const StaffManagement = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {generatedPayslip.deductions.map((deduction, i) => (
-                        <tr key={i}>
-                          <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                            {deduction.type}
-                          </td>
-                          <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                            {deduction.amount.toLocaleString()}
-                          </td>
-                        </tr>
-                      ))}
+                      {generatedPayslip.deductions
+                        ?.filter((d) => d.type !== "Professional Tax")
+                        .map((deduction, i) => (
+                          <tr key={i}>
+                            <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
+                              {deduction.type || "N/A"}
+                            </td>
+                            <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
+                              {deduction.amount?.toLocaleString() || "N/A"}
+                            </td>
+                          </tr>
+                        ))}
                       <tr className="bg-gray-100 font-bold">
                         <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-700">
                           Net Pay
                         </td>
                         <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                          ₹{generatedPayslip.netPay.toLocaleString()}
+                          ₹{generatedPayslip.netPay?.toLocaleString() || "N/A"}
                         </td>
                       </tr>
                     </tbody>
                   </table>
                   <p className="font-bold text-blue-600 mt-1 text-right">
-                    ({generatedPayslip.netPayInWords})
+                    ({generatedPayslip.netPayInWords || "N/A"})
                   </p>
                 </div>
               </div>
 
-              {/* Income Tax Details Tables */}
               <div className="mt-6 pt-4 border-t border-gray-200">
                 <h4 className="font-bold text-gray-700 mb-2">
                   INCOME TAX DETAILS
@@ -1045,13 +1292,13 @@ const StaffManagement = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {generatedPayslip.exemptions.map((x, i) => (
+                        {generatedPayslip.exemptions?.map((x, i) => (
                           <tr key={i}>
                             <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                              {x.label}
+                              {x.label || "N/A"}
                             </td>
                             <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                              {x.value.toLocaleString()}
+                              {x.value?.toLocaleString() || "N/A"}
                             </td>
                           </tr>
                         ))}
@@ -1071,13 +1318,13 @@ const StaffManagement = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {generatedPayslip.investments.map((x, i) => (
+                        {generatedPayslip.investments?.map((x, i) => (
                           <tr key={i}>
                             <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                              {x.label}
+                              {x.label || "N/A"}
                             </td>
                             <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                              {x.value.toLocaleString()}
+                              {x.value?.toLocaleString() || "N/A"}
                             </td>
                           </tr>
                         ))}
@@ -1098,13 +1345,13 @@ const StaffManagement = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {generatedPayslip.slabWiseTax.map((x, i) => (
+                        {generatedPayslip.slabWiseTax?.map((x, i) => (
                           <tr key={i}>
                             <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                              {x.label}
+                              {x.label || "N/A"}
                             </td>
                             <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                              {x.value.toLocaleString()}
+                              {x.value?.toLocaleString() || "N/A"}
                             </td>
                           </tr>
                         ))}
@@ -1124,13 +1371,13 @@ const StaffManagement = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {generatedPayslip.taxDeductedDetails.map((x, i) => (
+                        {generatedPayslip.taxDeductedDetails?.map((x, i) => (
                           <tr key={i}>
                             <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
-                              {x.label}
+                              {x.label || "N/A"}
                             </td>
                             <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                              {x.value.toLocaleString()}
+                              {x.value?.toLocaleString() || "N/A"}
                             </td>
                           </tr>
                         ))}
