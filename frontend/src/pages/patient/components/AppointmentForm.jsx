@@ -12,19 +12,17 @@ const AppointmentForm = () => {
   const [doctors, setDoctors] = useState([]);
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    const fetchDoctors = async () => {
-      try {
-        const res = await axios.get("http://localhost:3000/api/staff");
-        const filtered = res.data.filter((staff) => staff.status === "Active");
-        setDoctors(filtered);
-      } catch (err) {
-        console.error("Error fetching doctors:", err);
-      }
-    };
+useEffect(() => {
+  axios
+    .get("http://localhost:3000/api/users/doctors/only") // ← new working route
+    .then((res) => {
+      console.log(res.data); // check doctor data
+      setDoctors(res.data);
+    })
+    .catch((err) => console.error("Error fetching doctors", err));
+}, []);
 
-    fetchDoctors();
-  }, []);
+
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -55,23 +53,20 @@ const AppointmentForm = () => {
         {/* Doctor Dropdown */}
         <div>
           <label className="block text-sm font-medium mb-1">Choose Doctor</label>
-          <select
-            name="doctor"
-            value={formData.doctor}
-            onChange={handleChange}
-            required
-            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
-            <option value="">Select Doctor</option>
-            {doctors.map((doc) => (
-              <option
-                key={doc._id}
-                value={`${doc.name} - ${doc.department} (${doc.role})`}
-              >
-                {doc.name} - {doc.department} ({doc.role})
-              </option>
-            ))}
-          </select>
+         <select
+  name="doctor"
+  value={formData.doctor}
+  onChange={handleChange}
+  required
+  className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+>
+  <option value="">Select Doctor</option>
+  {doctors.map((doc) => (
+    <option key={doc._id} value={`${doc.name} - ${doc.department}`}>
+      {doc.name} - {doc.department}
+    </option>
+  ))}
+</select>
         </div>
 
         {/* Date */}
