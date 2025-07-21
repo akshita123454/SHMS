@@ -89,7 +89,7 @@ const StaffManagement = () => {
   const [selectedStaffForDetails, setSelectedStaffForDetails] = useState(null);
   const [generatedPayslip, setGeneratedPayslip] = useState(null);
   const [isDetailsEditable, setIsDetailsEditable] = useState(true);
-  const [currentStep, setCurrentStep] = useState(0); // 0: Add/Edit, 1: Staff List, 2: Staff Details
+  const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
   const showToast = useCallback((message, type = "success") => {
@@ -162,6 +162,8 @@ const StaffManagement = () => {
           ? checked
           : name === "isMetroCity"
           ? value === "true"
+          : name === "basic" || name === "specialAllowance"
+          ? parseFloat(value) || 0 // Ensure numeric values
           : value,
     });
   };
@@ -287,6 +289,7 @@ const StaffManagement = () => {
     setIsLoading(true);
     try {
       const updatedStaff = { ...selectedStaffForDetails, ...detailsFormData };
+      console.log("Saving staff details:", updatedStaff); // Log data sent to backend
       await updateStaff(selectedStaffForDetails._id, updatedStaff);
       showToast("Staff details updated successfully!");
       setSelectedStaffForDetails(updatedStaff);
@@ -313,6 +316,7 @@ const StaffManagement = () => {
           year: "numeric",
         }),
       });
+      console.log("Generated payslip data:", response.data); // Log payslip data
       setGeneratedPayslip(response.data);
       setIsDetailsEditable(false);
       showToast("Payslip generated successfully!");
@@ -1145,7 +1149,10 @@ const StaffManagement = () => {
                 <h3 className="text-xl font-semibold">
                   Generated Payslip - Editable Fields
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form
+                  onSubmit={handleSaveDetails}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                >
                   <div>
                     <label
                       className="block text-sm font-medium text-gray-700"
@@ -1180,17 +1187,17 @@ const StaffManagement = () => {
                       disabled={isLoading}
                     />
                   </div>
-                </div>
-                <div className="flex justify-end">
-                  <button
-                    onClick={handleSaveDetails}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-blue-300 disabled:cursor-not-allowed"
-                    disabled={isLoading}
-                    aria-label="Save payslip changes"
-                  >
-                    Save Changes
-                  </button>
-                </div>
+                  <div className="col-span-1 md:col-span-2 flex justify-end">
+                    <button
+                      type="submit"
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-blue-300 disabled:cursor-not-allowed"
+                      disabled={isLoading}
+                      aria-label="Save payslip changes"
+                    >
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1214,7 +1221,12 @@ const StaffManagement = () => {
                             {earning.type || "N/A"}
                           </td>
                           <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                            {earning.total?.toLocaleString() || "N/A"}
+                            {typeof earning.total === "number"
+                              ? earning.total.toLocaleString("en-IN", {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                })
+                              : "N/A"}
                           </td>
                         </tr>
                       ))}
@@ -1224,7 +1236,15 @@ const StaffManagement = () => {
                         </td>
                         <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
                           ₹
-                          {generatedPayslip.grossPay?.toLocaleString() || "N/A"}
+                          {typeof generatedPayslip.grossPay === "number"
+                            ? generatedPayslip.grossPay.toLocaleString(
+                                "en-IN",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : "N/A"}
                         </td>
                       </tr>
                     </tbody>
@@ -1253,7 +1273,12 @@ const StaffManagement = () => {
                               {deduction.type || "N/A"}
                             </td>
                             <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                              {deduction.amount?.toLocaleString() || "N/A"}
+                              {typeof deduction.amount === "number"
+                                ? deduction.amount.toLocaleString("en-IN", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                                : "N/A"}
                             </td>
                           </tr>
                         ))}
@@ -1262,7 +1287,13 @@ const StaffManagement = () => {
                           Net Pay
                         </td>
                         <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                          ₹{generatedPayslip.netPay?.toLocaleString() || "N/A"}
+                          ₹
+                          {typeof generatedPayslip.netPay === "number"
+                            ? generatedPayslip.netPay.toLocaleString("en-IN", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
+                            : "N/A"}
                         </td>
                       </tr>
                     </tbody>
@@ -1298,7 +1329,12 @@ const StaffManagement = () => {
                               {x.label || "N/A"}
                             </td>
                             <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                              {x.value?.toLocaleString() || "N/A"}
+                              {typeof x.value === "number"
+                                ? x.value.toLocaleString("en-IN", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                                : "N/A"}
                             </td>
                           </tr>
                         ))}
@@ -1324,7 +1360,12 @@ const StaffManagement = () => {
                               {x.label || "N/A"}
                             </td>
                             <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                              {x.value?.toLocaleString() || "N/A"}
+                              {typeof x.value === "number"
+                                ? x.value.toLocaleString("en-IN", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                                : "N/A"}
                             </td>
                           </tr>
                         ))}
@@ -1351,7 +1392,12 @@ const StaffManagement = () => {
                               {x.label || "N/A"}
                             </td>
                             <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                              {x.value?.toLocaleString() || "N/A"}
+                              {typeof x.value === "number"
+                                ? x.value.toLocaleString("en-IN", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                                : "N/A"}
                             </td>
                           </tr>
                         ))}
@@ -1377,7 +1423,12 @@ const StaffManagement = () => {
                               {x.label || "N/A"}
                             </td>
                             <td className="py-2 px-4 border-b border-gray-200 text-right text-sm text-gray-800">
-                              {x.value?.toLocaleString() || "N/A"}
+                              {typeof x.value === "number"
+                                ? x.value.toLocaleString("en-IN", {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2,
+                                  })
+                                : "N/A"}
                             </td>
                           </tr>
                         ))}
