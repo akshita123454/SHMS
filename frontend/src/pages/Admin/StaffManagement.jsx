@@ -623,7 +623,9 @@ const StaffManagement = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {memoizedStaffList.map((staff) => (
+                  {[...memoizedStaffList]
+                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                    .map((staff) => (
                     <tr key={staff._id} className="hover:bg-gray-50">
                       <td className="py-2 px-4 border-b border-gray-200 text-sm text-gray-800">
                         {staff.name || "N/A"}
@@ -1192,6 +1194,7 @@ const StaffManagement = () => {
                       type="submit"
                       className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300 disabled:bg-blue-300 disabled:cursor-not-allowed"
                       disabled={isLoading}
+                      onClick={() => window.location.reload()}
                       aria-label="Save payslip changes"
                     >
                       Save Changes
