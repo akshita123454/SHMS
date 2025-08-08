@@ -10,9 +10,24 @@ const generateToken = (id) =>
 
 // @route POST /signup
 export const register = async (req, res) => {
-    console.log("api is being hit");
-  const { name, email, password, role ,contact,baseSalary,department,employeeId} = req.body;
-  console.log(req.body);
+
+  
+  // console.log("api is being hit");
+  // const { name, email, password, role ,contact,baseSaldepartment,employeeIdary,} = req.body;
+  // console.log(req.body);
+
+  // try{
+  //     const user = await User.create (req.body);
+  //     const token = generateToken(user._id);
+  //     res.status(200).json({
+  //       status:"success",
+  //       user,
+  //       token
+  //     })
+  // }catch(error){
+  //     console.log(error);
+  // }
+
 
   try {
     const userExists = await User.findOne({ email });
@@ -61,15 +76,15 @@ export const registerPatient = async (req, res) => {
 // @route POST /login
 export const login = async (req, res) => {
   const { email, password } = req.body;
+  console.log('hi form login controller');
 
   try {
     const user = await User.findOne({ email });
+    console.log(user);
     if (!user || !(await user.matchPassword(password))) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-    
     console.log("user found ")
-
     res.json({
       _id: user._id,
       name: user.name,
@@ -81,6 +96,34 @@ export const login = async (req, res) => {
     res.status(500).json({ message: 'Login failed', error });
   }
 };
+
+
+
+
+// //created my madhu
+// export const login = async (req, res) => {
+//   const { email, password } = req.body;
+//   console.log('hi form login controller');
+//   try {
+//     const user = await User.findOne({ email });
+//     console.log(user);
+//     if (!user || user.password !== password) {
+//       return res.status(401).json({ message: 'Invalid credentials' });
+//     }
+//     console.log("user found ")
+//     res.json({
+//       _id: user._id,
+//       name: user.name,
+//       email: user.email,
+//       role: user.role,
+//       token: generateToken(user._id),
+//     });
+//   } catch (error) {
+//     res.status(500).json({ message: 'Login failed', error });
+//   }
+// };
+// created by madhu
+
 
 
 // @route POST /login for patient

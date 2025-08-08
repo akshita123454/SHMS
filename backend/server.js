@@ -69,17 +69,19 @@ app.use("/api/reports", reportsRoute);
 // Auth
 app.use("/api/auth", authRoute);
 
-app.use('/api/appointments', appointmentRoutes);
-app.use('/api/billings', billingRoutes);
+app.use('/api/reception/appointments', appointmentRoutes);
+
+app.use('/api/reception/billing', billingRoutes);
 app.use('/api/doctors', newdoctorRoutes);
-app.use('/api/patients', newpatientRoutes);
+app.use('/api/reception/newpatients', newpatientRoutes);
 app.use('/api/rooms', newroomRoutes);
 app.use('/api/sanitations', sanitationRoutes);
-app.use("/api/patients", RpatientRoutes);
+// app.use("/api/patients", RpatientRoutes);
 app.use('/api/attendance', attendanceRoutes);
 
 // Below other routes, register:
-app.use('/api/users', userRoutes); // ✅ Add this line
+app.use('/api/users', userRoutes); 
+
 
 // Connect DB and Start server
 connectDB().then(() => {
