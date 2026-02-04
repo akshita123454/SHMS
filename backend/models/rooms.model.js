@@ -7,5 +7,5 @@ const roomSchema = new mongoose.Schema({
   status: { type: String, default: 'Available' }, // Available, Occupied
 });
 
-const Room = mongoose.models.Room || mongoose.model('Room', roomSchema);
+const Room =  mongoose.model('Rooms', roomSchema);
 export default Room;

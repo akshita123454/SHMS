@@ -2,9 +2,15 @@ import Appointment from '../models/appointments.model.js';
 
 // Get all appointments
 export const getAllAppointments = async (req, res) => {
+  console.log("Fetching all appointments");
   try {
     const appointments = await Appointment.find();
-    res.json(appointments);
+    console.log(appointments);
+    res.status(200).json({
+      status: "success",
+      nbHits: appointments.length,
+      appointments
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -14,6 +20,7 @@ export const getAllAppointments = async (req, res) => {
 export const bookAppointment = async (req, res) => {
   const { name, date, time } = req.body;
 
+  console.log("Booking appointment:", req.body);
   if (!name || !date || !time) {
     return res.status(400).json({ message: 'All fields are required' });
   }

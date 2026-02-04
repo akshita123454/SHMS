@@ -4,6 +4,8 @@ import Billing from '../models/billings.model.js';
 export const addBillingEntry = async (req, res) => {
   const { patient, service, amount, status } = req.body;
 
+  console.log(req.body);
+
   if (!patient || !service || !amount) {
     return res.status(400).json({ message: 'All fields are required' });
   }
