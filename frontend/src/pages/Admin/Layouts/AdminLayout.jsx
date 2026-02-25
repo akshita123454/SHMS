@@ -10,7 +10,7 @@ import AdminHeader from "../Components/AdminHeader"; // Path adjusted
 import Dashboard from "../Dashboard"; // Path adjusted
 import StaffManagement from "../StaffManagement"; // Path adjusted
 import Inventory from "../Inventory"; // Path adjusted
-import Payroll from "../PayRoll"; // Path adjusted
+import Payroll from "../Payroll"; // Path adjusted
 import AmbulanceTracking from "../AmbulanceTracking"; // Path adjusted
 import RoomManagement from "../RoomManagement";
 const AdminLayout = () => {
