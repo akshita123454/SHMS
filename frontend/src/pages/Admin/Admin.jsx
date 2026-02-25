@@ -7,7 +7,7 @@ import AmbulanceTracking from "./AmbulanceTracking";
 import Dashboard from "./Dashboard";
 import EmergencyCases from "./EmergencyCases";
 import Inventory from "./Inventory";
-import Payroll from "./PayRoll";
+import Payroll from "./Payroll";
 import StaffManagement from "./StaffManagement";
 import RoomAllotment from "../EmergencyStaff/RoomAllotment";
 import { ToastContainer } from "react-toastify";
